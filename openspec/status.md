@@ -13,8 +13,8 @@ NR/5G-LENA.
 
 This is not yet a full reproduction of the paper's Chapter 3 experiments.
 Current work validates the integration path and full candidate metric plumbing.
-Real 5G/NR, real handover execution, full TOPSIS parity, plots, and comparison
-baselines are still pending.
+Real 5G/NR, real handover execution, full TOPSIS parity, detailed time-series
+logging, and broader comparison baselines are still pending.
 
 ## Workspace boundaries
 
@@ -139,12 +139,17 @@ proxy flow.
   - Added optional position and altitude jitter controlled by `RngRun`.
   - Preserved deterministic defaults.
   - Verified different seeds can produce different handover outcomes.
+- `laavha-baselines-and-plots`
+  - Added LAAVHA, fixed, and strongest-signal algorithm modes.
+  - Added algorithm sweeps to the batch runner.
+  - Added CSV summary and handover-count plotting.
 
 ## Active next change
 
-- `laavha-baselines-and-plots`
+- `laavha-time-series-logging`
   - Proposal, design, spec, tasks, and Claude prompt are prepared.
-  - Goal: add minimal baseline algorithms and CSV plotting/summary support.
+  - Goal: add per-decision CSV logging for metrics, scores, selected network,
+    and handover events.
 
 ## Verified commands
 
@@ -163,6 +168,8 @@ python laavha_inference.py --ns3-arg RngRun=7
 python laavha_batch_runner.py --runs 2 --duration 3.0 --period 0.1 --flowmonMode feed --seed-base 10 --output batch_seed.csv
 python laavha_batch_runner.py --runs 1 --sweep-duration 3.0,5.0 --sweep-period 0.1 --flowmonMode feed --seed-base 20 --output batch_sweep.csv
 python laavha_batch_runner.py --runs 2 --duration 3.0 --period 0.1 --flowmonMode feed --seed-base 10 --randomizeScenario --positionJitter 20 --altitudeJitter 5 --output batch_random.csv
+python laavha_batch_runner.py --runs 2 --duration 3.0 --period 0.1 --flowmonMode feed --seed-base 10 --randomizeScenario --positionJitter 20 --altitudeJitter 5 --sweep-algorithm laavha,strongest-signal,fixed --output batch_algorithms.csv
+python laavha_plot.py --input batch_algorithms.csv --output-dir plots
 python laavha_inference.py --ns3-arg flowmonMode=off
 python laavha_inference.py --ns3-arg flowmonMode=log
 python laavha_inference.py --ns3-arg flowmonMode=feed
@@ -178,6 +185,8 @@ Expected current behavior:
 - Sweep runs expand parameter combinations and write CSV rows.
 - Randomized runs with different seeds sample different initial positions and
   can produce different handover outcomes.
+- Algorithm sweeps compare LAAVHA, fixed, and strongest-signal baselines.
+- Plot script generates aggregate summaries and PNG output.
 - `flowmonMode=off|log|feed` all complete.
 - In `feed` mode, WiFi/LTE/5G proxy metrics are injected where available.
 
@@ -186,7 +195,7 @@ Expected current behavior:
 - Add real 5G/NR candidate if NR/5G-LENA becomes available.
 - Execute real handover effects in the ns-3 network, not only decision logging.
 - Align TOPSIS implementation with the paper's exact method.
-- Add plotting and aggregate result tables.
-- Add baselines and ablation experiments for Chapter 3 comparison.
+- Add per-decision time-series logging for paper-style plots.
+- Add broader baselines and ablation experiments for Chapter 3 comparison.
 - Move or patch-export ns-3 implementation files into a reproducible repository
   layout.
