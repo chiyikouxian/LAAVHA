@@ -124,9 +124,11 @@ validated 5G proxy flow is added.
 
 ## Active next change
 
-- No active implementation change is currently in progress.
-- Recommended next change: install/integrate NR or add a clearly labeled
-  5G-like proxy flow for delay, throughput, and PLR.
+- `laavha-5g-proxy-flow-metrics`
+  - Proposal, design, spec, tasks, and Claude prompt are prepared.
+  - Goal: replace remaining 5G synthetic delay, throughput, and PLR with a
+    clearly labeled FlowMonitor-observed 5G proxy flow.
+  - This remains a proxy path, not real NR.
 
 ## Verified commands
 
