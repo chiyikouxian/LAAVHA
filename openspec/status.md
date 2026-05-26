@@ -159,13 +159,17 @@ proxy flow.
   - Added LAAVHA-only multi-run mean/std aggregation.
   - Generated LAAVHA score and SINR mean/std figures.
   - Generated LAAVHA handover-count summary figure.
+- `laavha-publication-figures`
+  - Added publication plotting style and DPI controls.
+  - Generated stable `fig_laavha_*` output filenames.
+  - Documented recommended final LAAVHA-only 20-seed / 10 s commands.
 
 ## Active next change
 
-- `laavha-publication-figures`
+- `laavha-final-publication-batch`
   - Proposal, design, spec, tasks, and Claude prompt are prepared.
-  - Goal: generate publication-quality LAAVHA-only figures and document final
-    longer-duration/more-seed commands.
+  - Goal: run the final LAAVHA-only 20-seed / 10 s batch and verify generated
+    publication artifacts.
 
 ## Verified commands
 
@@ -191,6 +195,7 @@ python laavha_batch_runner.py --runs 2 --duration 3.0 --period 0.1 --flowmonMode
 python laavha_plot.py --time-series ts_single.csv --output-dir plots_ts
 python laavha_batch_runner.py --runs 5 --duration 3.0 --period 0.1 --flowmonMode feed --seed-base 10 --randomizeScenario --positionJitter 20 --altitudeJitter 5 --algorithm laavha --output batch_multirun.csv --time-series-dir time_series_multirun
 python laavha_plot.py --input batch_multirun.csv --time-series-dir time_series_multirun --output-dir plots_multirun
+python laavha_plot.py --input batch_multirun.csv --time-series-dir time_series_multirun --output-dir plots_publication --style publication --dpi 300
 python laavha_inference.py --ns3-arg flowmonMode=off
 python laavha_inference.py --ns3-arg flowmonMode=log
 python laavha_inference.py --ns3-arg flowmonMode=feed
@@ -213,6 +218,7 @@ Expected current behavior:
 - Time-series plotting writes score, SINR, and network timeline PNGs with
   handover markers.
 - Multi-run plotting writes LAAVHA mean/std figures across seeds.
+- Publication plotting writes stable high-DPI `fig_laavha_*` figures.
 - `flowmonMode=off|log|feed` all complete.
 - In `feed` mode, WiFi/LTE/5G proxy metrics are injected where available.
 
@@ -221,7 +227,7 @@ Expected current behavior:
 - Add real 5G/NR candidate if NR/5G-LENA becomes available.
 - Execute real handover effects in the ns-3 network, not only decision logging.
 - Align TOPSIS implementation with the paper's exact method.
-- Add publication-quality formatting and final longer-duration LAAVHA runs.
+- Run and review final longer-duration LAAVHA-only publication batch.
 - Add LAAVHA-focused parameter ablation if needed for Chapter 3 discussion.
 - Move or patch-export ns-3 implementation files into a reproducible repository
   layout.
