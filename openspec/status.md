@@ -155,13 +155,17 @@ proxy flow.
   - Added score, SINR, and network timeline plots from time-series CSV.
   - Marked handover events on time-series plots.
   - Preserved batch summary plotting.
+- `laavha-multirun-paper-figures`
+  - Added LAAVHA-only multi-run mean/std aggregation.
+  - Generated LAAVHA score and SINR mean/std figures.
+  - Generated LAAVHA handover-count summary figure.
 
 ## Active next change
 
-- `laavha-multirun-paper-figures`
+- `laavha-publication-figures`
   - Proposal, design, spec, tasks, and Claude prompt are prepared.
-  - Goal: generate LAAVHA-only multi-seed mean/std plots and paper-oriented
-    figures from batch/time-series CSV outputs.
+  - Goal: generate publication-quality LAAVHA-only figures and document final
+    longer-duration/more-seed commands.
 
 ## Verified commands
 
@@ -185,6 +189,8 @@ python laavha_plot.py --input batch_algorithms.csv --output-dir plots
 python laavha_inference.py --ns3-arg duration=3.0 --ns3-arg period=0.1 --time-series-output ts_single.csv
 python laavha_batch_runner.py --runs 2 --duration 3.0 --period 0.1 --flowmonMode feed --seed-base 10 --randomizeScenario --positionJitter 20 --altitudeJitter 5 --sweep-algorithm laavha,strongest-signal --output batch_ts.csv --time-series-dir time_series
 python laavha_plot.py --time-series ts_single.csv --output-dir plots_ts
+python laavha_batch_runner.py --runs 5 --duration 3.0 --period 0.1 --flowmonMode feed --seed-base 10 --randomizeScenario --positionJitter 20 --altitudeJitter 5 --algorithm laavha --output batch_multirun.csv --time-series-dir time_series_multirun
+python laavha_plot.py --input batch_multirun.csv --time-series-dir time_series_multirun --output-dir plots_multirun
 python laavha_inference.py --ns3-arg flowmonMode=off
 python laavha_inference.py --ns3-arg flowmonMode=log
 python laavha_inference.py --ns3-arg flowmonMode=feed
@@ -206,6 +212,7 @@ Expected current behavior:
   handover flags.
 - Time-series plotting writes score, SINR, and network timeline PNGs with
   handover markers.
+- Multi-run plotting writes LAAVHA mean/std figures across seeds.
 - `flowmonMode=off|log|feed` all complete.
 - In `feed` mode, WiFi/LTE/5G proxy metrics are injected where available.
 
@@ -214,7 +221,7 @@ Expected current behavior:
 - Add real 5G/NR candidate if NR/5G-LENA becomes available.
 - Execute real handover effects in the ns-3 network, not only decision logging.
 - Align TOPSIS implementation with the paper's exact method.
-- Add multi-run mean/std plots and paper-style figure formatting.
+- Add publication-quality formatting and final longer-duration LAAVHA runs.
 - Add LAAVHA-focused parameter ablation if needed for Chapter 3 discussion.
 - Move or patch-export ns-3 implementation files into a reproducible repository
   layout.
