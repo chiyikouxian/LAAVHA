@@ -13,9 +13,10 @@ NR/5G-LENA.
 
 This is not yet a full reproduction of the paper's Chapter 3 experiments.
 Current work validates the integration path and full candidate metric plumbing.
-Real 5G/NR, real handover execution, full TOPSIS parity, and LAAVHA paper-style
-figure reproduction are still pending. Other algorithms from the paper are not
-in the final reproduction scope.
+Real 5G/NR, real handover execution, and full TOPSIS parity are still pending.
+Other algorithms from the paper are not in the final reproduction scope. The
+LAAVHA-only publication figure workflow has produced a final 20-seed / 10 s
+dataset and publication-style plots.
 
 ## Workspace boundaries
 
@@ -163,13 +164,17 @@ proxy flow.
   - Added publication plotting style and DPI controls.
   - Generated stable `fig_laavha_*` output filenames.
   - Documented recommended final LAAVHA-only 20-seed / 10 s commands.
+- `laavha-final-publication-batch`
+  - Ran the final LAAVHA-only 20-seed / 10 s batch.
+  - Generated `batch_final.csv`, `time_series_final/`, and `plots_final/`.
+  - Verified 20/20 successful runs and publication-style PNG artifacts.
 
 ## Active next change
 
-- `laavha-final-publication-batch`
-  - Proposal, design, spec, tasks, and Claude prompt are prepared.
-  - Goal: run the final LAAVHA-only 20-seed / 10 s batch and verify generated
-    publication artifacts.
+- No active implementation change is currently in progress.
+- Recommended next change: real handover execution or LAAVHA parameter
+  ablation, depending on whether the thesis needs behavioral fidelity or
+  sensitivity analysis next.
 
 ## Verified commands
 
@@ -196,6 +201,8 @@ python laavha_plot.py --time-series ts_single.csv --output-dir plots_ts
 python laavha_batch_runner.py --runs 5 --duration 3.0 --period 0.1 --flowmonMode feed --seed-base 10 --randomizeScenario --positionJitter 20 --altitudeJitter 5 --algorithm laavha --output batch_multirun.csv --time-series-dir time_series_multirun
 python laavha_plot.py --input batch_multirun.csv --time-series-dir time_series_multirun --output-dir plots_multirun
 python laavha_plot.py --input batch_multirun.csv --time-series-dir time_series_multirun --output-dir plots_publication --style publication --dpi 300
+python laavha_batch_runner.py --runs 20 --duration 10.0 --period 0.1 --flowmonMode feed --seed-base 100 --randomizeScenario --positionJitter 30 --altitudeJitter 10 --algorithm laavha --output batch_final.csv --time-series-dir time_series_final
+python laavha_plot.py --input batch_final.csv --time-series-dir time_series_final --output-dir plots_final --style publication --dpi 300
 python laavha_inference.py --ns3-arg flowmonMode=off
 python laavha_inference.py --ns3-arg flowmonMode=log
 python laavha_inference.py --ns3-arg flowmonMode=feed
@@ -219,6 +226,8 @@ Expected current behavior:
   handover markers.
 - Multi-run plotting writes LAAVHA mean/std figures across seeds.
 - Publication plotting writes stable high-DPI `fig_laavha_*` figures.
+- Final LAAVHA-only 20-seed / 10 s batch produces publication artifacts:
+  `batch_final.csv`, `time_series_final/`, and `plots_final/`.
 - `flowmonMode=off|log|feed` all complete.
 - In `feed` mode, WiFi/LTE/5G proxy metrics are injected where available.
 
@@ -227,7 +236,6 @@ Expected current behavior:
 - Add real 5G/NR candidate if NR/5G-LENA becomes available.
 - Execute real handover effects in the ns-3 network, not only decision logging.
 - Align TOPSIS implementation with the paper's exact method.
-- Run and review final longer-duration LAAVHA-only publication batch.
 - Add LAAVHA-focused parameter ablation if needed for Chapter 3 discussion.
 - Move or patch-export ns-3 implementation files into a reproducible repository
   layout.
