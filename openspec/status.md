@@ -6,12 +6,13 @@ Last updated: 2026-05-26
 
 The project is in the ns-3 integration phase. The minimum C++ <-> Python
 ns3-ai control loop is working, the LAAVHA PyTorch model loads with
-`strict=True`, and the WiFi candidate now uses ns-3 simulation-derived metrics
-for all five model inputs.
+`strict=True`, and WiFi/LTE now provide ns-3 simulation-driven metrics for all
+five model inputs. The 5G candidate is explicitly marked as proxy/synthetic
+because the local ns-3.45 workspace does not include NR/5G-LENA.
 
 This is not yet a full reproduction of the paper's Chapter 3 experiments.
-Current work validates the integration path and the first realistic candidate
-network. LTE, 5G/NR, real handover execution, full TOPSIS parity, batch
+Current work validates the integration path and two realistic candidate
+networks. Real 5G/NR, real handover execution, full TOPSIS parity, batch
 experiments, and comparison baselines are still pending.
 
 ## Workspace boundaries
@@ -76,12 +77,19 @@ Metric order:
 | Network | SINR | RSRP | Delay | Throughput | PLR |
 | --- | --- | --- | --- | --- | --- |
 | WiFi | propagation proxy from MobilityModel positions | propagation proxy from MobilityModel positions | FlowMonitor | PacketSink interval rx bytes | FlowMonitor |
-| LTE | synthetic | synthetic | synthetic | synthetic | synthetic |
-| 5G | synthetic | synthetic | synthetic | synthetic | synthetic |
+| LTE | propagation proxy from MobilityModel positions | propagation proxy from MobilityModel positions | FlowMonitor | FlowMonitor | FlowMonitor |
+| 5G | propagation proxy from MobilityModel positions to hypothetical gNB | propagation proxy from MobilityModel positions to hypothetical gNB | synthetic | synthetic | synthetic |
 
 WiFi SINR/RSRP are driven by UAV/AP ns-3 mobility state with a log-distance
 path-loss proxy. They are simulation-derived but are not yet exact values from
 the YansWifi PHY internals.
+
+LTE SINR/RSRP are also propagation proxy values, while LTE delay, throughput,
+and PLR are derived from FlowMonitor over the LTE/EPC flow.
+
+5G is not real NR. Only 5G SINR/RSRP are mobility-driven propagation proxy
+values; 5G delay, throughput, and PLR remain synthetic until an NR module or a
+validated 5G proxy flow is added.
 
 ## Completed OpenSpec changes
 
@@ -105,12 +113,20 @@ the YansWifi PHY internals.
 - `laavha-wifi-signal-metrics`
   - Replaced WiFi SINR/RSRP synthetic values with mobility-driven propagation
     proxy values.
+- `laavha-lte-candidate-skeleton`
+  - Added LTE/EPC candidate metrics with a parallel LTE UE node.
+  - Fed LTE delay, throughput, and PLR from FlowMonitor.
+  - Fed LTE SINR/RSRP from a clearly labeled propagation proxy.
+- `laavha-5g-candidate-strategy`
+  - Confirmed no local NR/5G-LENA module is available.
+  - Renamed the 5G path to proxy/synthetic and upgraded 5G SINR/RSRP to a
+    hypothetical-gNB propagation proxy.
 
 ## Active next change
 
-- `laavha-lte-candidate-skeleton`
-  - Proposal, design, tasks, and Claude prompt are prepared.
-  - Implementation has not started.
+- No active implementation change is currently in progress.
+- Recommended next change: install/integrate NR or add a clearly labeled
+  5G-like proxy flow for delay, throughput, and PLR.
 
 ## Verified commands
 
@@ -135,13 +151,14 @@ Expected current behavior:
 - Default run completes 50 decisions.
 - `duration=3.0, period=0.1` completes 30 decisions.
 - `flowmonMode=off|log|feed` all complete.
-- In `feed` mode, WiFi delay and PLR are injected from FlowMonitor.
+- In `feed` mode, WiFi and LTE FlowMonitor metrics are injected where
+  available.
 
 ## Remaining reproduction gaps
 
-- Add LTE candidate with ns-3 LTE/EPC metrics.
-- Add 5G/NR candidate or define a validated proxy if NR is unavailable.
-- Replace synthetic LTE/5G metrics.
+- Add real 5G/NR candidate, or define a stronger validated 5G proxy flow if NR
+  remains unavailable.
+- Replace remaining synthetic 5G delay, throughput, and PLR.
 - Execute real handover effects in the ns-3 network, not only decision logging.
 - Align TOPSIS implementation with the paper's exact method.
 - Add batch experiment runner, seeds, result collection, and plots.
