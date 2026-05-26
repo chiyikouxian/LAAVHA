@@ -13,8 +13,8 @@ NR/5G-LENA.
 
 This is not yet a full reproduction of the paper's Chapter 3 experiments.
 Current work validates the integration path and full candidate metric plumbing.
-Real 5G/NR, real handover execution, full TOPSIS parity, time-series plotting,
-and broader comparison baselines are still pending.
+Real 5G/NR, real handover execution, full TOPSIS parity, multi-run paper-style
+plots, and broader comparison baselines are still pending.
 
 ## Workspace boundaries
 
@@ -148,13 +148,17 @@ proxy flow.
     and handover flags.
   - Integrated batch runner time-series output directory support.
   - Verified single-run and batch time-series outputs.
+- `laavha-time-series-plots`
+  - Added score, SINR, and network timeline plots from time-series CSV.
+  - Marked handover events on time-series plots.
+  - Preserved batch summary plotting.
 
 ## Active next change
 
-- `laavha-time-series-plots`
+- `laavha-multirun-paper-figures`
   - Proposal, design, spec, tasks, and Claude prompt are prepared.
-  - Goal: plot scores, SINR, network selection timeline, and handover markers
-    from per-decision CSV files.
+  - Goal: generate multi-seed mean/std plots and paper-oriented figures from
+    batch/time-series CSV outputs.
 
 ## Verified commands
 
@@ -177,6 +181,7 @@ python laavha_batch_runner.py --runs 2 --duration 3.0 --period 0.1 --flowmonMode
 python laavha_plot.py --input batch_algorithms.csv --output-dir plots
 python laavha_inference.py --ns3-arg duration=3.0 --ns3-arg period=0.1 --time-series-output ts_single.csv
 python laavha_batch_runner.py --runs 2 --duration 3.0 --period 0.1 --flowmonMode feed --seed-base 10 --randomizeScenario --positionJitter 20 --altitudeJitter 5 --sweep-algorithm laavha,strongest-signal --output batch_ts.csv --time-series-dir time_series
+python laavha_plot.py --time-series ts_single.csv --output-dir plots_ts
 python laavha_inference.py --ns3-arg flowmonMode=off
 python laavha_inference.py --ns3-arg flowmonMode=log
 python laavha_inference.py --ns3-arg flowmonMode=feed
@@ -196,6 +201,8 @@ Expected current behavior:
 - Plot script generates aggregate summaries and PNG output.
 - Time-series logging writes one row per decision with metrics, scores, and
   handover flags.
+- Time-series plotting writes score, SINR, and network timeline PNGs with
+  handover markers.
 - `flowmonMode=off|log|feed` all complete.
 - In `feed` mode, WiFi/LTE/5G proxy metrics are injected where available.
 
@@ -204,7 +211,7 @@ Expected current behavior:
 - Add real 5G/NR candidate if NR/5G-LENA becomes available.
 - Execute real handover effects in the ns-3 network, not only decision logging.
 - Align TOPSIS implementation with the paper's exact method.
-- Add time-series plots for paper-style decision analysis.
+- Add multi-run mean/std plots and paper-style figure formatting.
 - Add broader baselines and ablation experiments for Chapter 3 comparison.
 - Move or patch-export ns-3 implementation files into a reproducible repository
   layout.
