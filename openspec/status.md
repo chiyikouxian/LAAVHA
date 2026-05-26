@@ -13,8 +13,8 @@ NR/5G-LENA.
 
 This is not yet a full reproduction of the paper's Chapter 3 experiments.
 Current work validates the integration path and full candidate metric plumbing.
-Real 5G/NR, real handover execution, full TOPSIS parity, batch
-experiments, and comparison baselines are still pending.
+Real 5G/NR, real handover execution, full TOPSIS parity, parameter sweeps,
+plots, and comparison baselines are still pending.
 
 ## Workspace boundaries
 
@@ -126,14 +126,17 @@ proxy flow.
   - Added a 5G proxy P2P flow classified by destination subnet `9.0.0.0/8`.
   - Fed 5G delay, throughput, and PLR from FlowMonitor in `feed` mode.
   - Kept logs explicit that this is not real NR.
+- `laavha-batch-experiment-runner`
+  - Added a standalone Python batch runner.
+  - Collected per-run CSV rows with decisions, handover count, final network,
+    return code, and elapsed time.
+  - Verified a 3-run smoke batch.
 
 ## Active next change
 
-- `laavha-batch-experiment-runner`
+- `laavha-rngrun-parameter-sweeps`
   - Proposal, design, spec, tasks, and Claude prompt are prepared.
-  - Goal: run repeated LAAVHA experiments and collect per-run CSV summaries.
-  - This starts the path from smoke tests toward reproducible experiment
-    batches.
+  - Goal: add C++ `RngRun` support and batch runner parameter sweeps.
 
 ## Verified commands
 
@@ -147,6 +150,7 @@ From `/home/suwen/ns-3.45/contrib/ai/examples/laavha-handover`:
 
 ```bash
 python laavha_inference.py
+python laavha_batch_runner.py --runs 3 --duration 3.0 --period 0.1 --flowmonMode feed --output batch_results.csv
 python laavha_inference.py --ns3-arg flowmonMode=off
 python laavha_inference.py --ns3-arg flowmonMode=log
 python laavha_inference.py --ns3-arg flowmonMode=feed
@@ -157,6 +161,7 @@ Expected current behavior:
 
 - Default run completes 50 decisions.
 - `duration=3.0, period=0.1` completes 30 decisions.
+- Batch smoke run with 3 runs completes and writes CSV.
 - `flowmonMode=off|log|feed` all complete.
 - In `feed` mode, WiFi/LTE/5G proxy metrics are injected where available.
 
@@ -165,8 +170,8 @@ Expected current behavior:
 - Add real 5G/NR candidate if NR/5G-LENA becomes available.
 - Execute real handover effects in the ns-3 network, not only decision logging.
 - Align TOPSIS implementation with the paper's exact method.
-- Implement and validate the batch experiment runner.
-- Add parameter sweeps, seeds, result collection, and plots.
+- Add `RngRun` support for reproducible stochastic variation.
+- Add parameter sweeps, plotting, and aggregate result tables.
 - Add baselines and ablation experiments for Chapter 3 comparison.
 - Move or patch-export ns-3 implementation files into a reproducible repository
   layout.
