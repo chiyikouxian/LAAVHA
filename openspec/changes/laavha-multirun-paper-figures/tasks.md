@@ -7,22 +7,23 @@
 
 ## 2. Aggregate Time-Series Data
 
-- [ ] 2.1 Group by algorithm and `sim_time`.
-- [ ] 2.2 Compute mean/std for score columns.
-- [ ] 2.3 Compute mean/std for SINR columns.
-- [ ] 2.4 Handle missing or empty groups cleanly.
+- [ ] 2.1 Filter to LAAVHA rows by default for paper figures.
+- [ ] 2.2 Group by `sim_time`.
+- [ ] 2.3 Compute mean/std for score columns.
+- [ ] 2.4 Compute mean/std for SINR columns.
+- [ ] 2.5 Handle missing or empty groups cleanly.
 
 ## 3. Generate Figures
 
-- [ ] 3.1 Generate score mean/std plot.
-- [ ] 3.2 Generate SINR mean/std plot.
-- [ ] 3.3 Generate handover-count summary plot from batch CSV if provided.
+- [ ] 3.1 Generate LAAVHA score mean/std plot.
+- [ ] 3.2 Generate LAAVHA SINR mean/std plot.
+- [ ] 3.3 Generate LAAVHA handover-count summary plot from batch CSV if provided.
 - [ ] 3.4 Use stable filenames and clear axis labels.
 - [ ] 3.5 Keep 5G proxy labeling honest in titles or captions where applicable.
 
 ## 4. Validate
 
-- [ ] 4.1 Generate a multi-seed batch with time-series outputs.
+- [ ] 4.1 Generate a multi-seed LAAVHA batch with time-series outputs.
 - [ ] 4.2 Run plot script on the time-series directory.
 - [ ] 4.3 Verify expected PNG files exist.
 - [ ] 4.4 Verify existing single-run and batch summary plotting still work.

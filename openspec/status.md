@@ -13,8 +13,9 @@ NR/5G-LENA.
 
 This is not yet a full reproduction of the paper's Chapter 3 experiments.
 Current work validates the integration path and full candidate metric plumbing.
-Real 5G/NR, real handover execution, full TOPSIS parity, multi-run paper-style
-plots, and broader comparison baselines are still pending.
+Real 5G/NR, real handover execution, full TOPSIS parity, and LAAVHA paper-style
+figure reproduction are still pending. Other algorithms from the paper are not
+in the final reproduction scope.
 
 ## Workspace boundaries
 
@@ -143,6 +144,8 @@ proxy flow.
   - Added LAAVHA, fixed, and strongest-signal algorithm modes.
   - Added algorithm sweeps to the batch runner.
   - Added CSV summary and handover-count plotting.
+  - Scope note: non-LAAVHA algorithms are auxiliary diagnostics, not final
+    reproduction targets.
 - `laavha-time-series-logging`
   - Added per-decision CSV logging for metrics, scores, current/target network,
     and handover flags.
@@ -157,8 +160,8 @@ proxy flow.
 
 - `laavha-multirun-paper-figures`
   - Proposal, design, spec, tasks, and Claude prompt are prepared.
-  - Goal: generate multi-seed mean/std plots and paper-oriented figures from
-    batch/time-series CSV outputs.
+  - Goal: generate LAAVHA-only multi-seed mean/std plots and paper-oriented
+    figures from batch/time-series CSV outputs.
 
 ## Verified commands
 
@@ -212,6 +215,6 @@ Expected current behavior:
 - Execute real handover effects in the ns-3 network, not only decision logging.
 - Align TOPSIS implementation with the paper's exact method.
 - Add multi-run mean/std plots and paper-style figure formatting.
-- Add broader baselines and ablation experiments for Chapter 3 comparison.
+- Add LAAVHA-focused parameter ablation if needed for Chapter 3 discussion.
 - Move or patch-export ns-3 implementation files into a reproducible repository
   layout.

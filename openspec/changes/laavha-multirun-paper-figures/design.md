@@ -6,18 +6,21 @@ Current plotting supports:
 - one time-series CSV -> score/SINR/network timeline plots
 
 The batch runner can generate multiple time-series files. The plotting script
-should aggregate these by algorithm and simulation time to produce figures that
-are closer to thesis-style comparisons.
+should aggregate LAAVHA runs by simulation time to produce figures that are
+closer to thesis-style LAAVHA result plots. Other algorithms may remain
+available for debugging, but they are not required for the final reproduction
+scope.
 
 ## Goals / Non-Goals
 
 **Goals:**
 
 - Accept a directory or list of time-series CSV files.
-- Group rows by algorithm and simulation time.
+- Filter to LAAVHA rows by default for paper figures.
+- Group rows by simulation time.
 - Compute mean/std for scores and SINR.
 - Generate shaded mean/std plots.
-- Generate summary plots from batch CSV with publication-oriented labels.
+- Generate LAAVHA summary plots from batch CSV with publication-oriented labels.
 
 **Non-Goals:**
 
@@ -25,6 +28,7 @@ are closer to thesis-style comparisons.
 - Implement real handover execution.
 - Add real NR.
 - Perform statistical significance testing.
+- Reproduce other algorithms from the paper.
 
 ## Decisions
 
@@ -38,10 +42,11 @@ Add a CLI option such as:
 
 The script can load all CSV files in the directory and combine them.
 
-### Decision: Group by algorithm and sim_time
+### Decision: Use LAAVHA-only aggregation by default
 
-The time-series CSV already contains algorithm and sim_time. Grouping by these
-fields supports multi-algorithm overlays.
+The final reproduction target only needs LAAVHA curves. The plotter should
+default to `algorithm == laavha` for paper-oriented outputs, with an optional
+filter if broader diagnostic plots are useful.
 
 ### Decision: Keep paper formatting minimal but consistent
 
@@ -52,6 +57,6 @@ publication style before the actual experiment design is finalized.
 
 - **Risk: runs have different time grids** -> Mitigation: group by exact
   `sim_time` for current fixed-period experiments; document limitation.
-- **Risk: too many algorithms clutter plots** -> Mitigation: allow filtering by
-  algorithm if needed, or generate one plot per metric.
+- **Risk: diagnostic algorithms clutter paper figures** -> Mitigation: default
+  to LAAVHA-only plots and treat other algorithms as optional diagnostics.
 - **Risk: missing columns** -> Mitigation: validate and fail with clear errors.
