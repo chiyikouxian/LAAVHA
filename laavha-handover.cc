@@ -3,7 +3,7 @@
  *
  * Builds on the scheduled simulation skeleton:
  *   - UAV node with ConstantVelocityMobilityModel
- *   - AP ground node with WiFi STA-AP link (802.11a)
+ *   - AP ground node with WiFi STA-AP link (802.11g)
  *   - UDP traffic (UAV -> AP via OnOff/PacketSink)
  *   - WiFi Throughput: real (PacketSink interval rx bytes)
  *   - WiFi Delay/PLR: real (FlowMonitor) when flowmonMode=feed,
@@ -99,7 +99,8 @@ class LaavhaScheduledSimulation
           m_5gFmDelay(0.001f),
           m_5gFmThroughput(0.0f),
           m_5gFmPlr(0.0f),
-          m_historyInitialized(false)
+          m_historyInitialized(false),
+          m_numBackgroundNodes(0)
     {
     }
 
@@ -116,6 +117,9 @@ class LaavhaScheduledSimulation
         cmd.AddValue("initialSpeed", "Initial UAV speed (m/s)", m_initialSpeed);
         cmd.AddValue("initialAltitude", "Initial UAV altitude (m)", m_initialAltitude);
         cmd.AddValue("flowmonMode", "FlowMonitor mode: off|log|feed", m_flowmonMode);
+        cmd.AddValue("numBackgroundNodes",
+                     "Number of background WiFi STA nodes with Gauss-Markov mobility",
+                     m_numBackgroundNodes);
         cmd.AddValue("RngRun", "ns-3 RNG run number for reproducibility", rngRun);
         cmd.AddValue("randomizeScenario", "Enable random perturbations", randomizeScenario);
         cmd.AddValue("positionJitter", "Max x/y offset (m)", positionJitter);
@@ -152,12 +156,14 @@ class LaavhaScheduledSimulation
     {
         SetupMsgInterface();
         SetupNodes();
+        SetupBackgroundNodes();  // create background STA nodes (before network setup)
         SetupNetwork();
         SetupLte();
         Setup5gProxy();
         SetupTraffic();
         SetupLteTraffic();
         Setup5gProxyTraffic();
+        SetupBackgroundTraffic();
 
         if (m_flowmonMode != "off")
         {
@@ -257,7 +263,7 @@ class LaavhaScheduledSimulation
         phy.SetChannel(channel.Create());
 
         WifiHelper wifi;
-        wifi.SetStandard(WIFI_STANDARD_80211a);
+        wifi.SetStandard(WIFI_STANDARD_80211g);
         // Use default rate control (Aarf) for simplicity
 
         WifiMacHelper mac;
@@ -269,17 +275,39 @@ class LaavhaScheduledSimulation
         mac.SetType("ns3::StaWifiMac", "Ssid", SsidValue(ssid));
         NetDeviceContainer staDev = wifi.Install(phy, mac, m_uavNodes);
 
+        // Install STA devices on background nodes (same BSS, same channel)
+        NetDeviceContainer bgDevs;
+        if (m_backgroundStaNodes.GetN() > 0)
+        {
+            bgDevs = wifi.Install(phy, mac, m_backgroundStaNodes);
+        }
+
         // Internet stack
         InternetStackHelper internet;
         internet.Install(m_uavNodes);
         internet.Install(m_apNode);
+        if (m_backgroundStaNodes.GetN() > 0)
+        {
+            internet.Install(m_backgroundStaNodes);
+        }
 
-        // IP addressing
+        // IP addressing for all WiFi nodes (UAV + background STAs)
+        // All nodes on the same subnet to avoid GlobalRouter confusion
         NetDeviceContainer allDev;
         allDev.Add(apDev.Get(0));
         allDev.Add(staDev.Get(0));
+        for (uint32_t i = 0; i < bgDevs.GetN(); ++i)
+        {
+            allDev.Add(bgDevs.Get(i));
+        }
         Ipv4AddressHelper ipv4("10.1.1.0", "255.255.255.0");
-        m_ipIfs = ipv4.Assign(allDev); // m_ipIfs[0]=AP, m_ipIfs[1]=STA
+        m_ipIfs = ipv4.Assign(allDev); // m_ipIfs[0]=AP, m_ipIfs[1]=UAV-STA, [2+]=bg-STAs
+        // Store background node IP indices for traffic setup
+        m_bgIpIfs = Ipv4InterfaceContainer();
+        for (uint32_t i = 0; i < bgDevs.GetN(); ++i)
+        {
+            m_bgIpIfs.Add(m_ipIfs.Get(2 + i));
+        }
 
         Ipv4GlobalRoutingHelper::PopulateRoutingTables();
     }
@@ -345,7 +373,7 @@ class LaavhaScheduledSimulation
         enbMobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
         enbMobility.Install(m_enbNode);
         m_enbNode.Get(0)->GetObject<ConstantPositionMobilityModel>()->SetPosition(
-            Vector(50.0, 0.0, 30.0));
+            Vector(700.0, 0.0, 30.0));
 
         // LTE UE node (parallel to UAV, same mobility)
         m_lteUeNode.Create(1);
@@ -410,9 +438,9 @@ class LaavhaScheduledSimulation
         // proxy-UE follows UAV position conceptually
         m_5gProxyNodes.Get(0)->GetObject<ConstantPositionMobilityModel>()->SetPosition(
             m_mobility->GetPosition());
-        // proxy-gNB at hypothetical gNB location
+        // proxy-gNB at hypothetical gNB location (eastern edge of 2km area)
         m_5gProxyNodes.Get(1)->GetObject<ConstantPositionMobilityModel>()->SetPosition(
-            Vector(-30.0, 0.0, 35.0));
+            Vector(1400.0, 0.0, 30.0));
 
         PointToPointHelper p2p;
         p2p.SetDeviceAttribute("DataRate", DataRateValue(DataRate("10Gbps")));
@@ -448,6 +476,58 @@ class LaavhaScheduledSimulation
         ApplicationContainer clientApp5g = onoff5g.Install(m_5gProxyNodes.Get(1));
         clientApp5g.Start(Seconds(0.3));
         clientApp5g.Stop(Seconds(m_duration));
+    }
+
+    // -----------------------------------------------------------------------
+    // Background nodes (Gauss-Markov mobility, thesis Section 3.5)
+    // -----------------------------------------------------------------------
+    void SetupBackgroundNodes()
+    {
+        if (m_numBackgroundNodes == 0)
+            return;
+
+        m_backgroundStaNodes.Create(m_numBackgroundNodes);
+
+        // Random positions within 2000m x 2000m area, altitude 50-150m
+        // (thesis Table 3-2: area 2000m*2000m*200m)
+        // Using ConstantPositionMobilityModel for stability; node density
+        // creates WiFi contention/congestion as more nodes are added.
+        MobilityHelper bgMobility;
+        bgMobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
+        bgMobility.SetPositionAllocator(
+            "ns3::RandomBoxPositionAllocator",
+            "X", StringValue("ns3::UniformRandomVariable[Min=0|Max=2000]"),
+            "Y", StringValue("ns3::UniformRandomVariable[Min=-1000|Max=1000]"),
+            "Z", StringValue("ns3::UniformRandomVariable[Min=50|Max=150]"));
+        bgMobility.Install(m_backgroundStaNodes);
+
+        std::cout << "[LAAVHA] Created " << m_numBackgroundNodes
+                  << " background STA nodes (random positions, area 2000x2000m)"
+                  << std::endl;
+    }
+
+    void SetupBackgroundTraffic()
+    {
+        if (m_numBackgroundNodes == 0)
+            return;
+
+        // Each background node sends light UDP traffic to AP, creating
+        // realistic WiFi contention/congestion as node count increases
+        uint16_t basePort = 20;
+        for (uint32_t i = 0; i < m_numBackgroundNodes; ++i)
+        {
+            OnOffHelper onoff("ns3::UdpSocketFactory",
+                InetSocketAddress(m_ipIfs.GetAddress(0), basePort + i));
+            onoff.SetAttribute("PacketSize", UintegerValue(1024));
+            onoff.SetAttribute("DataRate", StringValue("30kbps"));
+            onoff.SetConstantRate(DataRate("30kbps"));
+            ApplicationContainer app = onoff.Install(m_backgroundStaNodes.Get(i));
+            app.Start(Seconds(0.5 + i * 0.01));  // stagger starts
+            app.Stop(Seconds(m_duration));
+        }
+
+        std::cout << "[LAAVHA] Background traffic: " << m_numBackgroundNodes
+                  << " nodes × 30kbps UDP to AP" << std::endl;
     }
 
     // -----------------------------------------------------------------------
@@ -694,7 +774,7 @@ class LaavhaScheduledSimulation
     {
         // 5G proxy: propagation-based SINR/RSRP from hypothetical gNB position.
         // Transport metrics from FlowMonitor on P2P proxy flow (NOT real NR).
-        constexpr double gnbX = -30.0, gnbY = 0.0, gnbZ = 35.0;
+        constexpr double gnbX = 1400.0, gnbY = 0.0, gnbZ = 30.0;
         constexpr double txPowerDbm = 30.0;    // macro gNB
         constexpr double noiseFloorDbm = -95.0;
         constexpr double refLossDb = 32.4;     // free-space at 1m, 3.5 GHz
@@ -960,11 +1040,12 @@ class LaavhaScheduledSimulation
     void ComputeWifiSignal()
     {
         // Propagation proxy: log-distance path loss from UAV to AP.
-        // Parameters for 802.11a at 5 GHz in free-space-like environment.
-        constexpr double txPowerDbm = 16.0;   // typical WiFi TX power
+        // Parameters for 802.11g at 2.4 GHz (thesis Table 3-2: TX power 20dBm,
+        // transmission range ~200m).
+        constexpr double txPowerDbm = 20.0;    // thesis: 20 dBm
         constexpr double noiseFloorDbm = -93.0; // thermal noise at 20 MHz BW
-        constexpr double refLossDb = 46.7;    // free-space loss at 1m, 5 GHz
-        constexpr double pathLossExp = 2.5;   // exponent (free-space ~2, indoor ~3)
+        constexpr double refLossDb = 40.0;     // free-space loss at 1m, 2.4 GHz
+        constexpr double pathLossExp = 3.0;    // urban/suburban exponent
 
         Vector uavPos = m_mobility->GetPosition();
         Vector apPos = m_apNode.Get(0)->GetObject<MobilityModel>()->GetPosition();
@@ -1132,6 +1213,11 @@ class LaavhaScheduledSimulation
     // 10-step history buffer [network][timestep][indicator]
     std::array<std::array<std::array<float, 5>, 10>, 3> m_metricHistory;
     bool m_historyInitialized;
+
+    // Background congestion nodes (thesis Section 3.5: node count 50-350)
+    uint32_t m_numBackgroundNodes;
+    NodeContainer m_backgroundStaNodes;
+    Ipv4InterfaceContainer m_bgIpIfs;
 };
 
 // ---------------------------------------------------------------------------

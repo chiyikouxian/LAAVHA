@@ -2,17 +2,20 @@
 LAAVHA ns3-ai inference script - struct-based message interface.
 
 Receives metrics (3 nets * 10 steps * 5 indicators), velocity, altitude, and
-current_net from C++. Runs LAAVHA_Net inference, applies TOPSIS-like weighted
-scoring, and returns the best target network.
+current_net from C++. Runs LAAVHA_Net inference, applies thesis-aligned
+improved TOPSIS scoring with fusion coefficient and double hysteresis, and
+returns the best target network.
 
 The LAAVHA_Net definition matches LAAVHA改进算法训练程序.py exactly so that
 the trained state_dict can be loaded directly.
 
+Reference: 毕业论文 Chapter 3, Sections 3.4.1-3.4.3
+
 Supported algorithms:
-  - laavha:           Full LSTM-Attention + TOPSIS weighted scoring
+  - laavha:           Full LSTM-Attention + improved TOPSIS + hysteresis
   - topsis-q:         Entropy-weighted classical TOPSIS (no neural network)
-  - laavha-l:         Ablation — remove LSTM prediction (use current state + Attention)
-  - laavha-a:         Ablation — remove Attention weights (use LSTM + entropy weights)
+  - laavha-l:         Ablation — remove LSTM prediction
+  - laavha-a:         Ablation — remove Attention weights
   - strongest-signal: Baseline — pick network with max SINR
   - fixed:            Baseline — always pick the same network
 """
@@ -29,7 +32,7 @@ import torch.nn as nn
 import ns3ai_laavha_handover_py as py_binding
 from ns3ai_utils import Experiment
 
-# Import TOPSIS-Q for comparison algorithm
+# Import TOPSIS-Q for comparison / ablation
 try:
     from topsis_q import topsis_q_decision
     TOPSIS_Q_AVAILABLE = True
@@ -92,7 +95,7 @@ else:
 model.eval()
 
 # ---------------------------------------------------------------------------
-# 3. TOPSIS-like weighted scoring
+# 3. Thesis-aligned improved TOPSIS (Section 3.4.1–3.4.2)
 # ---------------------------------------------------------------------------
 # Indicators: 0=SINR, 1=RSRP, 2=Delay, 3=Throughput, 4=PLR
 #   benefit (higher=better): SINR=0, RSRP=1, Throughput=3
@@ -100,43 +103,170 @@ model.eval()
 BENEFIT_INDICES = [0, 1, 3]
 COST_INDICES = [2, 4]
 
+# Fusion coefficient (Eq. 3-13): d_ij = α * ŝ_cur + (1-α) * ŝ_pred
+# Thesis Table 3-2: α = 0.6
+FUSION_ALPHA = 0.6
 
-def compute_network_scores(S_pred, weights):
-    """
-    S_pred:  (1, 3, 5)  - predicted indicators for 3 networks
-    weights: (1, 5)     - attention weights for 5 indicators
-    Returns: (3,) array of network scores
-    """
-    S = np.nan_to_num(S_pred[0].detach().numpy())  # (3, 5)
-    w = np.nan_to_num(weights[0].detach().numpy())  # (5,)
+# Double hysteresis (Section 3.4.3)
+# (1) Closeness threshold: target must beat current by Δ_th
+HYSTERESIS_THRESHOLD = 0.05
+# (2) Time window: need T consecutive confirmations before switching
+HYSTERESIS_WINDOW = 3
 
-    # Min-max normalize each indicator across the 3 networks
+
+def minmax_normalize(matrix):
+    """Min-max normalize each column across the 3 networks to [0, 1]."""
+    S = np.nan_to_num(matrix, nan=0.0, posinf=1e6, neginf=-1e6)
     S_norm = np.zeros_like(S)
-    for j in range(5):
+    for j in range(S.shape[1]):
         col = S[:, j]
-        col_min = col.min()
-        col_max = col.max()
-        if col_max - col_min > 1e-8:
+        col_min, col_max = col.min(), col.max()
+        if col_max - col_min > 1e-10:
             S_norm[:, j] = (col - col_min) / (col_max - col_min)
         else:
-            S_norm[:, j] = 0.5  # all equal
+            S_norm[:, j] = 0.5
+    return S_norm
 
-    # Invert cost indicators so higher = better
+
+def invert_costs(S_norm):
+    """Invert cost indicators so all become benefit-type (1 - value)."""
+    S = S_norm.copy()
     for j in COST_INDICES:
-        S_norm[:, j] = 1.0 - S_norm[:, j]
+        S[:, j] = 1.0 - S[:, j]
+    return S
 
-    # Guard against NaN/Inf propagation from the arithmetic above
-    S_norm = np.nan_to_num(S_norm, nan=0.5, posinf=1.0, neginf=0.0)
 
-    # Weighted sum
-    scores = (S_norm * w).sum(axis=1)  # (3,)
+def thesis_topsis(decision_matrix, weights):
+    """
+    Thesis-aligned TOPSIS ranking (Section 3.4.2).
 
-    # Fallback: if any score is non-finite, return uniform scores
-    if not np.all(np.isfinite(scores)):
-        print("[LAAVHA] WARNING: non-finite scores detected, falling back to uniform.")
-        return np.full(3, 1.0 / 3.0)
+    Args:
+        decision_matrix: (3, 5) numpy array — fused decision matrix D,
+                         already cost-inverted (all-benefit).
+        weights:         (5,) numpy array — dynamic weights from Attention.
 
-    return scores
+    Returns:
+        closeness: (3,) numpy array — relative closeness C_i for each network.
+    """
+    D = decision_matrix.astype(np.float64)
+    w = weights.astype(np.float64)
+    m, n = D.shape  # m=3 nets, n=5 indicators
+
+    # (1) Vector normalization (Eq. 3-14)
+    col_norms = np.sqrt((D ** 2).sum(axis=0))
+    col_norms = np.where(col_norms < 1e-10, 1.0, col_norms)
+    R = D / col_norms  # (3, 5)
+
+    # (2) Weighted normalization (Eq. 3-15)
+    V = R * w  # (3, 5)
+
+    # (3) Determine ideal solutions (all-benefit after cost inversion)
+    A_plus = V.max(axis=0)   # v_j^+
+    A_minus = V.min(axis=0)   # v_j^-
+
+    # (4) Euclidean distances (Eq. 3-16)
+    D_plus = np.sqrt(((V - A_plus) ** 2).sum(axis=1))
+    D_minus = np.sqrt(((V - A_minus) ** 2).sum(axis=1))
+
+    # (5) Relative closeness (Eq. 3-17)
+    denom = D_plus + D_minus
+    denom = np.where(denom < 1e-12, 1.0, denom)
+    C = D_minus / denom  # C_i ∈ [0, 1]
+
+    return C
+
+
+def build_fused_matrix(S_pred, S_cur):
+    """
+    Build fused decision matrix (Eq. 3-13).
+
+    d_ij = α * ŝ_cur + (1-α) * ŝ_pred
+
+    Args:
+        S_pred: (1, 3, 5) torch tensor — LSTM predicted future state
+        S_cur:  (1, 3, 5) torch tensor — current step state
+
+    Returns:
+        D: (3, 5) numpy array — fused decision matrix (normalized, cost-inverted)
+    """
+    cur_np = np.nan_to_num(S_cur[0].detach().numpy())   # (3, 5)
+    pred_np = np.nan_to_num(S_pred[0].detach().numpy())  # (3, 5)
+
+    # Min-max normalize each separately
+    cur_norm = minmax_normalize(cur_np)
+    pred_norm = minmax_normalize(pred_np)
+
+    # Fusion (Eq. 3-13): α on current, (1-α) on predicted
+    D = FUSION_ALPHA * cur_norm + (1.0 - FUSION_ALPHA) * pred_norm
+
+    # Invert cost indicators → all benefit-type
+    D = invert_costs(D)
+
+    # Guard against NaN/Inf
+    D = np.nan_to_num(D, nan=0.5, posinf=1.0, neginf=0.0)
+
+    return D
+
+
+def laavha_decision_with_hysteresis(S_pred, attention_weights, S_cur,
+                                     current_net, hysteresis_state):
+    """
+    Full LAAVHA decision: fusion + thesis TOPSIS + double hysteresis.
+
+    Args:
+        S_pred:           (1, 3, 5) torch tensor — LSTM predicted state
+        attention_weights: (1, 5) torch tensor — Attention dynamic weights
+        S_cur:            (1, 3, 5) torch tensor — current step state
+        current_net:      int — currently connected network
+        hysteresis_state: dict — persistent state across decision cycles
+                           {'serving_net': int, 'counter': int, 'candidate': int}
+
+    Returns:
+        target_net_id: int
+        closeness:     (3,) numpy array
+    """
+    w = np.nan_to_num(attention_weights[0].detach().numpy())  # (5,)
+
+    # Build fused decision matrix (Eq. 3-13)
+    D = build_fused_matrix(S_pred, S_cur)
+
+    # Thesis TOPSIS → relative closeness
+    C = thesis_topsis(D, w)  # (3,) closeness scores
+
+    # --- Double hysteresis (Section 3.4.3) ---
+    candidate = int(np.argmax(C))
+    serving = hysteresis_state.get("serving_net", current_net)
+
+    # If no prior state or serving net changed externally, sync
+    if serving != current_net and hysteresis_state.get("serving_net") is None:
+        serving = current_net
+
+    # (1) Closeness threshold check (Eq. 3-18)
+    if C[candidate] - C[serving] > HYSTERESIS_THRESHOLD:
+        # (2) Time window: count consecutive confirmations
+        if hysteresis_state.get("candidate") == candidate:
+            hysteresis_state["counter"] = hysteresis_state.get("counter", 0) + 1
+        else:
+            hysteresis_state["candidate"] = candidate
+            hysteresis_state["counter"] = 1
+
+        # Execute switch only after T consecutive confirmations
+        if hysteresis_state["counter"] >= HYSTERESIS_WINDOW:
+            hysteresis_state["serving_net"] = candidate
+            hysteresis_state["counter"] = 0
+            hysteresis_state["candidate"] = None
+            target = candidate
+        else:
+            target = serving
+    else:
+        # Reset counter if candidate doesn't beat threshold
+        hysteresis_state["counter"] = 0
+        hysteresis_state["candidate"] = None
+        target = serving
+
+    hysteresis_state["serving_net"] = target
+
+    return target, C
 
 
 NET_NAMES = ["5G", "LTE", "WiFi"]
@@ -169,7 +299,16 @@ def main():
     )
     parser.add_argument("--run-index", type=int, default=0)
     parser.add_argument("--seed", type=int, default=None)
+    # Hysteresis tunables (exposed for ablation/experiment)
+    parser.add_argument("--hysteresis-threshold", type=float, default=HYSTERESIS_THRESHOLD)
+    parser.add_argument("--hysteresis-window", type=int, default=HYSTERESIS_WINDOW)
+    parser.add_argument("--fusion-alpha", type=float, default=FUSION_ALPHA)
     args = parser.parse_args()
+
+    # Override globals with CLI values
+    hyst_threshold = args.hysteresis_threshold
+    hyst_window = args.hysteresis_window
+    fusion_alpha = args.fusion_alpha
 
     ns3_setting = {}
     for kv in args.ns3_arg:
@@ -183,6 +322,8 @@ def main():
     print("LAAVHA Inference Server - starting ns3-ai Experiment")
     print(f"Model loaded: {model_loaded}")
     print(f"Algorithm: {args.algorithm}")
+    print(f"Fusion α: {fusion_alpha}  |  Hysteresis: Δ_th={hyst_threshold}, "
+          f"T_window={hyst_window}")
     if args.algorithm == "topsis-q" and not TOPSIS_Q_AVAILABLE:
         print("[LAAVHA] ERROR: topsis-q algorithm requested but topsis_q module "
               "not found.")
@@ -206,6 +347,10 @@ def main():
     step_count = 0
     ts_rows = []
     period = float(ns3_setting.get("period", "0.1"))
+
+    # Per-algorithm hysteresis / persistent state
+    hysteresis_state = {"serving_net": None, "counter": 0, "candidate": None}
+
     try:
         while True:
             msg.PyRecvBegin()
@@ -228,21 +373,25 @@ def main():
             x_status = torch.from_numpy(metrics.reshape(1, 3, 10, 5))
             x_mob = torch.tensor([[velocity, altitude]], dtype=torch.float32)
 
-            # Decision based on algorithm
+            # ---- Decision based on algorithm ----
             if args.algorithm == "laavha":
                 with torch.no_grad():
                     S_pred, weights = model(x_status, x_mob)
-                scores = compute_network_scores(S_pred, weights)
-                target_net_id = int(np.argmax(scores))
+                S_cur = x_status[:, :, -1, :]
+                target_net_id, closeness = laavha_decision_with_hysteresis(
+                    S_pred, weights, S_cur, current_net, hysteresis_state
+                )
+                scores = closeness
+
             elif args.algorithm == "topsis-q":
                 # TOPSIS-Q: entropy-weighted classical TOPSIS (no neural network)
-                # Use current-step (latest) metrics as decision matrix
                 current_metrics = metrics.reshape(3, 10, 5)[:, -1, :]  # (3, 5)
                 target_net_id, scores, _ = topsis_q_decision(current_metrics)
+
             elif args.algorithm == "laavha-l":
-                # Ablation: remove LSTM prediction, use current state directly
-                # Still uses Attention for dynamic weights
-                S_cur = x_status[:, :, -1, :]  # (1, 3, 5) current step
+                # Ablation: remove LSTM prediction
+                # Use current state directly, retain Attention + hysteresis
+                S_cur = x_status[:, :, -1, :]
                 with torch.no_grad():
                     attn_out, _ = model.attention(S_cur, S_cur, S_cur)
                     combined = torch.cat(
@@ -250,36 +399,43 @@ def main():
                          torch.relu(model.fc_mob(x_mob))], dim=1
                     )
                     weights = torch.softmax(model.fc_weight(combined), dim=1)
-                # Use current state as "prediction"
-                scores = compute_network_scores(S_cur, weights)
-                target_net_id = int(np.argmax(scores))
+                # S_pred ← S_cur (no prediction), same fusion/hysteresis
+                target_net_id, closeness = laavha_decision_with_hysteresis(
+                    S_cur, weights, S_cur, current_net, hysteresis_state
+                )
+                scores = closeness
+
             elif args.algorithm == "laavha-a":
                 # Ablation: remove Attention weights, use entropy weighting
-                # Still uses LSTM for state prediction
+                # Retain LSTM prediction, same fusion, entropy weights
                 with torch.no_grad():
                     S_pred, _ = model(x_status, x_mob)
-                # Replace Attention weights with entropy-derived uniform weights
                 current_metrics = metrics.reshape(3, 10, 5)[:, -1, :]  # (3, 5)
                 _, _, entropy_w = topsis_q_decision(current_metrics)
-                # Apply entropy weights to the LSTM-predicted state
                 entropy_w_t = torch.from_numpy(entropy_w).unsqueeze(0).float()
-                scores = compute_network_scores(S_pred, entropy_w_t)
-                target_net_id = int(np.argmax(scores))
+                S_cur = x_status[:, :, -1, :]
+                target_net_id, closeness = laavha_decision_with_hysteresis(
+                    S_pred, entropy_w_t, S_cur, current_net, hysteresis_state
+                )
+                scores = closeness
+
             elif args.algorithm == "strongest-signal":
-                # Pick network with highest SINR (index 0 of each net's latest step)
                 sinr_vals = [metrics[i * 50 + 9 * 5 + 0] for i in range(3)]
                 scores = np.array(sinr_vals) / max(1e-8, max(abs(s) for s in sinr_vals))
                 target_net_id = int(np.argmax(sinr_vals))
+
             elif args.algorithm == "fixed":
                 target_net_id = args.fixed_net
                 scores = np.zeros(3)
                 scores[target_net_id] = 1.0
 
             # Print summary each step
+            serving = hysteresis_state.get("serving_net", target_net_id)
             print(
                 f"  Step {step_count:3d} | "
-                f"vel={velocity:.1f} alt={altitude:.1f} cur_net={current_net} | "
-                f"pred_scores: 5G={scores[0]:.4f} LTE={scores[1]:.4f} WiFi={scores[2]:.4f} | "
+                f"vel={velocity:.1f} alt={altitude:.1f} cur={current_net} "
+                f"svc={serving} | "
+                f"C: 5G={scores[0]:.4f} LTE={scores[1]:.4f} WiFi={scores[2]:.4f} | "
                 f"target={NET_NAMES[target_net_id]} (id={target_net_id})"
             )
 
