@@ -4,19 +4,21 @@ Last updated: 2026-05-26
 
 ## Current phase
 
-The project is in the ns-3 integration phase. The minimum C++ <-> Python
-ns3-ai control loop is working, the LAAVHA PyTorch model loads with
-`strict=True`, and all three candidate networks now provide five model inputs
-from ns-3 simulation state in `flowmonMode=feed`. The 5G candidate remains a
-clearly labeled proxy flow because the local ns-3.45 workspace does not include
-NR/5G-LENA.
+The project is in the **Chapter 3 full reproduction phase**. The active
+OpenSpec change is `laavha-chapter3-full-reproduction`.
 
-This is not yet a full reproduction of the paper's Chapter 3 experiments.
-Current work validates the integration path and full candidate metric plumbing.
-Real 5G/NR, real handover execution, and full TOPSIS parity are still pending.
-Other algorithms from the paper are not in the final reproduction scope. The
-LAAVHA-only publication figure workflow has produced a final 20-seed / 10 s
-dataset and publication-style plots.
+The minimum C++ <-> Python ns3-ai control loop is working, the LAAVHA PyTorch
+model loads with `strict=True`, and all three candidate networks provide five
+model inputs from ns-3 simulation state in `flowmonMode=feed`. The 5G candidate
+remains a clearly labeled proxy flow.
+
+The LAAVHA-only publication figure workflow has produced a final 20-seed / 10 s
+dataset and publication-style plots. Code repo has been organized: working code
+synced from ns-3.45, stale stubs archived as .deprecated.
+
+Current work: implementing comparison algorithms (TOPSIS-Q, ablation variants)
+and full Chapter 3 experiment matrix. Real 5G/NR and real handover execution
+remain as documented limitations.
 
 ## Workspace boundaries
 
@@ -168,13 +170,20 @@ proxy flow.
   - Ran the final LAAVHA-only 20-seed / 10 s batch.
   - Generated `batch_final.csv`, `time_series_final/`, and `plots_final/`.
   - Verified 20/20 successful runs and publication-style PNG artifacts.
+- `laavha-chapter3-full-reproduction`
+  - Phase 1: Code repo organized — synced working ns-3.45 code, archived stale stubs.
+  - Phase 2: TOPSIS-Q (entropy-weighted classical TOPSIS) comparison algorithm.
+  - Phase 3: LAAVHA-L (no LSTM) and LAAVHA-A (no Attention) ablation variants.
+  - Phase 4: 100-run experiment matrix (5 algos × 20 seeds) completed.
+  - Phase 5: Chapter 3 comparison figures + ablation plot generated.
+  - Generated `batch_chapter3.csv`, `time_series_chapter3/`, `plots_chapter3/`.
+  - Verified LAAVHA uniquely selects LTE; ablation confirms LSTM+Attention synergy.
 
 ## Active next change
 
 - No active implementation change is currently in progress.
-- Recommended next change: real handover execution or LAAVHA parameter
-  ablation, depending on whether the thesis needs behavioral fidelity or
-  sensitivity analysis next.
+- Recommended next change: Muti-VSA / DRL-based RSS comparison algorithms,
+  multi-scenario experiments, or real NR/5G-LENA integration.
 
 ## Verified commands
 
@@ -235,7 +244,8 @@ Expected current behavior:
 
 - Add real 5G/NR candidate if NR/5G-LENA becomes available.
 - Execute real handover effects in the ns-3 network, not only decision logging.
-- Align TOPSIS implementation with the paper's exact method.
-- Add LAAVHA-focused parameter ablation if needed for Chapter 3 discussion.
-- Move or patch-export ns-3 implementation files into a reproducible repository
-  layout.
+- Implement Muti-VSA and DRL-based RSS comparison algorithms (from thesis references).
+- Add multi-scenario experiments (different UAV velocities, network densities).
+- Add LAAVHA parameter ablation over decision period, velocity, and jitter values.
+- The active ns-3 implementation lives under `/home/suwen/ns-3.45`; a complete
+  patch-export into this repository is still pending.
