@@ -35,6 +35,7 @@
 #include <ns3/node-container.h>
 #include <ns3/nstime.h>
 #include <ns3/point-to-point-module.h>
+#include <ns3/rectangle.h>
 #include <ns3/rng-seed-manager.h>
 #include <ns3/simulator.h>
 #include <ns3/vector.h>
@@ -56,6 +57,9 @@ class LaavhaScheduledSimulation
   public:
     LaavhaScheduledSimulation()
         : m_msg(nullptr),
+          m_uavMobilityModel("constant-velocity"),
+          m_uavSpeedMin(5.0),
+          m_uavSpeedMax(30.0),
           m_currentNet(0),
           m_handoverCount(0),
           m_decisions(0),
@@ -116,6 +120,13 @@ class LaavhaScheduledSimulation
         cmd.AddValue("period", "Decision period in seconds", m_period);
         cmd.AddValue("initialSpeed", "Initial UAV speed (m/s)", m_initialSpeed);
         cmd.AddValue("initialAltitude", "Initial UAV altitude (m)", m_initialAltitude);
+        cmd.AddValue("uavMobilityModel",
+                     "UAV mobility model: constant-velocity | random-walk",
+                     m_uavMobilityModel);
+        cmd.AddValue("uavSpeedMin", "UAV min speed for random mobility (m/s)",
+                     m_uavSpeedMin);
+        cmd.AddValue("uavSpeedMax", "UAV max speed for random mobility (m/s)",
+                     m_uavSpeedMax);
         cmd.AddValue("flowmonMode", "FlowMonitor mode: off|log|feed", m_flowmonMode);
         cmd.AddValue("numBackgroundNodes",
                      "Number of background WiFi STA nodes with Gauss-Markov mobility",
@@ -174,7 +185,8 @@ class LaavhaScheduledSimulation
         std::cout << "Duration: " << m_duration << "s, period: " << m_period
                   << "s" << std::endl;
         std::cout << "UAV init pos: " << m_mobility->GetPosition()
-                  << ", init vel: " << m_mobility->GetVelocity() << std::endl;
+                  << ", mobility=" << m_uavMobilityModel
+                  << ", init speed=" << m_initialSpeed << " m/s" << std::endl;
         std::cout << "AP pos: " << m_apNode.Get(0)->GetObject<MobilityModel>()->GetPosition()
                   << std::endl;
         std::cout << "flowmonMode=" << m_flowmonMode << std::endl;
@@ -237,14 +249,57 @@ class LaavhaScheduledSimulation
     {
         m_uavNodes.Create(1);
         MobilityHelper mobility;
-        mobility.SetMobilityModel("ns3::ConstantVelocityMobilityModel");
-        mobility.Install(m_uavNodes);
 
-        Ptr<ConstantVelocityMobilityModel> cvmm =
-            m_uavNodes.Get(0)->GetObject<ConstantVelocityMobilityModel>();
-        cvmm->SetPosition(Vector(m_initialPosOffsetX, m_initialPosOffsetY, m_initialAltitude));
-        cvmm->SetVelocity(Vector(m_initialSpeed, 0.0, 0.0));
-        m_mobility = cvmm;
+        if (m_uavMobilityModel == "random-walk")
+        {
+            // RandomWalk2d: UAV moves randomly in 2000m x 2000m area,
+            // Speed randomized in [uavSpeedMin, uavSpeedMax].
+            // We use MobilityHelper with RandomBoxPositionAllocator for initial
+            // position, then the RandomWalk2d model takes over.
+            mobility.SetMobilityModel("ns3::RandomWalk2dMobilityModel",
+                "Bounds", RectangleValue(Rectangle(-500, 2500, -1000, 1000)),
+                "Speed", StringValue("ns3::UniformRandomVariable[Min="
+                                     + std::to_string(m_uavSpeedMin)
+                                     + "|Max="
+                                     + std::to_string(m_uavSpeedMax) + "]"),
+                "Time", TimeValue(Seconds(0.5)));
+            mobility.SetPositionAllocator(
+                "ns3::RandomBoxPositionAllocator",
+                "X", StringValue("ns3::UniformRandomVariable[Min="
+                                 + std::to_string(m_initialPosOffsetX)
+                                 + "|Max="
+                                 + std::to_string(m_initialPosOffsetX + 100.0)
+                                 + "]"),
+                "Y", StringValue("ns3::UniformRandomVariable[Min="
+                                 + std::to_string(m_initialPosOffsetY)
+                                 + "|Max="
+                                 + std::to_string(m_initialPosOffsetY + 100.0)
+                                 + "]"),
+                "Z", StringValue("ns3::UniformRandomVariable[Min="
+                                 + std::to_string(m_initialAltitude)
+                                 + "|Max="
+                                 + std::to_string(m_initialAltitude + 50.0)
+                                 + "]"));
+            mobility.Install(m_uavNodes);
+            Ptr<MobilityModel> mm = m_uavNodes.Get(0)->GetObject<MobilityModel>();
+            m_mobility = mm;
+            m_mobilityCv = nullptr;
+            m_lastUavPos = mm->GetPosition();
+        }
+        else
+        {
+            // Default: ConstantVelocityMobilityModel
+            mobility.SetMobilityModel("ns3::ConstantVelocityMobilityModel");
+            mobility.Install(m_uavNodes);
+            Ptr<ConstantVelocityMobilityModel> cvmm =
+                m_uavNodes.Get(0)->GetObject<ConstantVelocityMobilityModel>();
+            cvmm->SetPosition(Vector(m_initialPosOffsetX, m_initialPosOffsetY,
+                                     m_initialAltitude));
+            cvmm->SetVelocity(Vector(m_initialSpeed, 0.0, 0.0));
+            m_mobility = cvmm;
+            m_mobilityCv = cvmm;
+            m_lastUavPos = cvmm->GetPosition();
+        }
     }
 
     void SetupNetwork()
@@ -375,16 +430,14 @@ class LaavhaScheduledSimulation
         m_enbNode.Get(0)->GetObject<ConstantPositionMobilityModel>()->SetPosition(
             Vector(700.0, 0.0, 30.0));
 
-        // LTE UE node (parallel to UAV, same mobility)
+        // LTE UE node (tracks UAV position at each decision step)
         m_lteUeNode.Create(1);
         MobilityHelper ueMobility;
-        ueMobility.SetMobilityModel("ns3::ConstantVelocityMobilityModel");
+        ueMobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
         ueMobility.Install(m_lteUeNode);
-        Ptr<ConstantVelocityMobilityModel> ueMob =
-            m_lteUeNode.Get(0)->GetObject<ConstantVelocityMobilityModel>();
-        ueMob->SetPosition(m_mobility->GetPosition());
-        ueMob->SetVelocity(m_mobility->GetVelocity());
-        m_lteMobility = ueMob;
+        m_lteUeNode.Get(0)->GetObject<ConstantPositionMobilityModel>()
+            ->SetPosition(m_mobility->GetPosition());
+        m_lteMobility = m_lteUeNode.Get(0)->GetObject<ConstantPositionMobilityModel>();
 
         // Install LTE devices
         NetDeviceContainer enbDevs = m_lteHelper->InstallEnbDevice(m_enbNode);
@@ -535,12 +588,11 @@ class LaavhaScheduledSimulation
     // -----------------------------------------------------------------------
     void UpdateVelocity()
     {
+        // Only applies to constant-velocity mode
+        if (!m_mobilityCv)
+            return;
         Vector newVel(m_initialSpeed * 0.75, 0.0, 5.0);
-        m_mobility->SetVelocity(newVel);
-        if (m_lteMobility)
-        {
-            m_lteMobility->SetVelocity(newVel);
-        }
+        m_mobilityCv->SetVelocity(newVel);
     }
 
     void DecisionStep()
@@ -548,11 +600,39 @@ class LaavhaScheduledSimulation
         double now = Simulator::Now().GetSeconds();
         int stepIndex = m_decisions;
 
-        Vector v = m_mobility->GetVelocity();
         Vector p = m_mobility->GetPosition();
 
+        // Compute speed: for constant-velocity use model; for random-walk
+        // use position delta since last step
+        double speed;
+        if (m_mobilityCv)
+        {
+            Vector v = m_mobilityCv->GetVelocity();
+            speed = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+        }
+        else
+        {
+            Vector dp = p;
+            dp.x -= m_lastUavPos.x;
+            dp.y -= m_lastUavPos.y;
+            dp.z -= m_lastUavPos.z;
+            speed = std::sqrt(dp.x * dp.x + dp.y * dp.y + dp.z * dp.z)
+                    / m_period; // m/s
+            m_lastUavPos = p;
+        }
+
+        // Sync LTE UE position to match UAV position
+        if (m_lteMobility)
+        {
+            m_lteMobility->SetPosition(p);
+        }
+
+        // Sync 5G proxy-UE position
+        m_5gProxyNodes.Get(0)->GetObject<ConstantPositionMobilityModel>()
+            ->SetPosition(p);
+
         Cpp2PyStruct* env = m_msg->GetCpp2PyStruct();
-        env->velocity = std::sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+        env->velocity = speed;
         env->altitude = p.z;
         env->current_net = m_currentNet;
 
@@ -1128,7 +1208,9 @@ class LaavhaScheduledSimulation
     // -----------------------------------------------------------------------
     Ns3AiMsgInterfaceImpl<Cpp2PyStruct, Py2CppStruct>* m_msg;
     NodeContainer m_uavNodes;
-    Ptr<ConstantVelocityMobilityModel> m_mobility;
+    Ptr<MobilityModel> m_mobility;
+    Ptr<ConstantVelocityMobilityModel> m_mobilityCv; // null in random-walk
+    Vector m_lastUavPos;  // for velocity tracking in random-walk mode
 
     // WiFi network
     NodeContainer m_apNode;
@@ -1136,6 +1218,9 @@ class LaavhaScheduledSimulation
     Ptr<Application> m_sinkApp; // PacketSink for real throughput
 
     // Simulation state
+    std::string m_uavMobilityModel;
+    double m_uavSpeedMin;
+    double m_uavSpeedMax;
     int m_currentNet;
     int m_handoverCount;
     int m_decisions;
@@ -1176,7 +1261,7 @@ class LaavhaScheduledSimulation
     NodeContainer m_enbNode;
     NodeContainer m_lteUeNode;
     NodeContainer m_remoteHost;
-    Ptr<ConstantVelocityMobilityModel> m_lteMobility;
+    Ptr<ConstantPositionMobilityModel> m_lteMobility;
     Ipv4InterfaceContainer m_lteUeIpIfs;
     Ptr<Application> m_lteSinkApp;
 

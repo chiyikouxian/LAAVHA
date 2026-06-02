@@ -115,6 +115,11 @@ def main():
     parser.add_argument("--sweep-duration", default=None)
     parser.add_argument("--sweep-period", default=None)
     parser.add_argument("--sweep-flowmonMode", default=None)
+    parser.add_argument("--sweep-speed", default=None,
+                        help="Comma-separated speeds in m/s (e.g. 5,10,15,20,25,30)")
+    parser.add_argument("--mobility-model", default="constant-velocity",
+                        choices=["constant-velocity", "random-walk"],
+                        help="UAV mobility model")
     parser.add_argument("--randomizeScenario", action="store_true")
     parser.add_argument("--positionJitter", type=float, default=0.0)
     parser.add_argument("--altitudeJitter", type=float, default=0.0)
@@ -131,16 +136,19 @@ def main():
              if args.sweep_flowmonMode else [args.flowmonMode])
     algorithms = (args.sweep_algorithm.split(",")
                   if args.sweep_algorithm else [args.algorithm])
+    speeds = ([float(x) for x in args.sweep_speed.split(",")]
+              if args.sweep_speed else [None])
 
-    combos = [(d, p, m, a) for d in durations for p in periods
-              for m in modes for a in algorithms]
+    combos = [(d, p, m, a, s) for d in durations for p in periods
+              for m in modes for a in algorithms for s in speeds]
     total = len(combos) * args.runs
 
     print("=" * 60)
     print("LAAVHA Batch Experiment Runner")
     print(f"  runs_per_combo={args.runs}, output={args.output}")
     print(f"  durations={durations}, periods={periods}, modes={modes}")
-    print(f"  algorithms={algorithms}")
+    print(f"  algorithms={algorithms}, speeds={speeds}")
+    print(f"  mobility_model={args.mobility_model}")
     print(f"  combos={len(combos)}, total_runs={total}")
     if args.seed_base is not None:
         print(f"  seed_base={args.seed_base}")
@@ -163,13 +171,19 @@ def main():
     rows = []
     run_idx = 0
     stop = False
-    for dur, per, mode, algo in combos:
+    for dur, per, mode, algo, speed in combos:
         if stop:
             break
+        combo_ns3_args = list(extra_ns3_args)
+        # Apply speed override
+        if speed is not None:
+            combo_ns3_args.append(f"initialSpeed={speed}")
+        # Apply mobility model
+        combo_ns3_args.append(f"uavMobilityModel={args.mobility_model}")
         for r in range(args.runs):
             row = run_single(run_idx, dur, per, mode, args.seed_base,
                              algorithm=algo, fixed_net=args.fixed_net,
-                             extra_ns3_args=extra_ns3_args or None,
+                             extra_ns3_args=combo_ns3_args or None,
                              time_series_dir=args.time_series_dir)
             rows.append(row)
             run_idx += 1
