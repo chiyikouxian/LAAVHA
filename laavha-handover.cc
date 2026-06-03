@@ -70,6 +70,7 @@ class LaavhaScheduledSimulation
           m_initialPosOffsetX(0.0),
           m_initialPosOffsetY(0.0),
           m_flowmonMode("feed"),
+          m_trafficPattern("constant"),
           m_prevRxBytes(0),
           m_prevMetricTime(-1.0),
           m_lastWifiThroughput(0.0f),
@@ -128,6 +129,9 @@ class LaavhaScheduledSimulation
         cmd.AddValue("uavSpeedMax", "UAV max speed for random mobility (m/s)",
                      m_uavSpeedMax);
         cmd.AddValue("flowmonMode", "FlowMonitor mode: off|log|feed", m_flowmonMode);
+        cmd.AddValue("trafficPattern",
+                     "Traffic pattern: constant | burst (remote sensing)",
+                     m_trafficPattern);
         cmd.AddValue("numBackgroundNodes",
                      "Number of background WiFi STA nodes with Gauss-Markov mobility",
                      m_numBackgroundNodes);
@@ -189,7 +193,8 @@ class LaavhaScheduledSimulation
                   << ", init speed=" << m_initialSpeed << " m/s" << std::endl;
         std::cout << "AP pos: " << m_apNode.Get(0)->GetObject<MobilityModel>()->GetPosition()
                   << std::endl;
-        std::cout << "flowmonMode=" << m_flowmonMode << std::endl;
+        std::cout << "flowmonMode=" << m_flowmonMode
+                  << " trafficPattern=" << m_trafficPattern << std::endl;
         if (m_flowmonMode == "feed")
         {
             std::cout << "  WiFi: Throughput=real(PacketSink), Delay/PLR=real(FlowMonitor), "
@@ -381,9 +386,26 @@ class LaavhaScheduledSimulation
         // OnOff on UAV (client), sends to AP
         OnOffHelper onoff("ns3::UdpSocketFactory",
                           InetSocketAddress(m_ipIfs.GetAddress(0), port));
-        onoff.SetAttribute("PacketSize", UintegerValue(1024));
-        onoff.SetAttribute("DataRate", StringValue("500kbps"));
-        onoff.SetConstantRate(DataRate("500kbps"));
+        if (m_trafficPattern == "burst")
+        {
+            // Remote sensing: periodic image bursts.
+            // Burst: 2 Mbps for 1s (image chunk), idle 4s (cruise).
+            // Switch to burst mode by using OnTime/OffTime attributes.
+            onoff.SetAttribute("PacketSize", UintegerValue(1470));
+            onoff.SetAttribute("DataRate", StringValue("2Mbps"));
+            onoff.SetAttribute("OnTime",
+                               StringValue("ns3::ConstantRandomVariable[Constant=1.0]"));
+            onoff.SetAttribute("OffTime",
+                               StringValue("ns3::ConstantRandomVariable[Constant=4.0]"));
+            // Use fixed on/off pattern (not constant rate)
+            onoff.SetAttribute("MaxBytes", UintegerValue(0)); // unlimited
+        }
+        else
+        {
+            onoff.SetAttribute("PacketSize", UintegerValue(1024));
+            onoff.SetAttribute("DataRate", StringValue("500kbps"));
+            onoff.SetConstantRate(DataRate("500kbps"));
+        }
         ApplicationContainer clientApp = onoff.Install(m_uavNodes.Get(0));
         clientApp.Start(Seconds(0.2));
         clientApp.Stop(Seconds(m_duration));
@@ -469,9 +491,21 @@ class LaavhaScheduledSimulation
         // OnOff from remote host → LTE UE (downlink)
         OnOffHelper lteOnoff("ns3::UdpSocketFactory",
                              InetSocketAddress(m_lteUeIpIfs.GetAddress(0), ltePort));
-        lteOnoff.SetAttribute("PacketSize", UintegerValue(1024));
-        lteOnoff.SetAttribute("DataRate", StringValue("500kbps"));
-        lteOnoff.SetConstantRate(DataRate("500kbps"));
+        if (m_trafficPattern == "burst")
+        {
+            lteOnoff.SetAttribute("PacketSize", UintegerValue(1470));
+            lteOnoff.SetAttribute("DataRate", StringValue("2Mbps"));
+            lteOnoff.SetAttribute("OnTime",
+                StringValue("ns3::ConstantRandomVariable[Constant=1.0]"));
+            lteOnoff.SetAttribute("OffTime",
+                StringValue("ns3::ConstantRandomVariable[Constant=4.0]"));
+        }
+        else
+        {
+            lteOnoff.SetAttribute("PacketSize", UintegerValue(1024));
+            lteOnoff.SetAttribute("DataRate", StringValue("500kbps"));
+            lteOnoff.SetConstantRate(DataRate("500kbps"));
+        }
         ApplicationContainer lteClientApp = lteOnoff.Install(m_remoteHost.Get(0));
         lteClientApp.Start(Seconds(0.5));
         lteClientApp.Stop(Seconds(m_duration));
@@ -1233,6 +1267,7 @@ class LaavhaScheduledSimulation
 
     // FlowMonitor
     std::string m_flowmonMode;
+    std::string m_trafficPattern;
     FlowMonitorHelper m_flowHelper;
     Ptr<FlowMonitor> m_flowMonitor;
 

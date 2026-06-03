@@ -39,6 +39,19 @@ try:
 except ImportError:
     TOPSIS_Q_AVAILABLE = False
 
+# Import Fuzzy-VHO and SAW for comparison algorithms
+try:
+    from fuzzy_vho import fuzzy_vho_decision
+    FUZZY_VHO_AVAILABLE = True
+except ImportError:
+    FUZZY_VHO_AVAILABLE = False
+
+try:
+    from saw_madm import saw_decision
+    SAW_AVAILABLE = True
+except ImportError:
+    SAW_AVAILABLE = False
+
 
 # ---------------------------------------------------------------------------
 # 1. LAAVHA_Net - must match the training script exactly
@@ -283,10 +296,11 @@ def main():
     )
     parser.add_argument(
         "--algorithm", default="laavha",
-        choices=["laavha", "topsis-q", "laavha-l", "laavha-a",
+        choices=["laavha", "topsis-q", "fuzzy-vho", "saw",
+                 "laavha-l", "laavha-a",
                  "strongest-signal", "fixed"],
         help="Decision algorithm: laavha (full model), topsis-q, "
-             "laavha-l (no LSTM), laavha-a (no Attention), "
+             "fuzzy-vho, saw, laavha-l (no LSTM), laavha-a (no Attention), "
              "strongest-signal, fixed"
     )
     parser.add_argument(
@@ -326,6 +340,14 @@ def main():
           f"T_window={hyst_window}")
     if args.algorithm == "topsis-q" and not TOPSIS_Q_AVAILABLE:
         print("[LAAVHA] ERROR: topsis-q algorithm requested but topsis_q module "
+              "not found.")
+        sys.exit(1)
+    if args.algorithm == "fuzzy-vho" and not FUZZY_VHO_AVAILABLE:
+        print("[LAAVHA] ERROR: fuzzy-vho algorithm requested but fuzzy_vho module "
+              "not found.")
+        sys.exit(1)
+    if args.algorithm == "saw" and not SAW_AVAILABLE:
+        print("[LAAVHA] ERROR: saw algorithm requested but saw_madm module "
               "not found.")
         sys.exit(1)
     if args.algorithm == "fixed":
@@ -387,6 +409,18 @@ def main():
                 # TOPSIS-Q: entropy-weighted classical TOPSIS (no neural network)
                 current_metrics = metrics.reshape(3, 10, 5)[:, -1, :]  # (3, 5)
                 target_net_id, scores, _ = topsis_q_decision(current_metrics)
+
+            elif args.algorithm == "fuzzy-vho":
+                # Fuzzy Logic VHO: Mamdani fuzzy inference (no neural network)
+                # Uses triangular membership functions + centroid defuzzification
+                current_metrics = metrics.reshape(3, 10, 5)[:, -1, :]  # (3, 5)
+                target_net_id, scores = fuzzy_vho_decision(current_metrics)
+
+            elif args.algorithm == "saw":
+                # SAW: Simple Additive Weighting MADM baseline
+                # Fixed weights, min-max normalization, weighted sum
+                current_metrics = metrics.reshape(3, 10, 5)[:, -1, :]  # (3, 5)
+                target_net_id, scores = saw_decision(current_metrics)
 
             elif args.algorithm == "laavha-l":
                 # Ablation: remove LSTM prediction
