@@ -39,7 +39,15 @@ try:
 except ImportError:
     TOPSIS_Q_AVAILABLE = False
 
-# Import Fuzzy-VHO and SAW for comparison algorithms
+# Import modern MADM comparison algorithms (VIKOR, GRA, COPRAS, SPOTIS)
+try:
+    from madm_comparison import (vikor_decision, gra_decision,
+                                  copras_decision, spotis_decision)
+    MADM_AVAILABLE = True
+except ImportError:
+    MADM_AVAILABLE = False
+
+# Legacy comparison algorithms (kept for backward compatibility)
 try:
     from fuzzy_vho import fuzzy_vho_decision
     FUZZY_VHO_AVAILABLE = True
@@ -296,11 +304,12 @@ def main():
     )
     parser.add_argument(
         "--algorithm", default="laavha",
-        choices=["laavha", "topsis-q", "fuzzy-vho", "saw",
-                 "laavha-l", "laavha-a",
+        choices=["laavha", "topsis-q", "vikor", "gra", "copras", "spotis",
+                 "fuzzy-vho", "saw", "laavha-l", "laavha-a",
                  "strongest-signal", "fixed"],
         help="Decision algorithm: laavha (full model), topsis-q, "
-             "fuzzy-vho, saw, laavha-l (no LSTM), laavha-a (no Attention), "
+             "vikor/gra/copras/spotis (modern MADM), "
+             "fuzzy-vho, saw, laavha-l, laavha-a, "
              "strongest-signal, fixed"
     )
     parser.add_argument(
@@ -341,6 +350,10 @@ def main():
     if args.algorithm == "topsis-q" and not TOPSIS_Q_AVAILABLE:
         print("[LAAVHA] ERROR: topsis-q algorithm requested but topsis_q module "
               "not found.")
+        sys.exit(1)
+    if args.algorithm in ("vikor", "gra", "copras", "spotis") and not MADM_AVAILABLE:
+        print("[LAAVHA] ERROR: modern MADM algorithm requested but "
+              "madm_comparison module not found. Install: pip install pymcdm")
         sys.exit(1)
     if args.algorithm == "fuzzy-vho" and not FUZZY_VHO_AVAILABLE:
         print("[LAAVHA] ERROR: fuzzy-vho algorithm requested but fuzzy_vho module "
@@ -409,6 +422,26 @@ def main():
                 # TOPSIS-Q: entropy-weighted classical TOPSIS (no neural network)
                 current_metrics = metrics.reshape(3, 10, 5)[:, -1, :]  # (3, 5)
                 target_net_id, scores, _ = topsis_q_decision(current_metrics)
+
+            elif args.algorithm == "vikor":
+                # VIKOR (2004): compromise ranking, balances utility & regret
+                current_metrics = metrics.reshape(3, 10, 5)[:, -1, :]
+                target_net_id, scores = vikor_decision(current_metrics)
+
+            elif args.algorithm == "gra":
+                # GRA (1989): grey relational grade, handles uncertainty
+                current_metrics = metrics.reshape(3, 10, 5)[:, -1, :]
+                target_net_id, scores = gra_decision(current_metrics)
+
+            elif args.algorithm == "copras":
+                # COPRAS (1996): benefit/cost proportional assessment
+                current_metrics = metrics.reshape(3, 10, 5)[:, -1, :]
+                target_net_id, scores = copras_decision(current_metrics)
+
+            elif args.algorithm == "spotis":
+                # SPOTIS (2020): stable preference ordering, fixed bounds
+                current_metrics = metrics.reshape(3, 10, 5)[:, -1, :]
+                target_net_id, scores = spotis_decision(current_metrics)
 
             elif args.algorithm == "fuzzy-vho":
                 # Fuzzy Logic VHO: Mamdani fuzzy inference (no neural network)
