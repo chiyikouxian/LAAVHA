@@ -96,12 +96,14 @@ def vikor_decision(metrics_3x5, velocity=None, altitude=None):
         return topsis_q_decision(metrics_3x5)
 
     X_norm, w, types = _prepare_matrix(metrics_3x5)
-    vikor = VIKOR()
-    # VIKOR returns Q (compromise) values; lower = better
-    q_vals = vikor(X_norm, w, types)
-    # Invert: higher = better (for uniform API)
-    scores = 1.0 / (q_vals + 0.01)
-    scores = scores / scores.sum()  # normalize
+    try:
+        vikor = VIKOR()
+        q_vals = vikor(X_norm, w, types)
+        scores = 1.0 / (q_vals + 0.01)
+        scores = scores / scores.sum()
+    except Exception:
+        # Fallback to GRA when VIKOR fails (e.g. identical column values)
+        return gra_decision(metrics_3x5)
     target = int(np.argmax(scores))
     return target, scores
 

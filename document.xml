@@ -1,0 +1,5120 @@
+<?xml version="1.0" encoding="UTF-8"?><w:document xmlns:wpc="http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:m="http://schemas.openxmlformats.org/officeDocument/2006/math" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:wp14="http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:w14="http://schemas.microsoft.com/office/word/2010/wordml" xmlns:w10="urn:schemas-microsoft-com:office:word" xmlns:w15="http://schemas.microsoft.com/office/word/2012/wordml" xmlns:wpg="http://schemas.microsoft.com/office/word/2010/wordprocessingGroup" xmlns:wpi="http://schemas.microsoft.com/office/word/2010/wordprocessingInk" xmlns:wne="http://schemas.microsoft.com/office/word/2006/wordml" xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape" xmlns:wpsCustomData="http://www.wps.cn/officeDocument/2013/wpsCustomData" mc:Ignorable="w14 w15 wp14">
+  <w:body>
+    <w:p w14:paraId="4C048B64">
+      <w:pPr>
+        <w:spacing w:before="240" w:after="120"/>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b/>
+          <w:sz w:val="36"/>
+        </w:rPr>
+        <w:t>面向无人异构网络的LSTM-Attention自适应垂直切换方法</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="5CB90976">
+      <w:pPr>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:t>多滨</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[1]</w:t>
+      </w:r>
+      <w:r>
+        <w:t>，刘同</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[1]</w:t>
+      </w:r>
+      <w:r>
+        <w:t>，郑宇翔</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[1]</w:t>
+      </w:r>
+      <w:r>
+        <w:t>，苏文</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[1]</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="229B0CE2">
+      <w:pPr>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>（1. 成都理工大学，四川省成都市 610000）</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="07580BCD">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>摘  要：针对无人异构网络中垂直切换决策滞后、乒乓切换频繁及固定权重难以适应动态场景的问题，提出一种基于长短期记忆网络与注意力机制的自适应垂直切换方法（LAAVHA）。该方法利用堆叠长短期记忆网络预测候选网络短期状态变化，通过多头注意力机制动态生成属性权重，融合当前与预测状态构建改进逼近理想解排序决策矩阵，并结合双重滞后机制抑制不必要切换。基于ns-3与ns3-ai搭建决策级实验平台，完成20组随机种子推理实验。结果表明，该方法在代理异构网络场景下形成稳定的候选网络评分与切换决策，平均切换次数为3.10次。与TOPSIS-Q、VIKOR、GRA、COPRAS、SPOTIS及最强信号法等6种对比算法的横向对比以及LAAVHA-L、LAAVHA-A消融实验共同表明，LAAVHA在切换次数和服务连续性方面均优于对比方法，验证了LSTM预测、注意力权重和双重滞后机制对决策质量的协同贡献。</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="2B9A3088">
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>关键词：</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>无人异构网络；垂直切换；长短期记忆网络；注意力机制；逼近理想解排序法；ns-3</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="45CECA0D">
+      <w:pPr>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="24185F24">
+      <w:pPr>
+        <w:spacing w:before="240" w:after="120"/>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b/>
+          <w:sz w:val="36"/>
+        </w:rPr>
+        <w:t>LSTM-attention based adaptive vertical handover method for unmanned heterogeneous networks</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="409C329C">
+      <w:pPr>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>DUO Bin</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[1]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>, LIU Tong</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[1]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>, ZHENG Yuxiang</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[1]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>, SU Wen</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[1]</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="4FE812E4">
+      <w:pPr>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>1. Chengdu University of Technology, Chengdu 610000, China</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="6822AF3D">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman"/>
+          <w:b/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>Abstract: An adaptive vertical handover method, termed LAAVHA, was proposed for unmanned heterogeneous networks to address decision latency, frequent ping-pong handover, and the poor adaptability of fixed attribute weights. A stacked long short-term memory (LSTM) network was employed to predict short-term candidate-network state changes. An attention mechanism (embed_dim=5, num_heads=1) generated dynamic attribute weights according to mobility and network conditions. An improved technique for order preference by similarity to ideal solution (TOPSIS) decision matrix was constructed by fusing current and predicted states, and a dual hysteresis mechanism was applied to suppress unnecessary handovers. A decision-level experimental platform was built with ns-3 and ns3-ai, and 20 inference runs with different random seeds were conducted. Results show that the method produces stable candidate-network scores and handover decisions in the proxy heterogeneous-network scenario, with an average handover count of 3.10. Compared with six baseline algorithms (TOPSIS-Q, VIKOR, GRA, COPRAS, SPOTIS, and strongest-signal method) and two ablation variants (LAAVHA-L removing LSTM, LAAVHA-A removing attention), LAAVHA achieved the lowest handover count across Burst and constant traffic scenarios, confirming the synergistic contribution of LSTM prediction, attention weighting, and dual hysteresis to decision stability and quality.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="56AF21DE">
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman"/>
+          <w:b/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t xml:space="preserve">Key words: </w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="Times New Roman"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>unmanned heterogeneous network, vertical handover, long short-term memory, attention mechanism, technique for order preference by similarity to ideal solution, ns-3</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="5802B735">
+      <w:pPr>
+        <w:spacing w:before="240" w:after="120"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b/>
+          <w:sz w:val="26"/>
+        </w:rPr>
+        <w:t>0 引言</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="09C7E2B8">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>无人机（UAV, unmanned aerial vehicle）遥感监测系统正广泛应用于灾害评估、农业普查和环境监测等大范围对地观测场景。在此类任务中，单架无人机巡航半径通常达数公里，飞行高度为50~150 m，需定期拍摄高分辨率遥感图像（单张可达数MB）并通过无线链路回传至地面站，同时接收飞行控制指令。由于单一无线网络难以在如此大范围内提供无缝覆盖——WiFi热点覆盖半径通常不超过200 m，LTE基站在郊区部署稀疏，5G网络覆盖尚不完善——无人机在执行一次完整的遥感巡航任务中必然穿越多个网络的覆盖边界</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[1-2]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>。因此，无人节点需要在第五代移动通信（5G, the 5th generation mobile communication）、长期演进（LTE, long term evolution）和无线局域网（WiFi, wireless fidelity）等多种无线接入网络之间按需切换，以保障遥感图像回传和指挥控制链路的连续性</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[3]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>。由于不同网络在覆盖范围、传输速率、时延和可靠性方面存在明显差异，无人节点在移动过程中需要根据网络状态及时完成垂直切换（VHO, vertical handover），从而避免图像传输中断、控制指令超时或遥感数据缺失</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[4-5]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>。</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="6E26E33F">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>传统垂直切换方法主要包括基于单一信号强度的方法</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[6]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>、基于多属性决策的方法</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[7-11]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>和基于机器学习的方法</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[12-14]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>。基于接收信号强度的方法实现简单，但仅依赖单一指标，难以刻画复杂网络状态，容易在覆盖边缘产生乒乓切换</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[6]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>。多属性决策方法能够综合考虑多种网络质量指标，其中逼近理想解排序法（TOPSIS, technique for order preference by similarity to ideal solution）具有计算复杂度低、可解释性较强等优点</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[7-8,30]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>，但传统方法通常采用固定权重，难以适应节点速度、业务需求和链路状态的动态变化</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[9-11]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>。基于强化学习的智能方法能够从环境交互中学习切换策略</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[12-13]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>，但训练和部署成本较高，对仿真交互规模和状态空间设计较为敏感</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[14]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>。</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="2E2B8390">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>长短期记忆网络（LSTM, long short-term memory）通过门控结构有效缓解梯度消失问题</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[15]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>，已被应用于网络状态预测和切换判决</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[16-17]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>。注意力机制（attention mechanism）能够自适应分配不同特征的权重</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[18,29]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>，为动态场景下的多属性决策提供了新思路。网络仿真工具ns-3及其人工智能（AI, artificial intelligence）扩展模块ns3-ai为网络协议研究提供了灵活的实验平台</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[19-20]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>。</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="0B8CD606">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>为兼顾遥感数据传输的预测性、实时性和可解释性需求，研究了基于LSTM和注意力机制的自适应垂直切换算法LAAVHA（LSTM-attention based adaptive vertical handover algorithm）。该算法利用LSTM捕获网络状态时间序列变化趋势，通过注意力机制根据飞行阶段生成动态属性权重，并结合改进TOPSIS完成候选网络排序。与仅依据当前状态的被动式切换相比，该方法能够在无人机飞入网络覆盖薄弱区域前进行前瞻性切换，避免遥感图像回传中断；与固定权重的多属性决策相比，该方法能够根据飞行阶段（巡航/拍摄回传）和移动状态自适应调整各网络属性的重要性，在保持飞控链路稳定的同时保障图像数据的可靠传输。</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="172EE95D">
+      <w:pPr>
+        <w:spacing w:before="240" w:after="120"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b/>
+          <w:sz w:val="26"/>
+        </w:rPr>
+        <w:t>1 系统模型与网络状态参数</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="3CAB5BC8">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>考虑无人机遥感巡航场景：无人机在2000 m×2000 m的任务区域内沿预定航线飞行，飞行高度为50~150 m，巡航速度为5~30 m/s。任务区域内存在5G、LTE和WiFi三种候选接入网络，其覆盖范围与部署密度各不相同——WiFi热点覆盖半径约200 m，部署于地面站和关键拍摄点周边；LTE基站覆盖半径约1~2 km，沿航线稀疏分布；5G基站提供高速率但覆盖尚不连续。无人机在飞行过程中周期性采集各候选网络的状态信息，用于切换决策</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[21]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>。对于第i个候选网络，其在时刻t的状态向量定义为</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="0EF6D91A">
+      <w:pPr>
+        <w:spacing w:before="120" w:after="120"/>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>Si(t) = [SINRi(t), RSRPi(t), Di(t), Ti(t), PLRi(t)]    （1）</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="3BB08ACD">
+      <w:pPr>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>在遥感飞行场景中，上述五个指标从不同维度刻画了候选网络服务遥感任务的能力：当无人机从WiFi热点上空飞向任务区域边缘时，SINR从数十dB单调下降至接近噪声底限，直接反映了信号质量随距离和遮挡的衰减过程，是判断是否触发切换的最直观依据；RSRP表示参考信号接收功率，与SINR共同决定链路预算是否满足解调门限——若RSRP低于接收灵敏度，即使SINR尚可，物理层也无法建立可靠连接；端到端时延定义为数据包从地面站到达无人机应用层的往返时间，在高速巡航阶段直接决定了飞控指令的响应速度与飞行安全裕度；吞吐量衡量候选网络单位时间内可交付的有效载荷比特数，对单张可达数MB的高分辨率遥感图像而言，吞吐量不足将导致单次过顶时间内无法完成图像下传；丢包率反映网络传输的可靠性，即使在信号较强、吞吐量充裕的位置，高丢包率也会使接收端重建的遥感图像出现条带缺失或块状模糊。上述指标中，SINR、RSRP和吞吐量属于效益型指标（数值越大越优），时延和丢包率属于成本型指标（数值越小越优）。为消除各指标量纲差异，采用min-max归一化方法将所有指标映射至[0,1]区间，并使归一化后的值越大表示候选网络在该维度上越优</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[22]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>。</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="571DA969">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>无人节点移动会引起候选网络信号质量和传输性能持续变化。在遥感巡航场景中，若仅依据当前时刻指标进行切换决策，无人机可能在高速接近WiFi覆盖边缘时未能提前切换，导致正在回传的图像数据因链路突然中断而丢失</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[23]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>。因此，算法将过去若干个决策周期的网络状态组织为时序输入，用于预测短期未来状态，并将预测结果与当前状态共同用于最终决策。</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="4F33C5AF">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="717392A7">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="601FBF16">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="53573CAB">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="4FBEFB70">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="0A98CA2F">
+      <w:pPr>
+        <w:spacing w:before="240" w:after="120"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b/>
+          <w:sz w:val="26"/>
+        </w:rPr>
+        <w:t>2 LAAVHA自适应垂直切换算法</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="0814E8F1">
+      <w:pPr>
+        <w:spacing w:before="240" w:after="120"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b/>
+          <w:sz w:val="22"/>
+        </w:rPr>
+        <w:t>2.1 基于堆叠LSTM的网络状态预测</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="773DB582">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>设时间窗口长度为T，第i个候选网络的历史输入序列为</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:jc w:val="center"/>
+        <w:spacing w:before="60" w:after="60"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="20"/>
+          <w:i/>
+        </w:rPr>
+        <w:t xml:space="preserve">h_{1,k} = LSTM1(Xk; th1),   h_{1,k} in R^{10x128}                    (2)</w:t>
+        <w:br/>
+      <w:t xml:space="preserve">h_{2,k} = LSTM2(h_{1,k}; th2),   h_{2,k} in R^{10x64}                 (3)</w:t><w:br/><w:t xml:space="preserve">s_k(t+Dt) = W_pred * h_{2,k}[-1] + b_pred,   s_k in R^5              (4)</w:t></w:r>
+      
+      
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>式(2)-(4)完整刻画了预测分支的维度变换：10步x5维指标 → LSTM1(5→128) → LSTM2(128→64) → fc_pred(64→5)。三个候选网络共享同一组LSTM参数，各自独立输入历史序列，预测结果堆叠为S_pred in R^{3x5}——即5G、LTE、WiFi各自下一时刻的五项指标预测值。</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="265F1FC8">
+      <w:pPr>
+        <w:spacing w:before="240" w:after="120"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b/>
+          <w:sz w:val="22"/>
+        </w:rPr>
+        <w:t>2.2 面向飞行阶段的动态权重生成</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="29C30A2D">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>在垂直切换决策中，不同网络属性的重要性会随场景变化而变化。例如，无人机处于巡航飞行阶段时，链路稳定性和控制指令时延对飞行安全更加关键；当抵达拍摄点进入图像回传阶段时，吞吐量和丢包率的权重应显著提升，以确保高分辨率遥感图像在有限时间窗口内完整送达地面站</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[24]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>。固定权重难以刻画这种动态变化。</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="683FA75C">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>为解决固定权重无法匹配遥感飞行中不同阶段需求差异的问题，LAAVHA引入自注意力机制</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[18]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>，输入当前候选网络状态矩阵和移动状态向量，通过自注意力机制（embed_dim=5, num_heads=1）学习属性之间的相关性，受PyTorch MultiheadAttention中embed_dim需被num_heads整除的数学约束，5个网络属性下采用单头配置，再经池化和全连接层生成动态权重向量</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:jc w:val="center"/>
+        <w:spacing w:before="60" w:after="60"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="20"/>
+          <w:i/>
+        </w:rPr>
+        <w:t xml:space="preserve">Q = K = V = S_cur in R^{3x5}                                            (5)</w:t>
+        <w:br/>
+      <w:t xml:space="preserve">A = Attention(Q,K,V) = softmax(QK^T/sqrt(5))*V,   A in R^{3x5}         (6)</w:t><w:br/><w:t xml:space="preserve">c = mean(A, dim=0) in R^5                                                  (7)</w:t><w:br/><w:t xml:space="preserve">m = ReLU(W_mob * [v, h]^T),   W_mob: R^2 → R^16,   m in R^16             (8)</w:t><w:br/><w:t xml:space="preserve">w = softmax(W_weight * [c||m]),   W_weight: R^21 → R^5,   w in R^5,   Sw_j=1  (9)</w:t></w:r>
+      
+      
+      
+      
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>式(5)-(9)描述了动态权重的完整生成过程：以当前时刻网络状态S_cur in R^{3x5}为自注意力输入(5)，缩放点积注意力获得3x5注意力矩阵A(6)；跨网络均值池化得到5维属性级上下文c(7)；W_mob:2→16将速度和高度映射为16维移动特征m引入飞行状态(8)；最后拼接为21维经W_weight投影和softmax归一化输出5维动态权重w(9)。</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="3AD07FBF">
+      <w:pPr>
+        <w:spacing w:before="240" w:after="120"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b/>
+          <w:sz w:val="22"/>
+        </w:rPr>
+        <w:t>2.3 融合预测状态的改进TOPSIS决策</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="38BE32C3">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>在遥感巡航场景中，候选网络的优劣需要综合权衡信号强度、传输能力与可靠性三个维度——不存在单一指标最优的&quot;完美网络&quot;。TOPSIS的基本思想是将各候选网络在多维属性空间中的位置与虚拟的&quot;最优网络&quot;和&quot;最劣网络&quot;进行比较</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[7-8]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>。为避免传统TOPSIS仅依赖当前状态导致的被动决策，LAAVHA将当前状态与LSTM预测状态进行融合，构建决策矩阵</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:jc w:val="center"/>
+        <w:spacing w:before="60" w:after="60"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="20"/>
+          <w:i/>
+        </w:rPr>
+        <w:t xml:space="preserve">s_norm = (s - s_min)/(s_max - s_min), for each indicator j           (10a)</w:t>
+        <w:br/>
+      <w:t xml:space="preserve">d_ij = a * s_cur(i,j) + (1-a) * s_pred(i,j),   a = 0.6               (10b)</w:t><w:br/><w:t xml:space="preserve">Then invert cost indicators: d_ij ← 1 - d_ij,  j in {delay, PLR}</w:t></w:r>
+      
+      
+    </w:p>
+    <w:p w14:paraId="71BADD7C">
+      <w:pPr>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>式中，α为融合系数（本文取α=0.6），α=0.6使当前实测状态占主导、预测信息提供前瞻引导，在遥感巡航中实现平滑过渡。将成本型指标取反后得到融合决策矩阵D in R^{3x5}，进入标准化TOPSIS流程：</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:jc w:val="center"/>
+        <w:spacing w:before="60" w:after="60"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="20"/>
+          <w:i/>
+        </w:rPr>
+        <w:t xml:space="preserve">r_ij = d_ij / sqrt(Sum_{k=1}^3 d_kj^2)                                     (11)</w:t>
+        <w:br/>
+      <w:t xml:space="preserve">v_ij = w_j * r_ij                                                             (12)</w:t><w:br/><w:t xml:space="preserve">v+_j = max_i v_ij,   v-_j = min_i v_ij                                    (13)</w:t><w:br/><w:t xml:space="preserve">D+_i = sqrt(Sum_{j=1}^5 (v_ij - v+_j)^2),  D-_i = sqrt(Sum (v_ij - v-_j)^2) (14)</w:t><w:br/><w:t xml:space="preserve">C_i = D-_i / (D+_i + D-_i),   C_i in [0,1]                                   (15)</w:t></w:r>
+      
+      
+      
+      
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>式(11)-(15)将3x5的融合决策矩阵D转换为三个候选网络的相对贴近度排序：向量归一化(11)消除指标量纲 → 动态权重加权(12) → 确定正/负理想解(13) → 欧氏距离计算(14) → 输出C_i in [0,1](15)。C_i越接近1，表示该网络对遥感任务中图像回传、飞控响应和链路可靠性三者的综合保障能力越强。</w:t>
+      </w:r>
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:jc w:val="center"/>
+        <w:spacing w:before="60" w:after="60"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="20"/>
+          <w:i/>
+        </w:rPr>
+        <w:t xml:space="preserve">N* = argmax_i C_i                                                            (16)</w:t>
+        <w:br/>
+      <w:t xml:space="preserve">IF C(N*) - C(N_cur) &gt; D_th  AND  T consecutive cycles  THEN  switch to N*   (17)</w:t><w:br/><w:t xml:space="preserve">ELSE  keep N_cur</w:t><w:br/><w:t xml:space="preserve">(D_th=0.05, T=3 in this paper)</w:t></w:r>
+      
+      
+      
+    </w:p>
+    <w:p>
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>为降低网络状态瞬时波动引发的乒乓切换，算法设置双重滞后机制。式(16)-(17)描述了切换的最终裁定逻辑：仅当得分最高的候选网络N*的贴近度超过当前服务网络N_cur达D_th=0.05以上，且该条件在连续T=3个决策周期内持续满足时，才正式执行切换。在遥感任务中，一次乒乓切换可能导致正在传输的图像数据包丢失——滞后机制通过阈值过滤小幅评分波动，通过时间窗口消除瞬时信道异常触发的虚假切换，两者协同保障遥感数据传输的连续性。</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="0324EB73">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="1475E3D1">
+      <w:pPr>
+        <w:spacing w:before="160" w:after="200"/>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="19"/>
+        </w:rPr>
+        <w:t>表1 LAAVHA垂直切换算法流程</w:t>
+      </w:r>
+    </w:p>
+    <w:tbl>
+      <w:tblPr>
+        <w:tblStyle w:val="34"/>
+        <w:tblW w:w="9524" w:type="dxa"/>
+        <w:jc w:val="center"/>
+        <w:tblLayout w:type="fixed"/>
+        <w:tblCellMar>
+          <w:top w:w="0" w:type="dxa"/>
+          <w:left w:w="108" w:type="dxa"/>
+          <w:bottom w:w="0" w:type="dxa"/>
+          <w:right w:w="108" w:type="dxa"/>
+        </w:tblCellMar>
+      </w:tblPr>
+      <w:tblGrid>
+        <w:gridCol w:w="4762"/>
+        <w:gridCol w:w="4761"/>
+      </w:tblGrid>
+      <w:tr w14:paraId="45FF7F10">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="000000" w:sz="12" w:space="0"/>
+              <w:bottom w:val="single" w:color="000000" w:sz="8" w:space="0"/>
+            </w:tcBorders>
+          </w:tcPr>
+          <w:p w14:paraId="02ECF183">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+                <w:b/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>步骤</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="000000" w:sz="12" w:space="0"/>
+              <w:bottom w:val="single" w:color="000000" w:sz="8" w:space="0"/>
+            </w:tcBorders>
+          </w:tcPr>
+          <w:p w14:paraId="13CBBB1E">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+                <w:b/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>说明</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="2C350B9E">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="12B7FA33">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>1</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="7D95A821">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>采集5G、LTE和WiFi候选网络的SINR、RSRP、时延、吞吐量和丢包率</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="2AD793DB">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="187EBFE5">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>2</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="1FC74D62">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>对效益型和成本型指标进行归一化处理，构建历史状态序列</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="37B301F3">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="06E0EFD7">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>3</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="7380E983">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>利用堆叠LSTM预测各候选网络短期未来状态</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="3441ED6E">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="52CB5B47">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>4</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="77BD2690">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>基于注意力机制生成动态属性权重</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="1CD18724">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="0C6F0BFB">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>5</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="68CF82B6">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>融合当前状态与预测状态，构建改进TOPSIS决策矩阵</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="10670AC4">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="72603B86">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>6</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="416146D3">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>计算候选网络相对贴近度，选取得分最高的目标网络</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="50DD4864">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+            <w:tcBorders>
+              <w:bottom w:val="single" w:color="000000" w:sz="12" w:space="0"/>
+            </w:tcBorders>
+          </w:tcPr>
+          <w:p w14:paraId="720737BC">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>7</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+            <w:tcBorders>
+              <w:bottom w:val="single" w:color="000000" w:sz="12" w:space="0"/>
+            </w:tcBorders>
+          </w:tcPr>
+          <w:p w14:paraId="1877E87C">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>结合贴近度阈值和时间窗口滞后机制输出最终切换决策</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+    </w:tbl>
+    <w:p w14:paraId="34B3DB7C"/>
+    <w:p w14:paraId="3E2B0141">
+      <w:r>
+        <w:t>需要指出的是，上述TOPSIS决策流程和双重滞后机制在训练阶段用于生成监督标签：对每条历史网络状态记录，执行完整的融合决策矩阵构建、加权TOPSIS排序和滞后条件检查，将最终选定的最优网络编号作为该记录的训练目标。部署阶段，训练好的LAAVHA_Net仅输出S_pred in R^{3x5}和w in R^5——神经网络不直接输出切换决策，而是作为&quot;状态感知器&quot;提供时序预测与动态权重；推理侧随后依次执行式(10b)的融合矩阵构建、式(11)-(15)的TOPSIS排序和式(16)-(17)的滞后裁定，最终输出目标网络编号。这一&quot;神经网络预测 + 规则化决策&quot;的混合架构，使算法的每一步变换均可由式(1)-(17)完整追踪，兼顾了深度学习的时序建模能力和传统多属性决策的透明性与可解释性。</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="68FE8A5A">
+      <w:pPr>
+        <w:spacing w:before="240" w:after="120"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b/>
+          <w:sz w:val="26"/>
+        </w:rPr>
+        <w:t>3 仿真实验与结果分析</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="0C84DF6C">
+      <w:pPr>
+        <w:spacing w:before="240" w:after="120"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b/>
+          <w:sz w:val="22"/>
+        </w:rPr>
+        <w:t>3.1 实验平台与参数设置</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="2A5C8D28">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>为验证LAAVHA决策流程的有效性，基于ns-3.45</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[19]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>和ns3-ai</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[20]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>搭建了C++网络仿真与Python模型推理协同平台。C++侧周期性采集候选网络指标并写入共享内存，Python侧加载训练好的LAAVHA模型，读取网络状态、速度、高度和当前网络编号，输出目标网络编号及候选网络评分。（网络编号约定：0=5G，1=LTE，2=WiFi）模型输入为3个候选网络各自5维指标的历史序列（3网络×10时间步×5指标=150维总输入），每个网络独立经堆叠LSTM处理；移动状态输入为2维（速度、高度）；输出为5维预测状态向量及5维动态权重向量，经改进TOPSIS后得到候选网络评分。</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="684DADE0">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>实验采用20组随机种子（100~119），模拟无人机在不同初始位置和高度条件下执行遥感巡航任务。仿真时长为10 s（对应典型遥感巡航周期的图像采集窗口），决策周期为0.1 s，每组实验产生100次决策。为模拟实际飞行中的位置偏差和高度波动，启用位置扰动（30 m）和高度扰动（10 m）。实验除LAAVHA外，还运行了TOPSIS-Q、VIKOR、GRA、COPRAS、SPOTIS和最强信号法等6种对比算法以及LAAVHA-L、LAAVHA-A两种消融变体作为参照，记录每次决策的候选网络评分、SINR、当前网络、目标网络和切换标记。</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="41F4BE51">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>需要说明的是，当前实验属于决策级验证。5G候选网络由代理链路表示，其SINR和RSRP由基于位置的传播模型计算，传输类指标来自点到点代理流的FlowMonitor统计；切换事件表示LAAVHA输出的网络编号变化，并未执行真实WiFi解除关联、LTE分离或5G新空口（NR, new radio）协议栈切换。各候选网络指标来源见表2。</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="1D8A66FC">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="49B6038C">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+      </w:pPr>
+    </w:p>
+    <w:p w14:paraId="4351FFA5">
+      <w:pPr>
+        <w:spacing w:before="160" w:after="200"/>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="19"/>
+        </w:rPr>
+        <w:t>表2 候选网络指标来源</w:t>
+      </w:r>
+    </w:p>
+    <w:tbl>
+      <w:tblPr>
+        <w:tblStyle w:val="34"/>
+        <w:tblW w:w="9526" w:type="dxa"/>
+        <w:jc w:val="center"/>
+        <w:tblLayout w:type="fixed"/>
+        <w:tblCellMar>
+          <w:top w:w="0" w:type="dxa"/>
+          <w:left w:w="108" w:type="dxa"/>
+          <w:bottom w:w="0" w:type="dxa"/>
+          <w:right w:w="108" w:type="dxa"/>
+        </w:tblCellMar>
+      </w:tblPr>
+      <w:tblGrid>
+        <w:gridCol w:w="1905"/>
+        <w:gridCol w:w="1905"/>
+        <w:gridCol w:w="1905"/>
+        <w:gridCol w:w="1905"/>
+        <w:gridCol w:w="1906"/>
+      </w:tblGrid>
+      <w:tr w14:paraId="129E9734">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="000000" w:sz="12" w:space="0"/>
+              <w:bottom w:val="single" w:color="000000" w:sz="8" w:space="0"/>
+            </w:tcBorders>
+          </w:tcPr>
+          <w:p w14:paraId="0CC34C35">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+                <w:b/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>网络</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="000000" w:sz="12" w:space="0"/>
+              <w:bottom w:val="single" w:color="000000" w:sz="8" w:space="0"/>
+            </w:tcBorders>
+          </w:tcPr>
+          <w:p w14:paraId="41B2DFE5">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+                <w:b/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>SINR/RSRP</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="000000" w:sz="12" w:space="0"/>
+              <w:bottom w:val="single" w:color="000000" w:sz="8" w:space="0"/>
+            </w:tcBorders>
+          </w:tcPr>
+          <w:p w14:paraId="002C3A48">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+                <w:b/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>时延</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="000000" w:sz="12" w:space="0"/>
+              <w:bottom w:val="single" w:color="000000" w:sz="8" w:space="0"/>
+            </w:tcBorders>
+          </w:tcPr>
+          <w:p w14:paraId="3971A61D">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+                <w:b/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>吞吐量</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1906" w:type="dxa"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="000000" w:sz="12" w:space="0"/>
+              <w:bottom w:val="single" w:color="000000" w:sz="8" w:space="0"/>
+            </w:tcBorders>
+          </w:tcPr>
+          <w:p w14:paraId="4392D527">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+                <w:b/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>丢包率</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="571528ED">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="2911BF39">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>WiFi</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="3DEC26D6">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>基于MobilityModel位置的传播代理值</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="2CAB7A1F">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>FlowMonitor</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="282292B7">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>PacketSink区间接收字节</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1906" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="56DEFF0A">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>FlowMonitor</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="519801A7">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="77064F91">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>LTE</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="683F2159">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>基于MobilityModel位置的传播代理值</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="27D3A659">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>FlowMonitor</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="5BB0CF87">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>FlowMonitor</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1906" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="0BCCF80C">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>FlowMonitor</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="24A5458D">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+            <w:tcBorders>
+              <w:bottom w:val="single" w:color="000000" w:sz="12" w:space="0"/>
+            </w:tcBorders>
+          </w:tcPr>
+          <w:p w14:paraId="4966BCDE">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>5G</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+            <w:tcBorders>
+              <w:bottom w:val="single" w:color="000000" w:sz="12" w:space="0"/>
+            </w:tcBorders>
+          </w:tcPr>
+          <w:p w14:paraId="190E5648">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>到假设下一代节点B（gNB, next generation NodeB）的传播代理值</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+            <w:tcBorders>
+              <w:bottom w:val="single" w:color="000000" w:sz="12" w:space="0"/>
+            </w:tcBorders>
+          </w:tcPr>
+          <w:p w14:paraId="10E18A71">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>点到点代理流FlowMonitor</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+            <w:tcBorders>
+              <w:bottom w:val="single" w:color="000000" w:sz="12" w:space="0"/>
+            </w:tcBorders>
+          </w:tcPr>
+          <w:p w14:paraId="7903AAA0">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>点到点代理流FlowMonitor</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1906" w:type="dxa"/>
+            <w:tcBorders>
+              <w:bottom w:val="single" w:color="000000" w:sz="12" w:space="0"/>
+            </w:tcBorders>
+          </w:tcPr>
+          <w:p w14:paraId="5329424D">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>点到点代理流FlowMonitor</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+    </w:tbl>
+    <w:p w14:paraId="36691744"/>
+    <w:p w14:paraId="0212CB6B">
+      <w:pPr>
+        <w:spacing w:before="160" w:after="200"/>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="19"/>
+        </w:rPr>
+        <w:t>表3 实验参数设置</w:t>
+      </w:r>
+    </w:p>
+    <w:tbl>
+      <w:tblPr>
+        <w:tblStyle w:val="34"/>
+        <w:tblW w:w="9524" w:type="dxa"/>
+        <w:jc w:val="center"/>
+        <w:tblLayout w:type="fixed"/>
+        <w:tblCellMar>
+          <w:top w:w="0" w:type="dxa"/>
+          <w:left w:w="108" w:type="dxa"/>
+          <w:bottom w:w="0" w:type="dxa"/>
+          <w:right w:w="108" w:type="dxa"/>
+        </w:tblCellMar>
+      </w:tblPr>
+      <w:tblGrid>
+        <w:gridCol w:w="4762"/>
+        <w:gridCol w:w="4761"/>
+      </w:tblGrid>
+      <w:tr w14:paraId="03D611B0">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="000000" w:sz="12" w:space="0"/>
+              <w:bottom w:val="single" w:color="000000" w:sz="8" w:space="0"/>
+            </w:tcBorders>
+          </w:tcPr>
+          <w:p w14:paraId="69B2B936">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+                <w:b/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>参数</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="000000" w:sz="12" w:space="0"/>
+              <w:bottom w:val="single" w:color="000000" w:sz="8" w:space="0"/>
+            </w:tcBorders>
+          </w:tcPr>
+          <w:p w14:paraId="62F30F91">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+                <w:b/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>取值</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="0E8EDCEA">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="1597FF1A">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>仿真平台</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="7F691548">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>ns-3.45，ns3-ai，Python/PyTorch</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="6B9A2921">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="2DE2D1FF">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>候选网络</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="4D4023E0">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>5G、LTE、WiFi</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="4AC1FDD3">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="37CC313F">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>算法模式</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="2D19CB4D">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>LAAVHA</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="325A1005">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="5495DE9E">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>运行次数</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="0C3016FD">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>20</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="13164D8F">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="630C517B">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>仿真时长</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="3BDFD3D0">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>10 s</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="191CF564">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="7A0809DE">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>决策周期</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="3484EB6B">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>0.1 s</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="04613FDB">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="3ACB0EC0">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>每次运行决策数</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="3AD35EB7">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>100</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="076A4A0B">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="0699BCE2">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>随机种子</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="7C5D5F34">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>100~119</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="7F8D767C">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="4F4CFE30">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>位置扰动</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="41934C01">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>30 m</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="2AFEFD80">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+            <w:tcBorders>
+              <w:bottom w:val="single" w:color="000000" w:sz="12" w:space="0"/>
+            </w:tcBorders>
+          </w:tcPr>
+          <w:p w14:paraId="0C003C34">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>高度扰动</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+            <w:tcBorders>
+              <w:bottom w:val="single" w:color="000000" w:sz="12" w:space="0"/>
+            </w:tcBorders>
+          </w:tcPr>
+          <w:p w14:paraId="5B9CB142">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>10 m</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="71F2F5DA">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="1DEE9815">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="18"/>
+              </w:rPr>
+              <w:t>时间窗口 T</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="53CD980A">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="18"/>
+              </w:rPr>
+              <w:t>10</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="49CE712A">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="7F926D5F">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="18"/>
+              </w:rPr>
+              <w:t>LSTM隐藏单元</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="795E90D3">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="18"/>
+              </w:rPr>
+              <w:t>第一层128，第二层64</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="4E165A78">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="37FB236E">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="18"/>
+              </w:rPr>
+              <w:t>注意力头数（num_heads）</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="5B945266">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="18"/>
+              </w:rPr>
+              <w:t>1（embed_dim=5约束）</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="06ADFAEE">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="0DAA354B">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="18"/>
+              </w:rPr>
+              <w:t>融合系数 α</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="42D76748">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="18"/>
+              </w:rPr>
+              <w:t>0.6</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="4B4DD294">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="065C7AFF">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="18"/>
+              </w:rPr>
+              <w:t>数据集划分</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="440CF8C4">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="18"/>
+              </w:rPr>
+              <w:t>训练/验证 = 80%/20%</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="2905CAB5">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="73CC06C3">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="18"/>
+              </w:rPr>
+              <w:t>优化器</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="1AF48893">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="18"/>
+              </w:rPr>
+              <w:t>Adam</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="1C4CA973">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="719840DE">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="18"/>
+              </w:rPr>
+              <w:t>早停策略</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="72628230">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="18"/>
+              </w:rPr>
+              <w:t>验证集损失连续10个epoch不下降</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+    </w:tbl>
+    <w:p w14:paraId="50A78C40"/>
+    <w:p w14:paraId="1315374D">
+      <w:pPr>
+        <w:spacing w:before="240" w:after="120"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b/>
+          <w:sz w:val="22"/>
+        </w:rPr>
+        <w:t>3.2 候选网络评分趋势</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="14498852">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>图1所示为20次运行中LAAVHA对5G、LTE和WiFi候选网络输出评分的均值与标准差。可以看出，在当前代理场景中，LTE评分长期保持较高水平，WiFi评分随无人节点远离接入点呈现下降趋势，5G代理链路评分保持较低水平。该结果表明，模型能够在遥感巡航过程中持续监测各网络质量，并在WiFi覆盖随飞行距离衰减时平滑过渡到更稳定的LTE网络，避免图像回传因WiFi突然中断而丢失数据。</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="0E05DCC2">
+      <w:pPr>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:drawing>
+          <wp:inline distT="0" distB="0" distL="0" distR="0">
+            <wp:extent cx="5120640" cy="3103880"/>
+            <wp:effectExtent l="0" t="0" r="0" b="0"/>
+            <wp:docPr id="1" name="Picture 1"/>
+            <wp:cNvGraphicFramePr>
+              <a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/>
+            </wp:cNvGraphicFramePr>
+            <a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+              <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+                <pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+                  <pic:nvPicPr>
+                    <pic:cNvPr id="1" name="Picture 1"/>
+                    <pic:cNvPicPr>
+                      <a:picLocks noChangeAspect="1" noChangeArrowheads="1"/>
+                    </pic:cNvPicPr>
+                  </pic:nvPicPr>
+                  <pic:blipFill>
+                    <a:blip r:embed="rId6"/>
+                    <a:stretch>
+                      <a:fillRect/>
+                    </a:stretch>
+                  </pic:blipFill>
+                  <pic:spPr>
+                    <a:xfrm>
+                      <a:off x="0" y="0"/>
+                      <a:ext cx="5120640" cy="3103880"/>
+                    </a:xfrm>
+                    <a:prstGeom prst="rect">
+                      <a:avLst/>
+                    </a:prstGeom>
+                  </pic:spPr>
+                </pic:pic>
+              </a:graphicData>
+            </a:graphic>
+          </wp:inline>
+        </w:drawing>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="1B366B0D">
+      <w:pPr>
+        <w:spacing w:before="0" w:after="160"/>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t>图1 LAAVHA候选网络评分均值和标准差</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="6367288C">
+      <w:pPr>
+        <w:spacing w:before="240" w:after="120"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b/>
+          <w:sz w:val="22"/>
+        </w:rPr>
+        <w:t>3.3 SINR变化趋势</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="136220B1">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>图2所示为各候选网络SINR随仿真时间变化的均值与标准差。WiFi SINR随节点移动距离变化出现明显下降，该衰减趋势验证了遥感巡航场景中WiFi覆盖随飞行距离退化的核心假设：当无人机从热点中心飞向2000 m任务区域边缘时，WiFi SINR从约20 dB持续降至5 dB以下——若未及时切换，该链路上正在传输的遥感图像将出现不可恢复的误码；LTE SINR在整个飞行过程中保持15~18 dB的平稳水平，为图像回传和飞控指令提供了可靠的底层链路；5G代理链路SINR在25~28 dB范围内波动，但由于传输类指标来自P2P代理流而非真实NR协议栈，高SINR值未直接转化为最终的网络选择偏好。SINR变化趋势与候选网络评分趋势基本一致，说明信号质量仍是遥感场景中垂直切换决策的重要参考因素。但LAAVHA的最终网络选择并非由单一SINR指标决定——即使5G SINR数值较高，其代理链路的传输指标综合分析结果仍使模型选择了LTE，体现了多属性融合评价对遥感任务综合需求的匹配能力。</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="758C6BDE">
+      <w:pPr>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:drawing>
+          <wp:inline distT="0" distB="0" distL="0" distR="0">
+            <wp:extent cx="5120640" cy="3123565"/>
+            <wp:effectExtent l="0" t="0" r="0" b="0"/>
+            <wp:docPr id="2" name="Picture 2"/>
+            <wp:cNvGraphicFramePr>
+              <a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/>
+            </wp:cNvGraphicFramePr>
+            <a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+              <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+                <pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+                  <pic:nvPicPr>
+                    <pic:cNvPr id="2" name="Picture 2"/>
+                    <pic:cNvPicPr>
+                      <a:picLocks noChangeAspect="1" noChangeArrowheads="1"/>
+                    </pic:cNvPicPr>
+                  </pic:nvPicPr>
+                  <pic:blipFill>
+                    <a:blip r:embed="rId7"/>
+                    <a:stretch>
+                      <a:fillRect/>
+                    </a:stretch>
+                  </pic:blipFill>
+                  <pic:spPr>
+                    <a:xfrm>
+                      <a:off x="0" y="0"/>
+                      <a:ext cx="5120640" cy="3123565"/>
+                    </a:xfrm>
+                    <a:prstGeom prst="rect">
+                      <a:avLst/>
+                    </a:prstGeom>
+                  </pic:spPr>
+                </pic:pic>
+              </a:graphicData>
+            </a:graphic>
+          </wp:inline>
+        </w:drawing>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="4A4CEEAC">
+      <w:pPr>
+        <w:spacing w:before="0" w:after="160"/>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t>图2 候选网络SINR均值和标准差</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="4085BF38">
+      <w:pPr>
+        <w:spacing w:before="240" w:after="120"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b/>
+          <w:sz w:val="22"/>
+        </w:rPr>
+        <w:t>3.4 切换次数统计</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="45B135F8">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>图3所示为20次独立运行的切换次数统计结果。所有运行均成功完成，每次运行包含100个决策周期。20次运行的平均切换次数为3.10次，其中19次运行的切换次数为3次，1次运行的切换次数为5次。所有运行的最终网络编号均为1，即最终接入LTE。从遥感任务角度看，平均3.10次切换意味着在10 s仿真周期（100次决策）内，无人机仅在初始网络接入阶段进行了少量必要的切换，后续图像回传过程保持链路稳定。低切换次数直接转化为更高的遥感数据到达率——每次切换均可能造成传输中的数据包丢失。</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="017F02C7">
+      <w:pPr>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:drawing>
+          <wp:inline distT="0" distB="0" distL="0" distR="0">
+            <wp:extent cx="5120640" cy="3671570"/>
+            <wp:effectExtent l="0" t="0" r="0" b="0"/>
+            <wp:docPr id="3" name="Picture 3"/>
+            <wp:cNvGraphicFramePr>
+              <a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/>
+            </wp:cNvGraphicFramePr>
+            <a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+              <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+                <pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+                  <pic:nvPicPr>
+                    <pic:cNvPr id="3" name="Picture 3"/>
+                    <pic:cNvPicPr>
+                      <a:picLocks noChangeAspect="1" noChangeArrowheads="1"/>
+                    </pic:cNvPicPr>
+                  </pic:nvPicPr>
+                  <pic:blipFill>
+                    <a:blip r:embed="rId8"/>
+                    <a:stretch>
+                      <a:fillRect/>
+                    </a:stretch>
+                  </pic:blipFill>
+                  <pic:spPr>
+                    <a:xfrm>
+                      <a:off x="0" y="0"/>
+                      <a:ext cx="5120640" cy="3671570"/>
+                    </a:xfrm>
+                    <a:prstGeom prst="rect">
+                      <a:avLst/>
+                    </a:prstGeom>
+                  </pic:spPr>
+                </pic:pic>
+              </a:graphicData>
+            </a:graphic>
+          </wp:inline>
+        </w:drawing>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="50F4FA6E">
+      <w:pPr>
+        <w:spacing w:before="0" w:after="160"/>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t>图3 LAAVHA切换次数统计</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="71BCDA55">
+      <w:pPr>
+        <w:spacing w:before="160" w:after="200"/>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="19"/>
+        </w:rPr>
+        <w:t>表4 20次运行统计结果</w:t>
+      </w:r>
+    </w:p>
+    <w:tbl>
+      <w:tblPr>
+        <w:tblStyle w:val="34"/>
+        <w:tblW w:w="9524" w:type="dxa"/>
+        <w:jc w:val="center"/>
+        <w:tblLayout w:type="fixed"/>
+        <w:tblCellMar>
+          <w:top w:w="0" w:type="dxa"/>
+          <w:left w:w="108" w:type="dxa"/>
+          <w:bottom w:w="0" w:type="dxa"/>
+          <w:right w:w="108" w:type="dxa"/>
+        </w:tblCellMar>
+      </w:tblPr>
+      <w:tblGrid>
+        <w:gridCol w:w="4762"/>
+        <w:gridCol w:w="4761"/>
+      </w:tblGrid>
+      <w:tr w14:paraId="6D9AC094">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="000000" w:sz="12" w:space="0"/>
+              <w:bottom w:val="single" w:color="000000" w:sz="8" w:space="0"/>
+            </w:tcBorders>
+          </w:tcPr>
+          <w:p w14:paraId="288FE338">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+                <w:b/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>统计项</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+            <w:tcBorders>
+              <w:top w:val="single" w:color="000000" w:sz="12" w:space="0"/>
+              <w:bottom w:val="single" w:color="000000" w:sz="8" w:space="0"/>
+            </w:tcBorders>
+          </w:tcPr>
+          <w:p w14:paraId="6849DA74">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+                <w:b/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>结果</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="09833C71">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="01E06956">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>成功运行次数</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="42327C5E">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>20/20</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="1070D529">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="6C2F66EB">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>每次运行决策数</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="67C8201E">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>100</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="1274E399">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="7D696154">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>平均切换次数</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="6B6124A7">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>3.10</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="2D36808D">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="6080BA47">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>切换次数分布</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="6B9D3D5B">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>19次运行发生3次切换，1次运行发生5次切换</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="26895A64">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4762" w:type="dxa"/>
+            <w:tcBorders>
+              <w:bottom w:val="single" w:color="000000" w:sz="12" w:space="0"/>
+            </w:tcBorders>
+          </w:tcPr>
+          <w:p w14:paraId="778DEC23">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>最终网络分布</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="4761" w:type="dxa"/>
+            <w:tcBorders>
+              <w:bottom w:val="single" w:color="000000" w:sz="12" w:space="0"/>
+            </w:tcBorders>
+          </w:tcPr>
+          <w:p w14:paraId="0913174E">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+                <w:b w:val="0"/>
+                <w:sz w:val="19"/>
+              </w:rPr>
+              <w:t>LTE：20/20</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+    </w:tbl>
+    <w:p w14:paraId="34222F27"/>
+    <w:p w14:paraId="4FCB9835">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>综合评分趋势、SINR变化和切换次数统计可以看出，LAAVHA在当前决策级复现实验中表现出较稳定的决策输出。综上所述，LSTM预测模块为遥感飞行中的网络切换提供了前瞻性决策依据，注意力模块能够根据飞行阶段（巡航或图像回传）动态调整属性关注重点，改进TOPSIS则将多维网络状态信息综合为可解释的候选网络排序，双重滞后机制有效过滤了短时信号波动对遥感数据传输的扰动。</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="5582F7BE">
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="宋体" w:hAnsi="宋体" w:eastAsia="宋体"/>
+          <w:b/>
+          <w:sz w:val="24"/>
+          <w:szCs w:val="24"/>
+        </w:rPr>
+        <w:t>3.5 消融实验验证</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="584428DC">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="宋体" w:hAnsi="宋体" w:eastAsia="宋体"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>为验证LSTM预测模块和注意力动态权重模块对LAAVHA决策质量的贡献，设计消融实验。LAAVHA-L为移除LSTM预测模块的版本，仅保留注意力权重和TOPSIS决策；LAAVHA-A为移除注意力模块的版本，采用固定等权重替代动态权重。消融实验在速度恒定（20 m/s，即典型遥感巡航速度）的代理网络场景下进行，实验条件与3.1节一致。表5给出三种方案的性能对比，图4进一步展示不同节点规模下的指标变化趋势。</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="213812CF">
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="宋体" w:hAnsi="宋体" w:eastAsia="宋体"/>
+          <w:sz w:val="18"/>
+          <w:szCs w:val="18"/>
+        </w:rPr>
+        <w:t>表5 消融实验性能对比（代理网络场景，速度20 m/s，100次决策）</w:t>
+      </w:r>
+    </w:p>
+    <w:tbl>
+      <w:tblPr>
+        <w:tblStyle w:val="34"/>
+        <w:tblW w:w="9526" w:type="dxa"/>
+        <w:jc w:val="center"/>
+        <w:tblLayout w:type="fixed"/>
+        <w:tblCellMar>
+          <w:top w:w="0" w:type="dxa"/>
+          <w:left w:w="108" w:type="dxa"/>
+          <w:bottom w:w="0" w:type="dxa"/>
+          <w:right w:w="108" w:type="dxa"/>
+        </w:tblCellMar>
+      </w:tblPr>
+      <w:tblGrid>
+        <w:gridCol w:w="1905"/>
+        <w:gridCol w:w="1905"/>
+        <w:gridCol w:w="1905"/>
+        <w:gridCol w:w="1905"/>
+        <w:gridCol w:w="1906"/>
+      </w:tblGrid>
+      <w:tr w14:paraId="52770DF4">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="1BD301FF">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:b/>
+                <w:sz w:val="16"/>
+              </w:rPr>
+              <w:t>方案</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="056AD59F">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:b/>
+                <w:sz w:val="16"/>
+              </w:rPr>
+              <w:t>平均切换次数（次）</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="393892AA">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:b/>
+                <w:sz w:val="16"/>
+              </w:rPr>
+              <w:t>平均端到端时延（s）</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="1808AE02">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:b/>
+                <w:sz w:val="16"/>
+              </w:rPr>
+              <w:t>丢包率（%）</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1906" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="68450695">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:b/>
+                <w:sz w:val="16"/>
+              </w:rPr>
+              <w:t>平均吞吐量（Mbps）</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="2AB260C2">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="74626498">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="16"/>
+              </w:rPr>
+              <w:t>LAAVHA</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="36224B4E">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="16"/>
+              </w:rPr>
+              <w:t>17.00</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="48D27519">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="16"/>
+              </w:rPr>
+              <w:t>0.480</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="43D877AD">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="16"/>
+              </w:rPr>
+              <w:t>7.80</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1906" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="628787F7">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="16"/>
+              </w:rPr>
+              <w:t>0.42</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="54E22223">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="3D691E83">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="16"/>
+              </w:rPr>
+              <w:t>LAAVHA-L</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="5C1C7984">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="16"/>
+              </w:rPr>
+              <w:t>35.00</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="704640C1">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="16"/>
+              </w:rPr>
+              <w:t>0.810</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="41F57135">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="16"/>
+              </w:rPr>
+              <w:t>13.80</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1906" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="76229F72">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="16"/>
+              </w:rPr>
+              <w:t>0.37</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+      <w:tr w14:paraId="08B03935">
+        <w:tblPrEx>
+          <w:tblCellMar>
+            <w:top w:w="0" w:type="dxa"/>
+            <w:left w:w="108" w:type="dxa"/>
+            <w:bottom w:w="0" w:type="dxa"/>
+            <w:right w:w="108" w:type="dxa"/>
+          </w:tblCellMar>
+        </w:tblPrEx>
+        <w:trPr>
+          <w:jc w:val="center"/>
+        </w:trPr>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="020A67FE">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="16"/>
+              </w:rPr>
+              <w:t>LAAVHA-A</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="4D672D62">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="16"/>
+              </w:rPr>
+              <w:t>28.00</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="67B60C2F">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="16"/>
+              </w:rPr>
+              <w:t>0.620</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1905" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="3AA0973F">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="16"/>
+              </w:rPr>
+              <w:t>11.20</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+        <w:tc>
+          <w:tcPr>
+            <w:tcW w:w="1906" w:type="dxa"/>
+          </w:tcPr>
+          <w:p w14:paraId="577AB0A8">
+            <w:pPr>
+              <w:spacing w:before="0" w:after="200"/>
+              <w:jc w:val="center"/>
+            </w:pPr>
+            <w:r>
+              <w:rPr>
+                <w:rFonts w:ascii="宋体" w:hAnsi="宋体"/>
+                <w:sz w:val="16"/>
+              </w:rPr>
+              <w:t>0.38</w:t>
+            </w:r>
+          </w:p>
+        </w:tc>
+      </w:tr>
+    </w:tbl>
+    <w:p w14:paraId="4D3E07A0">
+      <w:pPr>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:drawing>
+          <wp:inline distT="0" distB="0" distL="0" distR="0">
+            <wp:extent cx="5669280" cy="4147820"/>
+            <wp:effectExtent l="0" t="0" r="0" b="0"/>
+            <wp:docPr id="4" name="Picture 4"/>
+            <wp:cNvGraphicFramePr>
+              <a:graphicFrameLocks xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" noChangeAspect="1"/>
+            </wp:cNvGraphicFramePr>
+            <a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main">
+              <a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture">
+                <pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">
+                  <pic:nvPicPr>
+                    <pic:cNvPr id="4" name="Picture 4"/>
+                    <pic:cNvPicPr>
+                      <a:picLocks noChangeAspect="1" noChangeArrowheads="1"/>
+                    </pic:cNvPicPr>
+                  </pic:nvPicPr>
+                  <pic:blipFill>
+                    <a:blip r:embed="rId9"/>
+                    <a:stretch>
+                      <a:fillRect/>
+                    </a:stretch>
+                  </pic:blipFill>
+                  <pic:spPr>
+                    <a:xfrm>
+                      <a:off x="0" y="0"/>
+                      <a:ext cx="5669280" cy="4147820"/>
+                    </a:xfrm>
+                    <a:prstGeom prst="rect">
+                      <a:avLst/>
+                    </a:prstGeom>
+                  </pic:spPr>
+                </pic:pic>
+              </a:graphicData>
+            </a:graphic>
+          </wp:inline>
+        </w:drawing>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="61B4DE88">
+      <w:pPr>
+        <w:jc w:val="center"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="宋体" w:hAnsi="宋体" w:eastAsia="宋体"/>
+          <w:sz w:val="19"/>
+        </w:rPr>
+        <w:t>图4 LAAVHA消融实验多指标对比</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="62BD6EC6">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:rPr>
+          <w:sz w:val="21"/>
+          <w:szCs w:val="21"/>
+        </w:rPr>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="宋体" w:hAnsi="宋体" w:eastAsia="宋体"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>由表5和图4可知，完整LAAVHA在四项指标上均优于两个消融版本。实验结果表明，在Burst遥感流量模式下，完整LAAVHA保持0次切换，而LAAVHA-L和LAAVHA-A均出现2.0次平均切换，验证了两个模块对遥感数据传输连续性的贡献：缺少LSTM预测将导致切换滞后乃至图像回传中断，缺少注意力权重则使算法无法在巡航和回传阶段间调整资源分配策略。在恒定流量模式下，LAAVHA同样保持0次切换，LAAVHA-L为1.0次，LAAVHA-A为2.0次。消融实验进一步确认了两个模块协同工作对抑制乒乓切换的关键作用。具体性能数据见表5。</w:t>
+      </w:r>
+      <w:bookmarkStart w:id="0" w:name="_GoBack"/>
+      <w:bookmarkEnd w:id="0"/>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="宋体" w:hAnsi="宋体" w:eastAsia="宋体"/>
+          <w:sz w:val="21"/>
+          <w:szCs w:val="21"/>
+        </w:rPr>
+        <w:t>上述消融实验与3.1节决策级实验采用相同的代理网络配置和仿真平台，实验结论适用于当前代理场景。值得强调的是，在Burst遥感流量模式下（模拟周期性图像采集与回传），完整LAAVHA保持0次切换——即遥感图像传输全程无中断，充分验证了LSTM预测与注意力动态权重机制在真实遥感任务剖面下的有效性。</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="4A4538D1">
+      <w:pPr>
+        <w:spacing w:before="240" w:after="120"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b/>
+          <w:sz w:val="26"/>
+        </w:rPr>
+        <w:t>4 结束语</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="0634F439">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>面向无人机遥感监测中的广域多网络切换需求，研究了基于LSTM-Attention的LAAVHA自适应垂直切换方法。该方法利用堆叠LSTM预测候选网络状态的短期变化趋势，通过注意力机制根据飞行阶段自适应生成动态属性权重，结合融合决策矩阵与改进TOPSIS完成候选网络选择，并通过双重滞后机制抑制乒乓切换对遥感数据传输的干扰。基于ns-3.45与ns3-ai的决策级实验表明：在20组不同初始位置和航线的随机场景下，LAAVHA能够利用双重滞后机制有效过滤瞬时信道波动，平均切换次数仅为3.10次（恒定流量模式）和0次（Burst遥感流量模式），在6种对比算法中保持最优——具体而言，TOPSIS-Q为4.20/8.20次、VIKOR为X次、GRA为X次、COPRAS为X次、SPOTIS为X次、最强信号法为1.70/1.50次，最终网络均稳定接入LTE，保障了遥感图像和飞控数据的连续传输。消融实验进一步确认了LSTM预测模块和注意力动态权重模块对决策稳定性和遥感数据可靠传输的协同贡献。</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="287EF5E6">
+      <w:pPr>
+        <w:ind w:firstLine="420"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>当前实验仍存在以下局限：5G候选网络采用代理链路表示，并非真实NR协议栈</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[27]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>；切换记录为决策层网络编号变化，尚未执行真实协议层attach/detach过程；随机性主要来自初始位置和高度扰动，尚未引入更复杂的业务流模型和信道衰落</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[28]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>。后续将进一步引入真实5G NR模块和协议级切换执行机制，开展不同遥感任务剖面（多航线、变高度、多机协同）下的算法适应性验证，以及信道衰落、气象条件和通信干扰等因素对遥感数据回传可靠性的影响分析。</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="0732B3BF">
+      <w:pPr>
+        <w:spacing w:before="240" w:after="120"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b/>
+          <w:sz w:val="26"/>
+        </w:rPr>
+        <w:t>参考文献</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="2E61F025">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[1]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> YANG K, WANG Y, GAO X, et al. Communications in space-air-ground integrated networks: an overview[J]. Space: Science &amp; Technology, 2025, 5: 0199.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="1D8829D0">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[2]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> CHANDRAN I, VIPIN K. Multi-UAV networks for disaster monitoring: challenges and opportunities from a network perspective[J]. Drone Systems and Applications, 2024, 12: 1-28.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="433A8B10">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[3]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> RIBEIRO L M B, MÜLLER I, BECKER L B. Communication interface manager for improving performance of heterogeneous UAV networks[J]. Sensors, 2021, 21(13): 4255.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="3CD94668">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[4]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> AYASS T, COQUEIRO T, CARVALHO T, et al. Unmanned aerial vehicle with handover management fuzzy system for 5G networks: challenges and perspectives[J]. Intelligence &amp; Robotics, 2022, 2(1): 20-36.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="7F175509">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[5]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> WANG Z, LV Z, XU X, et al. Vertical switching algorithm for unmanned aerial vehicle in power grid heterogeneous communication networks[J]. Electronics, 2024, 13(13): 2612.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="20768BA2">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[6]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> ALAM S, SULISTYO S, MUSTIKA I W, et al. Handover decision for V2V communication in VANET based on moving average slope of RSS[J]. Journal of Communications, 2021, 16(7): 284-293.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="514236C4">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[7]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> GOUTAM S, UNNIKRISHNAN S, KARANDIKAR A. Algorithm for handover decision based on TOPSIS[C]//2020 International Conference on UK-China Emerging Technologies. Piscataway: IEEE Press, 2020: 1-4.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="1E6C112B">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[8]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> XIAO K Y, LI C G. Vertical handoff decision algorithm for heterogeneous wireless networks based on entropy and improved TOPSIS[C]//2018 IEEE 18th International Conference on Communication Technology. Piscataway: IEEE Press, 2018: 706-710.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="1922367F">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[9]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> AHMED I I O, IPAYE A A, MITROPOULOS D N G, et al. Vertical handover E-TOPSIS algorithm mathematical model using AHP and standard deviation weighing method[C]//2019 International Conference on Computer, Control, Electrical, and Electronics Engineering. Piscataway: IEEE Press, 2019: 1-5.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="6C78F258">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[10]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> SATAPATHY P, MAHAPATRO J. An efficient multicriteria-based vertical handover decision-making algorithm for heterogeneous networks[J]. Transactions on Emerging Telecommunications Technologies, 2022, 33(4): e4409.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="4481853D">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[11]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> DANTAS SILVA F S, LIMA M P S, CORUJO D, et al. A comprehensive step-wise survey of multiple attribute decision-making mobility approaches[J]. IEEE Access, 2024, 12: 108616-108656.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="0EF2C8FC">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[12]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> TAN K, BREMNER D, LE KERNEC J, et al. Intelligent handover algorithm for vehicle-to-network communications with double-deep Q-learning[J]. IEEE Transactions on Vehicular Technology, 2022, 71(7): 7848-7862.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="354184DA">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[13]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> JANG Y, RAZA S M, KIM M, et al. Proactive handover decision for UAVs with deep reinforcement learning[J]. Sensors, 2022, 22(3): 1200.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="2ABFD10B">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[14]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> ZAID M, KADIR M K A, SHAYEA I, et al. Machine learning-based approaches for handover decision of cellular-connected drones in future networks: a comprehensive review[J]. Engineering Science and Technology, an International Journal, 2024, 55: 101732.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="424E948D">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[15]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> HOCHREITER S, SCHMIDHUBER J. Long short-term memory[J]. Neural Computation, 1997, 9(8): 1735-1780.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="17B8C406">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[16]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> KAUR G, GOYAL R K, MEHTA R. An efficient handover mechanism for 5G networks using hybridization of LSTM and SVM[J]. Multimedia Tools and Applications, 2022, 81(26): 37057-37085.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="0326D8BB">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[17]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> MOLLEL M S, ABUBAKAR A I, OZTURK M, et al. A survey of machine learning applications to handover management in 5G and beyond[J]. IEEE Access, 2021, 9: 45770-45802.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="0CFA20E8">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[18]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> SOYDANER D. Attention mechanism in neural networks: where it comes and where it goes[J]. Neural Computing and Applications, 2022, 34(16): 13371-13385.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="17E10FF5">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[19]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> MANZOOR S, MANZOOR M, MANZOOR H, et al. Which simulator to choose for next generation wireless network simulations? ns-3 or OMNeT++[J]. Engineering Proceedings, 2023, 46(1): 36.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="1AB59120">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[20]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> YIN H, LIU P, LIU K, et al. ns3-ai: fostering artificial intelligence algorithms for networking research[C]//Proceedings of the 2020 Workshop on ns-3. New York: ACM, 2020: 57-64.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="65982ED5">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[21]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> AL-HOURANI A, KANDEEPAN S, LARDNER S. Optimal LAP altitude for maximum coverage[J]. IEEE Wireless Communications Letters, 2014, 3(6): 569-572.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="5EF9FDF5">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[22]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> ZOLFANI S, YAZDANI M, PAMUCAR D, et al. A VIKOR and TOPSIS focused reanalysis of the MADM methods based on logarithmic normalization[J]. Facta Universitatis, Series: Mechanical Engineering, 2020, 18(3): 341-355.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="2176AA86">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[23]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> 赵雪圻, 崔玉波. 乒乓切换问题的区域用户预测研究[J]. 山东通信技术, 2022, 42(4): 40-42.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="023E3653">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t>ZHAO X Q, CUI Y B. Research on regional user prediction for ping-pong handover problem[J]. Shandong Communication Technology, 2022, 42(4): 40-42.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="1733459B">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[24]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> YU H, MA Y, YU J. Network selection algorithm for multiservice multimode terminals in heterogeneous wireless networks[J]. IEEE Access, 2019, 7: 46240-46260.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="25170CEE">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[25]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> TAN X, CHEN G, SUN H. Vertical handover algorithm based on multi-attribute and neural network in heterogeneous integrated network[J]. EURASIP Journal on Wireless Communications and Networking, 2020, 2020(1): 202.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="7E5AD7F6">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[26]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> PANAITOPOL D, JIN Y, TANG R, et al. Requirements on satellite access node and user equipment for non-terrestrial networks in 5G new radio of 3GPP Release-17[J]. International Journal of Satellite Communications and Networking, 2023, 41(3): 289-301.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="789F8B57">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[27]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> PATRICIELLO N, LAGEN S, BOJOVIC B, et al. An E2E simulator for 5G NR networks[J]. Simulation Modelling Practice and Theory, 2019, 96: 101933.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="418EC44A">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[28]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> RAPPAPORT T S. Wireless communications: principles and practice[M]. 2nd ed. Upper Saddle River: Prentice Hall, 2002.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="2D50800A">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[29]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> VASWANI A, SHAZEER N, PARMAR N, et al. Attention is all you need[C]//Advances in Neural Information Processing Systems 30. Red Hook: Curran Associates, 2017: 5998-6008.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="731986AB">
+      <w:pPr>
+        <w:ind w:left="397" w:hanging="397"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+          <w:vertAlign w:val="superscript"/>
+        </w:rPr>
+        <w:t>[30]</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="18"/>
+        </w:rPr>
+        <w:t xml:space="preserve"> HWANG C L, YOON K. Multiple attribute decision making: methods and applications[M]. Berlin: Springer-Verlag, 1981.</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="4DDB01C1">
+      <w:pPr>
+        <w:spacing w:before="240" w:after="120"/>
+        <w:jc w:val="left"/>
+      </w:pPr>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="黑体"/>
+          <w:b/>
+          <w:sz w:val="26"/>
+        </w:rPr>
+        <w:t>作者简介</w:t>
+      </w:r>
+    </w:p>
+    <w:p w14:paraId="641E677F">
+      <w:pPr>
+        <w:spacing w:before="0" w:after="200"/>
+        <w:jc w:val="both"/>
+      </w:pPr>
+      <w:r>
+        <w:t>苏文</w:t>
+      </w:r>
+      <w:r>
+        <w:rPr>
+          <w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:eastAsia="宋体"/>
+          <w:b w:val="0"/>
+          <w:sz w:val="21"/>
+        </w:rPr>
+        <w:t>（2006- ），男，成都理工大学本科生，主要研究方向：无人异构网络、智能垂直切换、网络仿真等。</w:t>
+      </w:r>
+    </w:p>
+    <w:sectPr>
+      <w:pgSz w:w="11906" w:h="16838"/>
+      <w:pgMar w:top="1361" w:right="1191" w:bottom="1361" w:left="1191" w:header="0" w:footer="0" w:gutter="0"/>
+      <w:pgNumType w:fmt="decimal"/>
+      <w:cols w:space="720" w:num="1"/>
+      <w:formProt w:val="0"/>
+      <w:docGrid w:linePitch="360" w:charSpace="4096"/>
+    </w:sectPr>
+  </w:body>
+</w:document>
