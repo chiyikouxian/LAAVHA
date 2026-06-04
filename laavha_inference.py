@@ -294,6 +294,70 @@ NET_NAMES = ["5G", "LTE", "WiFi"]
 
 
 # ---------------------------------------------------------------------------
+# 3b. Enhanced LAAVHA: adaptive hysteresis + risk-sensitive TOPSIS
+# ---------------------------------------------------------------------------
+
+def adaptive_hysteresis_params(sinr_history, velocity):
+    """Context-aware hysteresis: volatility raises threshold, speed shrinks window."""
+    if len(sinr_history) < 2:
+        return HYSTERESIS_THRESHOLD, HYSTERESIS_WINDOW
+    recent = np.array(sinr_history[-5:])
+    volatility = np.clip(np.std(recent) / 10.0, 0.0, 1.0)
+    threshold = 0.03 + 0.05 * volatility
+    speed_factor = np.clip(velocity / 30.0, 0.0, 1.0)
+    window = max(2, int(4 - 2 * speed_factor))
+    return threshold, window
+
+
+def risk_sensitive_topsis(D, weights, closeness_history, lam=0.5):
+    """Lower-confidence-bound ranking: penalize networks with volatile scores."""
+    C_current = thesis_topsis(D, weights)
+    if len(closeness_history) >= 3:
+        history = np.array(closeness_history[-5:])
+        C_std = np.std(history, axis=0)
+        C_robust = C_current - lam * C_std
+    else:
+        C_robust = C_current.copy()
+    return C_robust, C_current
+
+
+def laavha_enhanced_decision(S_pred, attention_weights, S_cur,
+                             current_net, hysteresis_state,
+                             sinr_history, closeness_history,
+                             velocity, risk_lambda=0.5):
+    """Enhanced LAAVHA: risk-sensitive TOPSIS + adaptive hysteresis."""
+    w = np.nan_to_num(attention_weights[0].detach().numpy())
+    D = build_fused_matrix(S_pred, S_cur)
+    C_robust, C_current = risk_sensitive_topsis(
+        D, w, closeness_history, risk_lambda)
+    closeness_history.append(C_current.copy())
+    threshold, window = adaptive_hysteresis_params(sinr_history, velocity)
+    candidate = int(np.argmax(C_robust))
+    serving = hysteresis_state.get("serving_net", current_net)
+    if serving != current_net and hysteresis_state.get("serving_net") is None:
+        serving = current_net
+    if C_robust[candidate] - C_robust[serving] > threshold:
+        if hysteresis_state.get("candidate") == candidate:
+            hysteresis_state["counter"] = hysteresis_state.get("counter", 0) + 1
+        else:
+            hysteresis_state["candidate"] = candidate
+            hysteresis_state["counter"] = 1
+        if hysteresis_state["counter"] >= window:
+            hysteresis_state["serving_net"] = candidate
+            hysteresis_state["counter"] = 0
+            hysteresis_state["candidate"] = None
+            target = candidate
+        else:
+            target = serving
+    else:
+        hysteresis_state["counter"] = 0
+        hysteresis_state["candidate"] = None
+        target = serving
+    hysteresis_state["serving_net"] = target
+    return target, C_current
+
+
+# ---------------------------------------------------------------------------
 # 4. Main loop
 # ---------------------------------------------------------------------------
 def main():
@@ -304,9 +368,9 @@ def main():
     )
     parser.add_argument(
         "--algorithm", default="laavha",
-        choices=["laavha", "topsis-q", "vikor", "gra", "copras", "spotis",
-                 "fuzzy-vho", "saw", "laavha-l", "laavha-a",
-                 "strongest-signal", "fixed"],
+        choices=["laavha", "laavha-enhanced", "topsis-q", "vikor", "gra",
+                 "copras", "spotis", "fuzzy-vho", "saw", "laavha-l",
+                 "laavha-a", "strongest-signal", "fixed"],
         help="Decision algorithm: laavha (full model), topsis-q, "
              "vikor/gra/copras/spotis (modern MADM), "
              "fuzzy-vho, saw, laavha-l, laavha-a, "
@@ -385,6 +449,8 @@ def main():
 
     # Per-algorithm hysteresis / persistent state
     hysteresis_state = {"serving_net": None, "counter": 0, "candidate": None}
+    enhanced_sinr_history = []
+    enhanced_closeness_history = []
 
     try:
         while True:
@@ -415,6 +481,19 @@ def main():
                 S_cur = x_status[:, :, -1, :]
                 target_net_id, closeness = laavha_decision_with_hysteresis(
                     S_pred, weights, S_cur, current_net, hysteresis_state
+                )
+                scores = closeness
+
+            elif args.algorithm == "laavha-enhanced":
+                with torch.no_grad():
+                    S_pred, weights = model(x_status, x_mob)
+                S_cur = x_status[:, :, -1, :]
+                sinr_serving = metrics.reshape(3, 10, 5)[current_net, -1, 0]
+                enhanced_sinr_history.append(float(sinr_serving))
+                target_net_id, closeness = laavha_enhanced_decision(
+                    S_pred, weights, S_cur, current_net, hysteresis_state,
+                    enhanced_sinr_history, enhanced_closeness_history,
+                    velocity, risk_lambda=0.5
                 )
                 scores = closeness
 
