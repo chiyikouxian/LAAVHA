@@ -1,6 +1,49 @@
 #!/usr/bin/env python3
-"""Apply all teacher feedback"""
+"""Fix algorithm naming: LAAVHA=base, ALERA=LAAVHA+ADH+RS-TOPSIS"""
 from docx import Document
+doc = Document('/home/suwen/reproduce/物联网学报_LAAVHA小论文.docx')
+
+# Fix intro P4: ALERA = LAAVHA + ADH + RS-TOPSIS
+for p in doc.paragraphs:
+    t = p.text
+    if '针对以上问题' in t and 'ALERA' in t and '基础之上' not in t:
+        for r in p.runs:
+            old = '提出注意力LSTM增强型风险感知垂直切换算法（ALERA），在LSTM预测与TOPSIS决策框架之上引入注意力机制与两阶段增强策略。'
+            new = '提出注意力LSTM增强型风险感知垂直切换算法（ALERA），即在基于长短期记忆神经网络和注意力机制的自适应垂直切换算法（LAAVHA）基础之上，引入自适应滞后（ADH）与风险敏感TOPSIS（RS-TOPSIS）两项增强机制。'
+            if old in r.text:
+                r.text = r.text.replace(old, new)
+                print('Fixed intro P4')
+                break
+        break
+
+# LAAVHA-enhanced -> ALERA
+cnt = 0
+for p in doc.paragraphs:
+    for r in p.runs:
+        if 'LAAVHA-enhanced' in r.text:
+            r.text = r.text.replace('LAAVHA-enhanced', 'ALERA')
+            cnt += 1
+for table in doc.tables:
+    for row in table.rows:
+        for cell in row.cells:
+            for p in cell.paragraphs:
+                for r in p.runs:
+                    if 'LAAVHA-enhanced' in r.text:
+                        r.text = r.text.replace('LAAVHA-enhanced', 'ALERA')
+                        cnt += 1
+print(f'LAAVHA-enhanced -> ALERA: {cnt}')
+
+# Fix section 2 heading (base algorithm chapter)
+for p in doc.paragraphs:
+    if 'ALERA自适应垂直切换算法' in p.text:
+        for r in p.runs:
+            if 'ALERA' in r.text:
+                r.text = r.text.replace('ALERA', 'LAAVHA')
+                print('Section 2: ALERA->LAAVHA')
+                break
+
+doc.save('/home/suwen/reproduce/物联网学报_LAAVHA小论文.docx')
+print('Saved')
 from lxml import etree
 
 doc = Document('/home/suwen/reproduce/物联网学报_LAAVHA小论文.docx')
