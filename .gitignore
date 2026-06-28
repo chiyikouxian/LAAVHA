@@ -1,17 +1,34 @@
-.venv/
+# LaTeX auxiliary files
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex*
+*.toc
+*.lof
+*.lot
+*.nav
+*.snm
+*.vrb
+
+# Backup files
+*.bak*
+*.backup
+*~
+
+# Python cache
 __pycache__/
 *.pyc
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
+*.pyo
+
+# OS files
 .DS_Store
+Thumbs.db
 
-.agents/
-.claude/
-.codex/
-
-build/
-cmake-build-*/
-*.pcap
-*.flowmon
-*.log
+# Temp files
+/tmp/
+*.tmp
+*.swp
