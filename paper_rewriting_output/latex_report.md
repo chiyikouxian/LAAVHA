@@ -30,6 +30,10 @@
 - Annotated `plots_chapter3_v2/fig_adaptive_hysteresis_proof.png` with A-D row labels and A->B/B->A switch labels while preserving the original curves.
 - Converted prose literature citations from inline `[n]` style to superscript citation markers via `\upcite{...}`; math intervals, vector notation, author affiliations, and bibliography entry types were left unchanged.
 - Final read-through fix: aligned the English abstract with the manuscript's `0--2` handover-count range and polished the Chinese/English abstract wording for ALERA formation.
+- Strengthened the input/output linkage across Sections 1--2.5: `S_i(t)` now explicitly feeds `S_cur` and `X_k`, LSTM outputs `S_pred`, Attention outputs `w`, TOPSIS outputs `C_i`, and ADH/RS-TOPSIS feed those outputs into the final decision.
+- Added detailed symbol explanations for Section 2.3 formulas, including normalization variables, candidate/attribute indices, TOPSIS ideal solutions, distance terms, closeness score, and hysteresis decision symbols.
+- Reordered Section 3.1 tables so the experiment-parameter table appears before the comparison-algorithm paragraph; table numbering now places experiment parameters before metric sources.
+- Rewrote the conclusion to synthesize the full LAAVHA-to-ALERA pipeline, comparison results, ablation findings, enhanced-mechanism validation, and decision-level validation limitations.
 
 ## Compilation
 
@@ -38,7 +42,7 @@
 - Runs: 2
 - Status: passed
 - Output PDF: `manuscript_cn.pdf`
-- PDF pages: 18
+- PDF pages: 21
 
 ## Remaining Warnings
 
