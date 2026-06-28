@@ -31,6 +31,7 @@
 \usepackage{multirow}
 \usepackage{makecell}
 \usepackage{xcolor}
+\graphicspath{{./plots_chapter3_v2/}}
 
 %=================================================================
 % Title
@@ -229,5 +230,87 @@ RS-TOPSIS (2.4.2) & In: 5-round $C_i$ history \newline Out: $C_i^{\text{robust}}
 \end{table}
 
 Total end-to-end complexity: $O(R \cdot K^2 \cdot d)$, where $R = 3$ (candidate networks), $K = 10$ (time window length), $d = 5$ (state dimension), $h = 128$ (LSTM hidden size).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Simulation Experiments and Results}
+\label{sec:experiments}
+
+\subsection{Experimental Platform and Parameter Settings}
+\label{sec:setup}
+
+To validate the effectiveness of the ALERA decision pipeline, a co-simulation platform is built on ns-3.45~\cite{ref19} and ns3-ai~\cite{ref20}. The simulation side periodically collects candidate-network metrics and writes them to shared memory; the Python side loads the pre-trained LAAVHA model to perform inference. The model input is a 150-dimensional vector consisting of five normalized indicators for each of the three candidate networks (5G, LTE, WiFi). Fifty random seeds (200--249) are used to emulate UAV remote sensing cruise missions starting from different initial positions and altitudes. Each run lasts 10~s with a decision period of $\tau = 0.1$~s, producing 100 decisions per run. To approximate real flight position bias and altitude jitter, position perturbation ($\pm 30$~m) and altitude perturbation ($\pm 10$~m) are enabled. Besides LAAVHA and ALERA, the experiments include eight baseline algorithms -- TOPSIS-Q, Fuzzy-VHO, SAW, VIKOR, GRA, COPRAS, SPOTIS, and the strongest-signal method -- and two ablation variants LAAVHA-L and LAAVHA-A, yielding $11 \times 50 = 550$ independent runs in total.
+
+\subsection{Cross-Algorithm Comparison}
+\label{sec:compare}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{fig_handover_count_by_algorithm.png}
+\caption{Average handover count of 11 algorithms (mean $\pm$ std, $n = 50$).}
+\label{fig:ho_comparison}
+\end{figure}
+
+As shown in Figure~\ref{fig:ho_comparison}, across the 50 random scenarios, LAAVHA achieves the lowest average handover count of $0.24$ among all algorithms. Among the baselines, the strongest-signal method averages $1.58$ handovers (std $= 0.49$), SAW averages $2.00$ (std $= 0.00$), TOPSIS-Q averages $4.04$ (std $= 1.17$), Fuzzy-VHO averages $8.64$ (std $= 1.11$), VIKOR averages $13.52$ (std $= 6.27$), GRA averages $19.24$ (std $= 1.32$), SPOTIS averages $23.88$ (std $= 3.24$), and COPRAS averages $25.88$ (std $= 1.23$). The ablation variants LAAVHA-L and LAAVHA-A average $1.08$ and $2.00$ handovers respectively, both higher than the full LAAVHA, indicating the critical contribution of temporal prediction and dynamic weighting to decision stability.
+
+\subsection{Decision-Process Comparison of Representative Algorithms}
+\label{sec:scoring}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{fig_scoring_timeline_comparison.png}
+\caption{Closeness scores and SINR time series of LAAVHA / TOPSIS-Q / Fuzzy-VHO under seed = 200.}
+\label{fig:scoring}
+\end{figure}
+
+Figure~\ref{fig:scoring} compares the decision processes of three algorithms under the same random seed in a $2 \times 3$ layout. The upper row shows the closeness scores of the three candidate networks while the lower row shows their SINR; the red vertical dashed lines mark handover events. LAAVHA keeps the 5G closeness consistently above $0.99$ throughout the cruise and, with the help of the dual hysteresis mechanism, triggers no handover at all. TOPSIS-Q switches several times when the WiFi closeness approaches the 5G closeness, and Fuzzy-VHO produces multiple handovers because its fuzzy rules are sensitive to SINR fluctuations.
+
+\subsection{Ablation Study}
+\label{sec:ablation}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{fig_laavha_handover_count.png}
+\caption{Ablation study: contribution of the LSTM and attention modules ($n = 50$).}
+\label{fig:ablation}
+\end{figure}
+
+To quantify the contribution of the LSTM prediction module and the attention dynamic-weight module to decision quality, an ablation study is conducted. LAAVHA-L removes the LSTM prediction branch, and LAAVHA-A removes the attention-based dynamic-weight branch. As shown in Figure~\ref{fig:ablation}, the full LAAVHA averages only $0.24$ handovers (std $= 0.43$); LAAVHA-L averages $1.08$ handovers (std $= 1.01$), degrading to passive reactive decisions once temporal prediction is removed; LAAVHA-A averages $2.00$ handovers (std $= 0.00$), with all 50 runs producing exactly two handovers. The attention module shows the most pronounced effect (average handover count rising from $0.24$ to $2.00$, an eight-fold increase), confirming that dynamic weight adjustment plays an irreplaceable role in differentiating the network requirements of different flight phases.
+
+\subsection{Enhancement-Mechanism Validation}
+\label{sec:enhanced-validation}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{fig_adaptive_hysteresis_proof.png}
+\caption{Adaptive-hysteresis validation: fixed low threshold ($0.03$) vs.\ ALERA under $\pm 20$~dB SINR oscillation.}
+\label{fig:enhanced}
+\end{figure}
+
+A synthetic competitive scenario is constructed to validate the two enhancement mechanisms. Networks A (analogous to 5G) and B (analogous to WiFi) have closeness scores oscillating around $0.50$: Zone~1 ($t = 5 \sim 8$~s) represents genuine degradation, while Zone~2 ($t = 12 \sim 15$~s) represents transient fluctuation. As shown in Figure~\ref{fig:enhanced}, the fixed-low-threshold scheme triggers four handovers in total -- besides the one correct handover in Zone~1, two false handovers plus one ping-pong are observed inside Zone~2. With the joint effect of adaptive hysteresis and the risk penalty, ALERA triggers only two handovers, both located in Zone~1 and right after Zone~2 ends -- no false handover occurs inside Zone~2. During the Zone~2 oscillation, the adaptive threshold automatically rises from $0.03$ to about $0.09$, much higher than the fixed baseline of $0.03$, and smoothly returns to $0.03$ after the fluctuation subsides.
+
+\begin{table}[h]
+\caption{Handover-count comparison before and after enhancement.}
+\label{tab:enhanced}
+\centering
+\begin{tabular}{lccc}
+\toprule
+\textbf{Scheme} & \textbf{Mean handovers} & \textbf{Std} & \textbf{Final network} \\
+\midrule
+LAAVHA & 0.24 & 0.43 & 5G (50/50) \\
+ALERA  & 0.22 & 0.42 & 5G (50/50) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The two mechanisms govern \emph{when to switch} and \emph{which network to switch to} respectively, granting the algorithm channel-fluctuation awareness without modifying the model structure.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusions}
+\label{sec:conclusion}
+
+Targeting the multi-network handover requirements of wide-area UAV remote sensing cruise, this paper proposes LAAVHA -- an adaptive vertical handover method based on LSTM and attention -- and further introduces adaptive hysteresis (ADH) and risk-sensitive TOPSIS (RS-TOPSIS) on top of it. The method realizes candidate-network evaluation and handover decision through a four-layer architecture of ``temporal prediction $\rightarrow$ dynamic weighting $\rightarrow$ improved TOPSIS $\rightarrow$ dual hysteresis''. The enhancement mechanisms add context-aware hysteresis parameters and a lower-confidence-bound risk penalty, lifting the channel-fluctuation adaptability of the algorithm without retraining the model. Decision-level experiments on ns-3.45 and ns3-ai (11 algorithms $\times$ 50 seeds $= 550$ independent runs) show that LAAVHA reaches the lowest mean handover count of $0.24$ (std $= 0.43$) among all baselines -- compared with TOPSIS-Q ($4.04$), Fuzzy-VHO ($8.64$), SAW ($2.00$), VIKOR ($13.52$), GRA ($19.24$), COPRAS ($25.88$), SPOTIS ($23.88$), and the strongest-signal method ($1.58$). The ablation variants LAAVHA-L ($1.08$) and LAAVHA-A ($2.00$) confirm the synergistic contribution of the two modules. Enhancement-mechanism validation further shows that adaptive hysteresis can automatically raise the switching threshold during channel oscillation to suppress ping-pong, and risk-sensitive TOPSIS biases the ranking toward historically more stable networks under closeness competition. Current experiments still have limitations: the 5G candidate is represented by a point-to-point proxy link rather than a real NR protocol stack, and handover events are decision-level records rather than protocol-layer attach/detach. Future work will integrate a real 5G NR module together with protocol-level handover execution and conduct full performance verification and parameter tuning for LAAVHA and ALERA under diverse channel conditions and remote sensing mission profiles.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliography{references}
 
 \end{document}

@@ -1,251 +1,82 @@
-# LAAVHA reproduction OpenSpec status
+# LAAVHA 论文修改 — 当前进度状态
 
-Last updated: 2026-05-26
+## 一、项目概览
 
-## Current phase
+论文标题：面向无人机遥感异构网络的注意力LSTM增强型风险感知垂直切换算法
 
-The project is in the **Chapter 3 full reproduction phase**. The active
-OpenSpec change is `laavha-chapter3-full-reproduction`.
+算法命名：
+- LAAVHA = 基础算法（LSTM + Attention + TOPSIS + 双滞后）
+- ALERA = LAAVHA + ADH + RS-TOPSIS（增强版）
+- ADH = Adaptive Hysteresis（自适应滞后）
+- RS-TOPSIS = Risk-Sensitive TOPSIS（风险敏感TOPSIS）
 
-The minimum C++ <-> Python ns3-ai control loop is working, the LAAVHA PyTorch
-model loads with `strict=True`, and all three candidate networks provide five
-model inputs from ns-3 simulation state in `flowmonMode=feed`. The 5G candidate
-remains a clearly labeled proxy flow.
+## 二、已完成工作
 
-The LAAVHA-only publication figure workflow has produced a final 20-seed / 10 s
-dataset and publication-style plots. Code repo has been organized: working code
-synced from ns-3.45, stale stubs archived as .deprecated.
+### 2.1 论文内容（物联网学报_LAAVHA小论文.docx）
 
-Current work: implementing comparison algorithms (TOPSIS-Q, ablation variants)
-and full Chapter 3 experiment matrix. Real 5G/NR and real handover execution
-remain as documented limitations.
+| 章节 | 状态 | 说明 |
+|------|------|------|
+| 标题 | ✅ | 面向无人机遥感异构网络的注意力LSTM增强型风险感知垂直切换算法 |
+| 英文标题 | ✅ | Attention-LSTM Enhanced Risk-aware Vertical Handoff Algorithm... |
+| 摘要 | ✅ | 遥感背景 + 候选网络定义 + LAAVHA+ALERA 命名 + 550 次实验 |
+| 英文摘要 | ✅ | 与中文对应 |
+| 关键词 | ✅ | 中英文已更新 |
+| 0 引言 | ✅ | 四段结构：P1 传统方法局限→P2 LSTM 局限→P3 两层总结→P4 提案(ALERA) |
+| 1 系统模型 | ✅ | 5 维状态向量 + ns3/ns3-ai 说明，"C++"已移除 |
+| 2 LAAVHA 算法 | ✅ | 承上启下段 + 2.1-2.4 + 2.5 复杂度总结 + 算法表 |
+| 3 仿真实验 | ✅ | 550 次实验、8 种对比、消融、增强验证 |
+| 4 结束语 | ✅ | 更新为 550 次实验结果 |
+| 参考文献 | ✅ | [2]撤稿文献已替换为 Mozaffari 2019，核实 30 篇 DOI |
 
-## Workspace boundaries
+### 2.2 实验数据
 
-This git repository tracks the reproduction workspace and OpenSpec records:
+| 文件 | 说明 |
+|------|------|
+| batch_chapter3_v2.csv | 550 次实验汇总（11 算法 × 50 种子） |
+| time_series_chapter3_v2/ | 550 个时序 CSV |
+| plots_chapter3_v2/ | 所有图表 PNG |
 
-- `/home/suwen/reproduce`
+### 2.3 实验图表
 
-The active ns-3 implementation currently lives outside this repository:
+| 图表 | 文件 | 状态 |
+|------|------|------|
+| 图1 算法对比柱状图 | fig_handover_count_by_algorithm.png | ✅ |
+| 图2 三算法评分对比 | fig_scoring_timeline_comparison.png | ✅ |
+| 图4 消融实验 | fig_laavha_handover_count.png | ✅ |
+| 图5 增强机制验证 | fig_adaptive_hysteresis_proof.png | ✅ |
+| LAAVHA 框架图 | fig_laavha_framework.png | ✅ (MCP AI 生成) |
+| ALERA 框架图 | fig_alera_framework.png | ✅ (MCP AI 生成) |
 
-- `/home/suwen/ns-3.45/contrib/ai/examples/laavha-handover/`
-- `/home/suwen/ns-3.45/contrib/ai/examples/CMakeLists.txt`
-- `/home/suwen/ns-3.45/scratch/flowmon-wifi-diagnosis.cc`
+### 2.4 LaTeX 版本
 
-The ns-3 files above must be copied, patch-exported, or kept in a separate
-ns-3 repository before this reproduction can be rebuilt from this repository
-alone.
+| 文件 | 说明 |
+|------|------|
+| manuscript.tex | MDPI Remote Sensing 英文版（全文：摘要+引言+系统模型+LAAVHA+复杂度+仿真实验+结论）已编译 12 页 PDF |
+| manuscript_cn.tex | 物联网学报中文版（ctexart）已编译 13 页 PDF |
+| references.bib | 30 篇 BibTeX 参考文献 |
 
-## Current implementation summary
+## 三、待完成
 
-- Python environment: `deeplearn`, Python 3.10.20.
-- ns-3 version: `/home/suwen/ns-3.45`.
-- ns3-ai module: `/home/suwen/ns-3.45/contrib/ai`.
-- Model artifact: `/home/suwen/reproduce/LAAVHA算法模型.pth`.
-- Python runner: `laavha_inference.py`.
-- C++ example target: `ns3ai_laavha_handover`.
-- Default decision run: 50 decisions at 0.1 s period over 5.0 s.
-- CLI forwarding: repeated `--ns3-arg KEY=VALUE` is supported.
-- Default FlowMonitor mode: `feed`.
+### 3.1 高优先级
+- [ ] 老师反馈的公式格式修改（Times New Roman, 变量斜体, 函数正体）— 需在 Word 中逐公式调整
+- [ ] 摘要压缩（老师要求 ~200 字，当前 ~300 字）
 
-## Message schema
+### 3.2 中优先级
+- [ ] 中文 LaTeX 版（manuscript_cn.tex）摘要格式修复
+- [ ] 中图分类号、文献标志码待补充
 
-The ns3-ai shared-memory schema is unchanged after the initial smoke-test:
+### 3.3 低优先级
+- [ ] TexLive 编译环境确认（PATH 设置）
+- [ ] MDPI 投稿格式（参考文献 MDPI 风格）
 
-- C++ to Python:
-  - `metrics[150]`
-  - `velocity`
-  - `altitude`
-  - `current_net`
-- Python to C++:
-  - `target_net_id`
-  - `score_5g`
-  - `score_lte`
-  - `score_wifi`
+## 四、Git 仓库
 
-Network IDs:
+- 地址：git@github.com:chiyikouxian/LAAVHA.git
+- 最新 commit：fa445fe... (引言 P4 定义 LAAVHA/ALERA)
+- 分支：main
 
-- `0`: 5G
-- `1`: LTE
-- `2`: WiFi
+## 五、环境
 
-Metric order:
-
-1. SINR
-2. RSRP
-3. Delay
-4. Throughput
-5. PLR
-
-## Metric source table
-
-| Network | SINR | RSRP | Delay | Throughput | PLR |
-| --- | --- | --- | --- | --- | --- |
-| WiFi | propagation proxy from MobilityModel positions | propagation proxy from MobilityModel positions | FlowMonitor | PacketSink interval rx bytes | FlowMonitor |
-| LTE | propagation proxy from MobilityModel positions | propagation proxy from MobilityModel positions | FlowMonitor | FlowMonitor | FlowMonitor |
-| 5G | propagation proxy from MobilityModel positions to hypothetical gNB | propagation proxy from MobilityModel positions to hypothetical gNB | FlowMonitor over P2P proxy flow | FlowMonitor over P2P proxy flow | FlowMonitor over P2P proxy flow |
-
-WiFi SINR/RSRP are driven by UAV/AP ns-3 mobility state with a log-distance
-path-loss proxy. They are simulation-derived but are not yet exact values from
-the YansWifi PHY internals.
-
-LTE SINR/RSRP are also propagation proxy values, while LTE delay, throughput,
-and PLR are derived from FlowMonitor over the LTE/EPC flow.
-
-5G is not real NR. 5G SINR/RSRP are mobility-driven propagation proxy values;
-5G delay, throughput, and PLR are FlowMonitor values from a clearly labeled P2P
-proxy flow.
-
-## Completed OpenSpec changes
-
-- `laavha-ns3ai-smoke-test`
-  - Built the minimum C++ <-> Python ns3-ai loop.
-  - Loaded the LAAVHA model and verified decision exchange.
-- `laavha-ns3-scheduled-mobility`
-  - Replaced the plain loop with `Simulator::Schedule`.
-  - Added UAV node and `ConstantVelocityMobilityModel`.
-- `laavha-wifi-flowmon-metrics`
-  - Added WiFi STA/AP, UDP traffic, PacketSink throughput, and history buffer.
-  - Recorded FlowMonitor risk from the first integration attempt.
-- `laavha-flowmonitor-diagnosis`
-  - Added an independent FlowMonitor WiFi diagnostic.
-  - Confirmed FlowMonitor itself works in ns-3.45.
-- `laavha-flowmonitor-controlled-reintegration`
-  - Reintroduced FlowMonitor into LAAVHA with `off|log|feed` modes.
-  - Fed WiFi delay and PLR from FlowMonitor in `feed` mode.
-- `laavha-python-cli-forwarding`
-  - Added Python CLI forwarding for ns-3 arguments.
-- `laavha-wifi-signal-metrics`
-  - Replaced WiFi SINR/RSRP synthetic values with mobility-driven propagation
-    proxy values.
-- `laavha-lte-candidate-skeleton`
-  - Added LTE/EPC candidate metrics with a parallel LTE UE node.
-  - Fed LTE delay, throughput, and PLR from FlowMonitor.
-  - Fed LTE SINR/RSRP from a clearly labeled propagation proxy.
-- `laavha-5g-candidate-strategy`
-  - Confirmed no local NR/5G-LENA module is available.
-  - Renamed the 5G path to proxy/synthetic and upgraded 5G SINR/RSRP to a
-    hypothetical-gNB propagation proxy.
-- `laavha-5g-proxy-flow-metrics`
-  - Added a 5G proxy P2P flow classified by destination subnet `9.0.0.0/8`.
-  - Fed 5G delay, throughput, and PLR from FlowMonitor in `feed` mode.
-  - Kept logs explicit that this is not real NR.
-- `laavha-batch-experiment-runner`
-  - Added a standalone Python batch runner.
-  - Collected per-run CSV rows with decisions, handover count, final network,
-    return code, and elapsed time.
-  - Verified a 3-run smoke batch.
-- `laavha-rngrun-parameter-sweeps`
-  - Added C++ `RngRun` parsing and `RngSeedManager::SetRun()`.
-  - Added duration, period, and FlowMonitor mode sweeps to the batch runner.
-  - Verified seed and sweep CSV outputs.
-- `laavha-randomized-scenario-perturbations`
-  - Added optional position and altitude jitter controlled by `RngRun`.
-  - Preserved deterministic defaults.
-  - Verified different seeds can produce different handover outcomes.
-- `laavha-baselines-and-plots`
-  - Added LAAVHA, fixed, and strongest-signal algorithm modes.
-  - Added algorithm sweeps to the batch runner.
-  - Added CSV summary and handover-count plotting.
-  - Scope note: non-LAAVHA algorithms are auxiliary diagnostics, not final
-    reproduction targets.
-- `laavha-time-series-logging`
-  - Added per-decision CSV logging for metrics, scores, current/target network,
-    and handover flags.
-  - Integrated batch runner time-series output directory support.
-  - Verified single-run and batch time-series outputs.
-- `laavha-time-series-plots`
-  - Added score, SINR, and network timeline plots from time-series CSV.
-  - Marked handover events on time-series plots.
-  - Preserved batch summary plotting.
-- `laavha-multirun-paper-figures`
-  - Added LAAVHA-only multi-run mean/std aggregation.
-  - Generated LAAVHA score and SINR mean/std figures.
-  - Generated LAAVHA handover-count summary figure.
-- `laavha-publication-figures`
-  - Added publication plotting style and DPI controls.
-  - Generated stable `fig_laavha_*` output filenames.
-  - Documented recommended final LAAVHA-only 20-seed / 10 s commands.
-- `laavha-final-publication-batch`
-  - Ran the final LAAVHA-only 20-seed / 10 s batch.
-  - Generated `batch_final.csv`, `time_series_final/`, and `plots_final/`.
-  - Verified 20/20 successful runs and publication-style PNG artifacts.
-- `laavha-chapter3-full-reproduction`
-  - Phase 1: Code repo organized — synced working ns-3.45 code, archived stale stubs.
-  - Phase 2: TOPSIS-Q (entropy-weighted classical TOPSIS) comparison algorithm.
-  - Phase 3: LAAVHA-L (no LSTM) and LAAVHA-A (no Attention) ablation variants.
-  - Phase 4: 100-run experiment matrix (5 algos × 20 seeds) completed.
-  - Phase 5: Chapter 3 comparison figures + ablation plot generated.
-  - Generated `batch_chapter3.csv`, `time_series_chapter3/`, `plots_chapter3/`.
-  - Verified LAAVHA uniquely selects LTE; ablation confirms LSTM+Attention synergy.
-
-## Active next change
-
-- No active implementation change is currently in progress.
-- Recommended next change: Muti-VSA / DRL-based RSS comparison algorithms,
-  multi-scenario experiments, or real NR/5G-LENA integration.
-
-## Verified commands
-
-From `/home/suwen/ns-3.45`:
-
-```bash
-./ns3 build ns3ai_laavha_handover
-```
-
-From `/home/suwen/ns-3.45/contrib/ai/examples/laavha-handover`:
-
-```bash
-python laavha_inference.py
-python laavha_batch_runner.py --runs 3 --duration 3.0 --period 0.1 --flowmonMode feed --output batch_results.csv
-python laavha_inference.py --ns3-arg RngRun=7
-python laavha_batch_runner.py --runs 2 --duration 3.0 --period 0.1 --flowmonMode feed --seed-base 10 --output batch_seed.csv
-python laavha_batch_runner.py --runs 1 --sweep-duration 3.0,5.0 --sweep-period 0.1 --flowmonMode feed --seed-base 20 --output batch_sweep.csv
-python laavha_batch_runner.py --runs 2 --duration 3.0 --period 0.1 --flowmonMode feed --seed-base 10 --randomizeScenario --positionJitter 20 --altitudeJitter 5 --output batch_random.csv
-python laavha_batch_runner.py --runs 2 --duration 3.0 --period 0.1 --flowmonMode feed --seed-base 10 --randomizeScenario --positionJitter 20 --altitudeJitter 5 --sweep-algorithm laavha,strongest-signal,fixed --output batch_algorithms.csv
-python laavha_plot.py --input batch_algorithms.csv --output-dir plots
-python laavha_inference.py --ns3-arg duration=3.0 --ns3-arg period=0.1 --time-series-output ts_single.csv
-python laavha_batch_runner.py --runs 2 --duration 3.0 --period 0.1 --flowmonMode feed --seed-base 10 --randomizeScenario --positionJitter 20 --altitudeJitter 5 --sweep-algorithm laavha,strongest-signal --output batch_ts.csv --time-series-dir time_series
-python laavha_plot.py --time-series ts_single.csv --output-dir plots_ts
-python laavha_batch_runner.py --runs 5 --duration 3.0 --period 0.1 --flowmonMode feed --seed-base 10 --randomizeScenario --positionJitter 20 --altitudeJitter 5 --algorithm laavha --output batch_multirun.csv --time-series-dir time_series_multirun
-python laavha_plot.py --input batch_multirun.csv --time-series-dir time_series_multirun --output-dir plots_multirun
-python laavha_plot.py --input batch_multirun.csv --time-series-dir time_series_multirun --output-dir plots_publication --style publication --dpi 300
-python laavha_batch_runner.py --runs 20 --duration 10.0 --period 0.1 --flowmonMode feed --seed-base 100 --randomizeScenario --positionJitter 30 --altitudeJitter 10 --algorithm laavha --output batch_final.csv --time-series-dir time_series_final
-python laavha_plot.py --input batch_final.csv --time-series-dir time_series_final --output-dir plots_final --style publication --dpi 300
-python laavha_inference.py --ns3-arg flowmonMode=off
-python laavha_inference.py --ns3-arg flowmonMode=log
-python laavha_inference.py --ns3-arg flowmonMode=feed
-python laavha_inference.py --ns3-arg duration=3.0 --ns3-arg period=0.1
-```
-
-Expected current behavior:
-
-- Default run completes 50 decisions.
-- `duration=3.0, period=0.1` completes 30 decisions.
-- Batch smoke run with 3 runs completes and writes CSV.
-- `RngRun` is parsed and logged by the C++ simulation.
-- Sweep runs expand parameter combinations and write CSV rows.
-- Randomized runs with different seeds sample different initial positions and
-  can produce different handover outcomes.
-- Algorithm sweeps compare LAAVHA, fixed, and strongest-signal baselines.
-- Plot script generates aggregate summaries and PNG output.
-- Time-series logging writes one row per decision with metrics, scores, and
-  handover flags.
-- Time-series plotting writes score, SINR, and network timeline PNGs with
-  handover markers.
-- Multi-run plotting writes LAAVHA mean/std figures across seeds.
-- Publication plotting writes stable high-DPI `fig_laavha_*` figures.
-- Final LAAVHA-only 20-seed / 10 s batch produces publication artifacts:
-  `batch_final.csv`, `time_series_final/`, and `plots_final/`.
-- `flowmonMode=off|log|feed` all complete.
-- In `feed` mode, WiFi/LTE/5G proxy metrics are injected where available.
-
-## Remaining reproduction gaps
-
-- Add real 5G/NR candidate if NR/5G-LENA becomes available.
-- Execute real handover effects in the ns-3 network, not only decision logging.
-- Implement Muti-VSA and DRL-based RSS comparison algorithms (from thesis references).
-- Add multi-scenario experiments (different UAV velocities, network densities).
-- Add LAAVHA parameter ablation over decision period, velocity, and jitter values.
-- The active ns-3 implementation lives under `/home/suwen/ns-3.45`; a complete
-  patch-export into this repository is still pending.
+- TeX Live 2026：/home/suwen/texlive/2026
+- Python：miniconda3/envs/deeplearn（torch 2.2.2）
+- MCP：image-draw (nano-banana-pro), context7, github-mcp

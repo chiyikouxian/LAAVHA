@@ -1,0 +1,145 @@
+\begin{thebibliography}{999}
+
+\bibitem[Yang et~al.(2025)Yang, Wang, Gao, et~al.]{ref1}
+Yang, K.; Wang, Y.; Gao, X.;  et~al.
+\newblock Communications in space-air-ground integrated networks: an overview.
+\newblock {\em Space: Science \& Technology} {\bf 2025}, {\em 5},~0199.
+\newblock {\url{https://doi.org/10.34133/space.0199}}.
+
+\bibitem[Mozaffari et~al.(2019)Mozaffari, Saad, Bennis, Nam, and Debbah]{ref2}
+Mozaffari, M.; Saad, W.; Bennis, M.; Nam, Y.H.; Debbah, M.
+\newblock A tutorial on {UAV}s for wireless networks: applications, challenges,
+  and open problems.
+\newblock {\em IEEE Communications Surveys \& Tutorials} {\bf 2019}, {\em
+  21},~2334--2360.
+\newblock {\url{https://doi.org/10.1109/COMST.2019.2902862}}.
+
+\bibitem[Ribeiro et~al.(2021)Ribeiro, M\"{u}ller, and Becker]{ref3}
+Ribeiro, L.M.B.; M\"{u}ller, I.; Becker, L.B.
+\newblock Communication interface manager for improving performance of
+  heterogeneous {UAV} networks.
+\newblock {\em Sensors} {\bf 2021}, {\em 21},~4255.
+\newblock {\url{https://doi.org/10.3390/s21134255}}.
+
+\bibitem[Ayass et~al.(2022)Ayass, Coqueiro, Carvalho, Jailton, Ara\'{u}jo, and
+  Franc\^{e}s]{ref4}
+Ayass, T.; Coqueiro, T.; Carvalho, T.; Jailton, J.; Ara\'{u}jo, J.;
+  Franc\^{e}s, R.
+\newblock Unmanned aerial vehicle with handover management fuzzy system for
+  {5G} networks: challenges and perspectives.
+\newblock {\em Intelligence \& Robotics} {\bf 2022}, {\em 2},~20--36.
+\newblock {\url{https://doi.org/10.20517/ir.2021.07}}.
+
+\bibitem[Goutam et~al.(2020)Goutam, Unnikrishnan, and Karandikar]{ref7}
+Goutam, S.; Unnikrishnan, S.; Karandikar, A.
+\newblock Algorithm for handover decision based on {TOPSIS}.
+\newblock In Proceedings of the 2020 IEEE International Conference on
+  Communication, Networks and Satellite (Comnetsat),  2020, pp. 306--313.
+\newblock {\url{https://doi.org/10.1109/comnetsat50391.2020.9328929}}.
+
+\bibitem[Xiao and Li(2018)]{ref8}
+Xiao, K.Y.; Li, C.G.
+\newblock Vertical handoff decision algorithm for heterogeneous wireless
+  networks based on entropy and improved {TOPSIS}.
+\newblock In Proceedings of the 2018 IEEE 18th International Conference on
+  Communication Technology,  2018, pp. 706--710.
+\newblock {\url{https://doi.org/10.1109/icct.2018.8600008}}.
+
+\bibitem[Zolfani et~al.(2020)Zolfani, Yazdani, Pamucar, et~al.]{ref22}
+Zolfani, S.; Yazdani, M.; Pamucar, D.;  et~al.
+\newblock A {VIKOR} and {TOPSIS} focused reanalysis of the {MADM} methods based
+  on logarithmic normalization.
+\newblock {\em Facta Universitatis, Series: Mechanical Engineering} {\bf 2020},
+  {\em 18},~341--355.
+\newblock {\url{https://doi.org/10.22190/fume191129016z}}.
+
+\bibitem[Satapathy and Mahapatro(2022)]{ref10}
+Satapathy, P.; Mahapatro, J.
+\newblock An efficient multicriteria-based vertical handover decision-making
+  algorithm for heterogeneous networks.
+\newblock {\em Transactions on Emerging Telecommunications Technologies} {\bf
+  2022}, {\em 33},~e4409.
+\newblock {\url{https://doi.org/10.1002/ett.4409}}.
+
+\bibitem[Dantas~Silva et~al.(2024)Dantas~Silva, Lima, Corujo, et~al.]{ref11}
+Dantas~Silva, F.S.; Lima, M.P.S.; Corujo, D.;  et~al.
+\newblock A comprehensive step-wise survey of multiple attribute
+  decision-making mobility approaches.
+\newblock {\em IEEE Access} {\bf 2024}, {\em 12},~108616--108656.
+\newblock {\url{https://doi.org/10.1109/access.2024.3436074}}.
+
+\bibitem[Tan et~al.(2022)Tan, Bremner, Le~Kernec, et~al.]{ref12}
+Tan, K.; Bremner, D.; Le~Kernec, J.;  et~al.
+\newblock Intelligent handover algorithm for vehicle-to-network communications
+  with double-deep {Q}-learning.
+\newblock {\em IEEE Transactions on Vehicular Technology} {\bf 2022}, {\em
+  71},~7848--7862.
+\newblock {\url{https://doi.org/10.1109/tvt.2022.3169804}}.
+
+\bibitem[Jang et~al.(2022)Jang, Raza, Kim, et~al.]{ref13}
+Jang, Y.; Raza, S.M.; Kim, M.;  et~al.
+\newblock Proactive handover decision for {UAVs} with deep reinforcement
+  learning.
+\newblock {\em Sensors} {\bf 2022}, {\em 22},~1200.
+\newblock {\url{https://doi.org/10.3390/s22031200}}.
+
+\bibitem[Zaid et~al.(2024)Zaid, Kadir, Shayea, et~al.]{ref14}
+Zaid, M.; Kadir, M.K.A.; Shayea, I.;  et~al.
+\newblock Machine learning-based approaches for handover decision of
+  cellular-connected drones in future networks: a comprehensive review.
+\newblock {\em Engineering Science and Technology, an International Journal}
+  {\bf 2024}, {\em 55},~101732.
+\newblock {\url{https://doi.org/10.1016/j.jestch.2024.101732}}.
+
+\bibitem[Hochreiter and Schmidhuber(1997)]{ref15}
+Hochreiter, S.; Schmidhuber, J.
+\newblock Long short-term memory.
+\newblock {\em Neural Computation} {\bf 1997}, {\em 9},~1735--1780.
+\newblock {\url{https://doi.org/10.1162/neco.1997.9.8.1735}}.
+
+\bibitem[Kaur et~al.(2022)Kaur, Goyal, and Mehta]{ref16}
+Kaur, G.; Goyal, R.K.; Mehta, R.
+\newblock An efficient handover mechanism for {5G} networks using hybridization
+  of {LSTM} and {SVM}.
+\newblock {\em Multimedia Tools and Applications} {\bf 2022}, {\em
+  81},~37057--37085.
+\newblock {\url{https://doi.org/10.1007/s11042-021-11510-x}}.
+
+\bibitem[Mollel et~al.(2021)Mollel, Abubakar, Ozturk, et~al.]{ref17}
+Mollel, M.S.; Abubakar, A.I.; Ozturk, M.;  et~al.
+\newblock A survey of machine learning applications to handover management in
+  {5G} and beyond.
+\newblock {\em IEEE Access} {\bf 2021}, {\em 9},~45770--45802.
+\newblock {\url{https://doi.org/10.1109/access.2021.3067503}}.
+
+\bibitem[Manzoor et~al.(2023)Manzoor, Manzoor, Manzoor, et~al.]{ref19}
+Manzoor, S.; Manzoor, M.; Manzoor, H.;  et~al.
+\newblock Which simulator to choose for next generation wireless network
+  simulations? {ns-3} or {OMNeT++}.
+\newblock {\em Engineering Proceedings} {\bf 2023}, {\em 46},~36.
+\newblock {\url{https://doi.org/10.3390/engproc2023046036}}.
+
+\bibitem[Yin et~al.(2020)Yin, Liu, Liu, et~al.]{ref20}
+Yin, H.; Liu, P.; Liu, K.;  et~al.
+\newblock ns3-ai: fostering artificial intelligence algorithms for networking
+  research.
+\newblock In Proceedings of the Proceedings of the 2020 Workshop on ns-3,
+  2020, pp. 57--64.
+\newblock {\url{https://doi.org/10.1145/3389400.3389404}}.
+
+\bibitem[Yu et~al.(2019)Yu, Ma, and Yu]{ref24}
+Yu, H.; Ma, Y.; Yu, J.
+\newblock Network selection algorithm for multiservice multimode terminals in
+  heterogeneous wireless networks.
+\newblock {\em IEEE Access} {\bf 2019}, {\em 7},~46240--46260.
+\newblock {\url{https://doi.org/10.1109/access.2019.2908764}}.
+
+\bibitem[Soydaner(2022)]{ref18}
+Soydaner, D.
+\newblock Attention mechanism in neural networks: where it comes and where it
+  goes.
+\newblock {\em Neural Computing and Applications} {\bf 2022}, {\em
+  34},~13371--13385.
+\newblock {\url{https://doi.org/10.1007/s00521-022-07366-3}}.
+
+\end{thebibliography}
