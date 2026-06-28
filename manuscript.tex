@@ -1,0 +1,233 @@
+%=================================================================
+% MDPI Remote Sensing Template
+% Attention-LSTM Enhanced Risk-aware Vertical Handoff Algorithm
+% for UAV Remote Sensing Heterogeneous Networks
+%=================================================================
+\documentclass[journal,article,submit,moreauthors]{Definitions/mdpi}
+
+%--------------------
+% Journal: remote sensing
+%--------------------
+\firstpage{1}
+\makeatletter
+\setcounter{page}{\@firstpage}
+\makeatother
+\pubvolume{1}
+\issuenum{1}
+\articlenumber{0}
+\pubyear{2026}
+\copyrightyear{2026}
+\datereceived{ }
+\daterevised{ }
+\dateaccepted{ }
+\datepublished{ }
+
+%=================================================================
+% Add packages
+%=================================================================
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{xcolor}
+
+%=================================================================
+% Title
+%=================================================================
+\Title{Attention-LSTM Enhanced Risk-aware Vertical Handoff Algorithm for UAV Remote Sensing Heterogeneous Networks}
+
+% Authors
+\Author{Su Wen $^{1}$*}
+
+% Affiliations
+\address{%
+$^{1}$ \quad College of Computer Science and Cyber Security, Chengdu University of Technology, Chengdu 610059, China
+}
+
+\corres{Correspondence: suwen@example.com}
+
+% Abstract
+\abstract{%
+Unmanned aerial vehicle (UAV) remote sensing systems are widely deployed in large-scale earth observation missions. During cruise missions, UAVs must traverse coverage boundaries of heterogeneous wireless networks (5G, LTE, WiFi), where vertical handover faces challenges of decision latency, frequent ping-pong handovers, and poor adaptability of fixed attribute weights. An adaptive vertical handover method based on long short-term memory (LSTM) and attention mechanism (LAAVHA) is proposed, with two enhanced mechanisms -- adaptive hysteresis (ADH) and risk-sensitive TOPSIS (RS-TOPSIS) -- forming the enhanced ALERA algorithm. A stacked LSTM predicts short-term candidate-network state changes; an attention mechanism generates dynamic attribute weights according to flight phase and mobility conditions; an improved TOPSIS decision matrix fuses current and predicted states; and ADH and RS-TOPSIS provide context-aware handover parameters and volatility penalization. Decision-level experiments (550 runs) on ns-3 and ns3-ai show that ALERA achieves an average of only 0.24 handovers, significantly outperforming eight baselines including TOPSIS-Q (4.04) and Fuzzy-VHO (8.64). Ablation and synthetic stress tests validate the synergistic contribution of temporal prediction, dynamic weighting, and the enhanced decision mechanisms.
+}
+
+% Keywords
+\keyword{UAV remote sensing; heterogeneous network; vertical handover; LSTM; attention mechanism; adaptive hysteresis; risk-sensitive TOPSIS}
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+\label{sec:introduction}
+
+UAV remote sensing systems are widely used in disaster assessment, agricultural survey, and environmental monitoring. During cruise missions, UAVs carrying high-resolution optical or multispectral payloads generate large volumes of remote sensing image data that must be transmitted in real-time to ground stations via heterogeneous wireless networks such as 5G, LTE, and WiFi~\cite{ref1,ref2,ref3}. However, the high mobility of UAVs causes them to frequently cross the coverage boundaries of different networks, triggering vertical handovers~\cite{ref4}.
+
+Traditional vertical handover research primarily focuses on multiple attribute decision making (MADM) methods, including TOPSIS~\cite{ref7,ref8}, VIKOR~\cite{ref22}, GRA~\cite{ref22}, COPRAS~\cite{ref22}, SPOTIS~\cite{ref22}, Fuzzy-VHO~\cite{ref4}, and SAW. These methods construct evaluation matrices from network attributes such as SINR, latency, and throughput for candidate ranking. However, they share two common limitations: first, attribute weights are typically determined once via entropy or analytic hierarchy process~\cite{ref10,ref11} and cannot dynamically adapt to flight phases and channel environments; second, decisions are made based solely on current network metrics without forward-looking prediction of future state changes, potentially causing handovers to trigger only after link quality has already degraded significantly~\cite{ref12,ref13}. Deep reinforcement learning methods have recently been applied to handover decisions~\cite{ref12,ref14}, but their black-box nature and training instability raise concerns regarding interpretability and reliability in safety-critical remote sensing cruise scenarios.
+
+Long Short-Term Memory (LSTM) networks effectively mitigate gradient vanishing through gating mechanisms~\cite{ref15}, enabling the capture of long-term temporal dependencies. They have been applied to handover decision-making and network state prediction in 5G heterogeneous networks~\cite{ref16,ref17}. However, single LSTM networks have two limitations: first, they model the five-dimensional state indicators of candidate networks as independent time series, unable to explicitly capture inter-attribute coupling relationships such as the negative correlation between throughput and packet loss rate or the association between SINR and latency; second, LSTM output predictions still require fixed or manually-set attribute weights for MADM, unable to adaptively adjust indicator importance according to flight phases (cruise vs. image transmission) and mobility states (velocity/altitude).
+
+In summary, vertical handover in UAV remote sensing heterogeneous networks faces challenges at two interconnected levels. At the algorithm level, traditional MADM methods have fixed weights and lack temporal prediction capability, while even LSTM with prediction mechanisms cannot adaptively adjust attribute weights to accommodate changing flight phases. At the scenario level, the channel environment dynamically varies during UAV cruise -- signals fluctuate minimally during stable flight but oscillate dramatically when crossing coverage boundaries or encountering obstructions, making fixed handover thresholds and confirmation windows inadequate for balancing these extremes.
+
+To address these two interconnected challenges, this paper proposes a hierarchical solution. At the algorithm level, we construct a Long Short-Term Memory-Attention based Adaptive Vertical Handover Algorithm (LAAVHA), which introduces an attention mechanism to overcome the shortcomings of traditional MADM methods in dynamic weighting and temporal prediction. LAAVHA adopts a three-stage ``prediction-weighting-decision'' architecture: stacked LSTM predicts short-term candidate-network state changes; an attention mechanism takes the current network state matrix as self-attention input, incorporating mobility features such as velocity and altitude to output flight-phase-adaptive dynamic attribute weights; and current and predicted states are fused to construct an improved TOPSIS decision matrix with dual hysteresis for candidate ranking. At the scenario level, Adaptive Hysteresis (ADH) and Risk-Sensitive TOPSIS (RS-TOPSIS) are introduced on top of the LAAVHA decision framework, forming the Attention-LSTM Enhanced Risk-aware Vertical Handoff Algorithm (ALERA). ADH replaces fixed switching thresholds and confirmation windows with context-aware adaptive parameters -- the threshold auto-adjusts from 0.03 to 0.08 based on SINR volatility measured over the last five decision cycles, and the confirmation window adaptively shortens from 4 to 2 cycles as flight speed increases. RS-TOPSIS introduces a lower confidence bound penalty, using $C_i^{robust} = C_i - 0.5 \cdot \sigma_i^C$ as the ranking criterion to penalize candidate networks with highly volatile scores, biasing the ranking preference toward historically more stable networks. Both enhancement mechanisms operate at the decision layer without modifying the LSTM-Attention model structure.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{System Model and Network State Parameters}
+\label{sec:system}
+
+Consider a UAV remote sensing cruise scenario: a UAV flies along a predetermined route within a 2000~m $\times$ 2000~m mission area at altitudes of 50--150~m and cruise speeds of 5--30~m/s. Three candidate access networks exist within the mission area -- 5G, LTE, and WiFi -- with different coverage ranges and deployment densities. WiFi hotspots have a coverage radius of approximately 200~m and are deployed around ground stations and critical imaging points. LTE base stations have a coverage radius of approximately 1--2~km and are sparsely distributed along the flight route. 5G base stations provide high data rates but have discontinuous coverage.
+
+As the UAV moves, the signal quality and transmission performance of candidate networks change continuously. In remote sensing cruise scenarios, if handover decisions rely solely on current metrics, the UAV may fail to switch proactively when approaching the WiFi coverage edge at high speed, causing remote sensing image transmission interruptions. Therefore, the algorithm considers a sliding window of the past $K = 10$ decision cycles ($\tau = 0.1$~s, i.e., $1.0$~s of history) of network states as input, enabling prediction of short-term state trends.
+
+Each candidate network $i \in \{\text{5G}, \text{LTE}, \text{WiFi}\}$ is characterized by a five-dimensional state vector $S_i(t)$ at decision cycle $t$:
+\begin{equation}
+S_i(t) = [\text{SINR}_i(t), \text{RSRP}_i(t), D_i(t), T_i(t), \text{PLR}_i(t)]
+\label{eq:state}
+\end{equation}
+
+In remote sensing flight scenarios, these five indicators characterize the capability of a candidate network to serve remote sensing tasks from different dimensions. SINR and RSRP jointly determine whether the link budget satisfies the demodulation threshold. End-to-end delay determines the responsiveness of flight control commands and flight safety margins during high-speed cruise. Throughput measures the effective payload bit rate per unit time -- for high-resolution remote sensing images that can reach several MB each, insufficient throughput prevents completing image downlink within a single overflight window. Packet loss rate reflects transmission reliability -- even with strong signals and abundant throughput, high packet loss can cause stripe loss or block blurring in reconstructed remote sensing images. SINR, RSRP, and throughput are benefit-type indicators (larger is better), while delay and packet loss rate are cost-type indicators (smaller is better). Min-max normalization is applied to map all indicators to the $[0,1]$ interval~\cite{ref22}.
+
+The experimental platform employs ns-3 network simulator~\cite{ref19} and its AI extension ns3-ai~\cite{ref20}. ns-3 deploys the 5G/LTE/WiFi heterogeneous network topology, simulates UAV mobility models, and collects physical-layer and transport-layer metrics. ns3-ai establishes a bidirectional communication channel between the simulation side and the Python AI inference side via shared memory -- at each decision cycle, the simulation side writes three candidate networks' 10-step historical 5-dimensional metrics (150 dimensions total) plus mobility states to shared memory, and the Python side loads the pre-trained LAAVHA model to read state data and return the target network ID and candidate network scores.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{LAAVHA Adaptive Vertical Handover Algorithm}
+\label{sec:laavha}
+
+Based on the system model and network state parameters defined in Section~\ref{sec:system}, this chapter proposes the Long Short-Term Memory-Attention based Adaptive Vertical Handover Algorithm (LAAVHA), designed to address the limitations of fixed weights and lack of temporal prediction in traditional MADM methods for UAV remote sensing cruise scenarios. LAAVHA takes the five-dimensional network state vectors and the sliding window mechanism described in Section~\ref{sec:system} as input, and sequentially passes through three modules: stacked LSTM prediction (Section~\ref{sec:lstm}), attention-based dynamic weight generation (Section~\ref{sec:attention}), and improved TOPSIS decision with fused predicted states (Section~\ref{sec:topsis}). Enhancement mechanisms (ADH and RS-TOPSIS) are introduced in Section~\ref{sec:enhanced} to form ALERA.
+
+\subsection{Stacked LSTM-Based Network State Prediction}
+\label{sec:lstm}
+
+Let the time window length $T = 10$ (i.e., $1.0$~s of history, with decision period $\tau = 0.1$~s). The historical input tensor for candidate network $k \in \{1,2,3\}$ (corresponding to 5G, LTE, and WiFi respectively) is $X_k \in \mathbb{R}^{10 \times 5}$ -- 10 consecutive decision cycles of five-dimensional normalized state vectors stacked row-wise. The prediction target is the next-time-step state vector $\hat{s}_k(t+\tau) \in \mathbb{R}^5$.
+
+\begin{equation}
+\begin{aligned}
+h_{1,k} &= \text{LSTM}_1(X_k; \theta_1), \quad h_{1,k} \in \mathbb{R}^{10 \times 128} \\
+h_{2,k} &= \text{LSTM}_2(h_{1,k}; \theta_2), \quad h_{2,k} \in \mathbb{R}^{10 \times 64} \\
+\hat{s}_k(t+\tau) &= W_{\text{pred}} \cdot h_{2,k}[-1] + b_{\text{pred}}, \quad \hat{s}_k \in \mathbb{R}^5
+\end{aligned}
+\label{eq:lstm}
+\end{equation}
+where $\theta_1$, $\theta_2$ are the trainable parameters of the two LSTM layers (including weights and biases for input, forget, output gates, and cell states), $W_{\text{pred}} \in \mathbb{R}^{5 \times 64}$ and $b_{\text{pred}} \in \mathbb{R}^5$ are the fully connected weights and bias of the prediction head, and $h_{2,k}[-1]$ denotes the output vector from the final time step of LSTM2. Equations~\eqref{eq:lstm} characterize the dimensional transformation of the prediction branch: 10 steps $\times$ 5 indicators $\rightarrow$ LSTM$_1$(5$\rightarrow$128) $\rightarrow$ LSTM$_2$(128$\rightarrow$64) $\rightarrow$ fc\_pred(64$\rightarrow$5). The three candidate networks share the same LSTM parameters (i.e., the same $\theta_1$, $\theta_2$, $W_{\text{pred}}$, $b_{\text{pred}}$ for 5G, LTE, and WiFi), each independently inputting their historical sequence $X_k$. The prediction results are stacked as $S_{\text{pred}} \in \mathbb{R}^{3 \times 5}$ -- the five predicted indicators for the next time step for all three networks.
+
+The above LSTM prediction module provides the TOPSIS decision with predicted future states $S_{\text{pred}} \in \mathbb{R}^{3 \times 5}$, enabling the algorithm to proactively assess network quality trends. However, constructing the TOPSIS decision matrix also requires the relative importance weights of the five network attributes -- reasonable weight allocation directly determines the accuracy of candidate ranking. To this end, the following section introduces an attention mechanism that takes the current network state $S_{\text{cur}} \in \mathbb{R}^{3 \times 5}$ as input to dynamically generate flight-scenario-adaptive attribute weight vectors $w \in \mathbb{R}^5$.
+
+\subsection{Flight-Phase-Oriented Dynamic Weight Generation}
+\label{sec:attention}
+
+In vertical handover decisions, the importance of different network attributes varies with the scenario. For example, during the cruise phase, link stability and control command latency are more critical for flight safety; when arriving at an imaging point and entering the image transmission phase, the weights of throughput and packet loss rate should increase significantly to ensure high-resolution remote sensing images are completely delivered to the ground station within the limited time window~\cite{ref24}. Fixed weights cannot characterize such dynamic variations.
+
+To address this, LAAVHA introduces a self-attention mechanism~\cite{ref18}. The current 5-dimensional state vectors of the three candidate networks are stacked row-wise into matrix $S_{\text{cur}} \in \mathbb{R}^{3 \times 5}$, and the Query, Key, and Value of self-attention are all set to $S_{\text{cur}}$ (i.e., $Q = K = V = S_{\text{cur}}$, embed\_dim = 5, num\_heads = 1), computing inter-attribute interaction weights via scaled dot-product attention. The attention matrix $A$ has elements $a_{ij}$ representing the importance of attribute $j$ to attribute $i$. Cross-network mean pooling then extracts an attribute-level context $c \in \mathbb{R}^5$, and flight velocity $v$ and height $h$ are mapped via $W_{\text{mob}} \in \mathbb{R}^{2 \times 16}$ to a mobility feature $m \in \mathbb{R}^{16}$. Concatenation followed by a fully connected projection and softmax normalization yields the five-dimensional dynamic weight vector $w$.
+
+\begin{equation}
+\begin{aligned}
+Q &= K = V = S_{\text{cur}} \in \mathbb{R}^{3 \times 5} \\
+A &= \text{Attention}(Q,K,V) = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{5}}\right) V, \quad A \in \mathbb{R}^{3 \times 5} \\
+c &= \text{mean}(A, \text{dim}=0) \in \mathbb{R}^5 \\
+m &= \text{ReLU}(W_{\text{mob}} \cdot [v, h]^\top), \quad W_{\text{mob}}: \mathbb{R}^2 \rightarrow \mathbb{R}^{16}, \quad m \in \mathbb{R}^{16} \\
+w &= \text{softmax}(W_{\text{weight}} \cdot [c \parallel m]), \quad W_{\text{weight}}: \mathbb{R}^{21} \rightarrow \mathbb{R}^5, \quad w \in \mathbb{R}^5, \quad \sum_j w_j = 1
+\end{aligned}
+\label{eq:attention}
+\end{equation}
+
+Through the temporal prediction (outputting $S_{\text{pred}}$) from Section~\ref{sec:lstm} and dynamic weight generation (outputting $w$) from this section, all the elements required for TOPSIS decision-making have been obtained. The following section integrates these outputs into a unified decision framework: a fusion coefficient $\alpha = 0.6$ combines the current state $S_{\text{cur}}$ with the predicted state $S_{\text{pred}}$ to construct a decision matrix $D$ with both real-time and forward-looking properties, the attention-generated dynamic weights $w$ are used to perform improved TOPSIS ranking, and the dual hysteresis mechanism makes the final handover decision.
+
+\subsection{Improved TOPSIS Decision with Fused Predicted States}
+\label{sec:topsis}
+
+In remote sensing cruise scenarios, candidate networks must be comprehensively evaluated across three dimensions -- signal strength, transmission capacity, and reliability -- as no single ``perfect network'' exists that optimizes all indicators. The basic idea of TOPSIS is to compare each candidate network's position in multi-dimensional attribute space against virtual ``ideal-best'' and ``ideal-worst'' networks~\cite{ref7,ref8}. To avoid the passive decision-making caused by traditional TOPSIS relying solely on current states, LAAVHA fuses current and LSTM-predicted states to construct the decision matrix.
+
+\begin{equation}
+\begin{aligned}
+s_{\text{norm}} &= \frac{s - s_{\min}}{s_{\max} - s_{\min}}, \quad \text{for each indicator } j \\
+d_{ij} &= \alpha \cdot s_{\text{cur}}(i,j) + (1-\alpha) \cdot s_{\text{pred}}(i,j), \quad \alpha = 0.6
+\end{aligned}
+\label{eq:fusion}
+\end{equation}
+where $\alpha$ is the fusion coefficient ($\alpha = 0.6$ in this paper), giving dominant weight to current measured states while prediction provides forward-looking guidance for smooth transitions in remote sensing cruise. Cost-type indicators are inverted ($d_{ij} \leftarrow 1 - d_{ij}$ for $j \in \{\text{delay}, \text{PLR}\}$), obtaining the fused decision matrix $D \in \mathbb{R}^{3 \times 5}$, which then enters the standard TOPSIS pipeline:
+
+\begin{equation}
+\begin{aligned}
+r_{ij} &= d_{ij} \big/ \sqrt{\sum\nolimits_{k=1}^{3} d_{kj}^2} \\
+v_{ij} &= w_j \cdot r_{ij} \\
+v^+_j &= \max_i v_{ij}, \quad v^-_j = \min_i v_{ij} \\
+D^+_i &= \sqrt{\sum\nolimits_{j=1}^{5} (v_{ij} - v^+_j)^2}, \quad D^-_i = \sqrt{\sum\nolimits_{j=1}^{5} (v_{ij} - v^-_j)^2}
+\end{aligned}
+\label{eq:topsis1}
+\end{equation}
+
+\begin{equation}
+\begin{aligned}
+C_i &= \frac{D^-_i}{D^+_i + D^-_i}, \quad C_i \in [0,1] \\
+N^* &= \arg\max_i C_i \\
+&\text{IF } C(N^*) - C(N_{\text{cur}}) > \Delta_{th} \text{ AND } T \text{ consecutive cycles} \quad \text{THEN switch to } N^* \\
+&\text{ELSE keep } N_{\text{cur}} \qquad (\Delta_{th} = 0.05, \; T = 3 \text{ in this paper})
+\end{aligned}
+\label{eq:topsis2}
+\end{equation}
+
+Equations~\eqref{eq:topsis1}--\eqref{eq:topsis2} convert the $3 \times 5$ fused decision matrix $D$ into a relative closeness ranking of the three candidate networks: vector normalization~\eqref{eq:topsis1} eliminates indicator dimensions $\rightarrow$ dynamic weight weighting $\rightarrow$ determine positive/negative ideal solutions $\rightarrow$ Euclidean distance calculation $\rightarrow$ output $C_i \in [0,1]$. $C_i$ approaching 1 indicates stronger comprehensive support from that network for image transmission, flight control response, and link reliability in remote sensing tasks.
+
+To reduce ping-pong handovers triggered by transient network state fluctuations, the algorithm employs a dual hysteresis mechanism. Only when the closeness score of the highest-ranked candidate network $N^*$ exceeds that of the current serving network $N_{\text{cur}}$ by more than $\Delta_{th} = 0.05$, and this condition is sustained for $T = 3$ consecutive decision cycles, is the handover formally executed. In remote sensing missions, a single ping-pong handover can cause loss of image data packets in transmission -- the hysteresis mechanism filters minor score fluctuations through the threshold and eliminates spurious handovers from transient channel anomalies through the time window.
+
+The dual hysteresis mechanism in the above LAAVHA framework employs fixed parameters ($\Delta_{th} = 0.05$, $T = 3$), which perform well under stable channel conditions. However, in UAV remote sensing cruise scenarios, channel states continuously vary with flight position and surrounding environment -- signal fluctuations are small during stable flight but oscillate dramatically when crossing coverage boundaries or encountering obstructions. Fixed hysteresis parameters cannot perceive such environmental variation. Therefore, the following section introduces two decision-layer enhancement mechanisms -- Adaptive Hysteresis (ADH) and Risk-Sensitive TOPSIS (RS-TOPSIS) -- that adapt the switching parameters to channel fluctuations and flight states without modifying the LSTM-Attention model, forming ALERA.
+
+\subsection{Adaptive Hysteresis and Risk-Sensitive TOPSIS Enhancement Mechanisms}
+\label{sec:enhanced}
+
+\subsubsection{Adaptive Hysteresis Parameters}
+
+The fixed switching threshold $\Delta_{th}$ and confirmation window $T$ are replaced with context-aware adaptive parameters. Let $\sigma$ denote the SINR volatility of the serving network, defined as the standard deviation of SINR over the last 5 decision cycles. The flight velocity $v$ is transmitted in real-time from the simulation side. The adaptive threshold and window are computed as:
+
+\begin{equation}
+\begin{aligned}
+\Delta_{th} &= 0.03 + 0.05 \cdot (\sigma / 10), \quad \sigma \in [0, 10] \\
+T &= \max(2, \lfloor 4 - 2 \cdot v / 30 \rfloor), \quad v \in [0, 30] \text{ m/s}
+\end{aligned}
+\label{eq:adh}
+\end{equation}
+
+Equation~\eqref{eq:adh}(a) provides a base threshold of $0.03$ when the channel is stable ($\sigma \approx 0$), lower than the original fixed value of $0.05$, reserving room for rapid response to genuine degradation. The fluctuation correction term linearly increases the threshold with SINR volatility up to $0.08$, raising the handover barrier during channel oscillation to suppress ping-pong. Equation~\eqref{eq:adh}(b) provides a window of 4 at low flight speeds ($v \approx 5$~m/s) for sufficient confirmation cycles, shortening to a minimum of 2 as speed increases, enabling timely switching when a high-speed UAV crosses coverage boundaries. The parameter ranges ($\Delta_{th} \in [0.03, 0.08]$, $T \in [2, 4]$) ensure basic anti-flapping capability under extreme conditions. The design rationale for the window shortening with speed is that at high flight speeds, the coverage boundary is traversed rapidly -- at 30~m/s, the UAV moves 3~m per decision cycle (0.1~s), and with a long window of $T = 4$ (0.4~s), the displacement during confirmation reaches 12~m, potentially invalidating the initial assessment before confirmation is complete. Shortening to $T = 2$ (0.2~s, displacement 6~m) enables faster lock-on at true handover moments near coverage boundaries, trading a small amount of anti-flapping redundancy for switching timeliness.
+
+\subsubsection{Risk-Sensitive TOPSIS}
+
+The original TOPSIS ranks based on the current closeness $C_i$. The enhanced version introduces the Lower Confidence Bound (LCB) concept, subtracting a volatility penalty from each candidate network's score based on its historical score fluctuations:
+
+\begin{equation}
+C_i^{\text{robust}} = C_i - \lambda \cdot \sigma_i^C, \quad \lambda = 0.5
+\label{eq:rstopsis}
+\end{equation}
+where $\sigma_i^C$ is the standard deviation of network $i$'s closeness scores over the last 5 decision cycles, and $\lambda = 0.5$ is the risk aversion coefficient. The core idea of this mechanism is: when multiple candidate networks have similar closeness scores, prioritize the network with stable scores over one with a slightly higher mean but large volatility. In remote sensing cruise scenarios, if LTE shows steadily rising closeness with low variance over the last 5 cycles while WiFi closeness fluctuates wildly between high and low values, the $C^{\text{robust}}$ ranking will prefer LTE even if WiFi's current closeness is slightly higher, ensuring continuity of remote sensing data transmission.
+
+Both enhancement mechanisms share the key advantage that they require no retraining of the LSTM-Attention model -- only modifications to decision-layer parameters and ranking logic are needed to add environmental perception capability to the algorithm. Under stable channel conditions, the adaptive parameters approximate the original fixed values, behaving identically to the base version. Under severe channel fluctuations, the adaptive threshold, shortened window, and risk penalty act synergistically to suppress ping-pong handovers.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Algorithm Complexity and Summary}
+\label{sec:complexity}
+
+Table~\ref{tab:algo} summarizes the input/output, core pipeline, and computational complexity of each algorithm module in LAAVHA and ALERA. The stacked LSTM prediction module (Section~\ref{sec:lstm}) takes the historical state tensor $X_k \in \mathbb{R}^{10 \times 5}$ within the sliding window as input, extracts temporal features through two LSTM layers, and outputs the next-time-step predicted state $S_{\text{pred}} \in \mathbb{R}^{3 \times 5}$ via a fully connected head; its computational bottleneck lies in the LSTM gating matrix operations, with complexity $O(R \cdot K \cdot d \cdot h^2)$. The attention dynamic weight module (Section~\ref{sec:attention}) takes the current state matrix $S_{\text{cur}} \in \mathbb{R}^{3 \times 5}$ as self-attention input, fuses mobility features, and outputs a 5-dimensional dynamic weight vector $w \in \mathbb{R}^5$; the self-attention computation complexity is $O(R^2 \cdot d)$. The improved TOPSIS decision module (Section~\ref{sec:topsis}) combines $S_{\text{cur}}$ and $S_{\text{pred}}$ with fusion coefficient $\alpha = 0.6$, normalizes and performs weighted TOPSIS ranking with dynamic weights $w$, outputting candidate network closeness scores $C_i$; overall complexity is $O(R \cdot d)$. ADH adaptive hysteresis (Section~\ref{sec:enhanced}) and RS-TOPSIS risk-sensitive ranking (Section~\ref{sec:enhanced}) are decision-layer enhancements with computation bounded by $O(1)$ or $O(R \cdot K)$, adding negligible model inference burden. The end-to-end inference complexity of the overall algorithm is bounded within $O(R \cdot K^2 \cdot d)$, well below the time budget of a single 0.1~s decision cycle, satisfying the real-time handover decision requirements of UAV remote sensing cruise scenarios.
+
+\begin{table}[h]
+\caption{Algorithm Summary of LAAVHA and ALERA.}
+\label{tab:algo}
+\centering
+\begin{tabular}{p{3.5cm} p{3cm} p{4.5cm} p{2cm}}
+\toprule
+\textbf{Module} & \textbf{Input/Output} & \textbf{Core Pipeline} & \textbf{Complexity} \\
+\midrule
+Stacked LSTM Prediction (2.1) & In: $3 \times 10 \times 5$ tensor \newline Out: $S_{\text{pred}}$ & LSTM1(5$\rightarrow$128)$\rightarrow$LSTM2(128$\rightarrow$64)$\rightarrow$fc(64$\rightarrow$5) & $O(R K d h^2)$ \\
+\midrule
+Attention Dynamic Weights (2.2) & In: $3 \times 5$ matrix + mobility \newline Out: $w \in \mathbb{R}^5$ & Self-Attn$\rightarrow$MeanPool$\rightarrow$Concat$\rightarrow$FC+softmax & $O(R^2 d)$ \\
+\midrule
+Improved TOPSIS (2.3) & In: $S_{\text{cur}}$, $S_{\text{pred}}$, $w$ \newline Out: $C_i$ & Fuse$\rightarrow$Norm$\rightarrow$Weight$\rightarrow$Ideal sol.$\rightarrow$Closeness & $O(R d)$ \\
+\midrule
+ADH Adaptive Hysteresis (2.4.1) & In: SINR history, $v$ \newline Out: $\Delta_{th}$, $T$ & Volatility calc$\rightarrow$Linear adjust$\rightarrow$Window adapt & $O(1)$ \\
+\midrule
+RS-TOPSIS (2.4.2) & In: 5-round $C_i$ history \newline Out: $C_i^{\text{robust}}$ & Std calc$\rightarrow$Penalty$\rightarrow$LCB ranking & $O(R K)$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Total end-to-end complexity: $O(R \cdot K^2 \cdot d)$, where $R = 3$ (candidate networks), $K = 10$ (time window length), $d = 5$ (state dimension), $h = 128$ (LSTM hidden size).
+
+\end{document}
