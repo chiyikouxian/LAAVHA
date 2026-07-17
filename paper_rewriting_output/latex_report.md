@@ -44,6 +44,46 @@
 - Output PDF: `manuscript_cn.pdf`
 - PDF pages: 21
 
+## Revision 2026-07-17
+
+- Rephrased the Section 2.1 window definition as 10 consecutive decision cycles covered within 1.0 s.
+- Added the required forward references for the fusion coefficient, fixed hysteresis parameters, ADH history/range parameters, and RS-TOPSIS risk coefficient.
+- Merged the repeated Section 2.3-to-2.4 transition into the opening of Section 2.4.
+- Replaced Chinese-prose double hyphens with proper Chinese em dashes or explicit range wording.
+- Reduced the final Section 2.4 complexity paragraph to qualitative analysis.
+- Added a reproducible three-part parameter-sensitivity experiment before Table 3 and inserted `fig_parameter_sensitivity.png`.
+- Deleted the former Table 5 enhanced-before/after comparison; remaining tables are numbered 1 through 4.
+- Replaced and explained the ambiguous term "真实退化" as "持续性链路劣化".
+- LaTeX guard: 0 errors, 0 warnings.
+- XeLaTeX compilation: 2 runs, passed; cross-references stabilized; output remains 21 pages.
+
+## Parameter Figure Redraw
+
+- Recomputed the fusion-coefficient sensitivity on 50 stress replays containing measurement volatility and short-term prediction lag.
+- Updated average false handovers for $\alpha=0.2,0.4,0.6,0.8$ to 1.20, 0.90, 0.08, and 1.00 from the reproducible replay script.
+- Added mean detection delay to every cell in panels (b) and (c); each cell now shows false handovers on the first line and delay on the second line.
+- Regenerated `fig_parameter_sensitivity.png`, synchronized the Section 3.1 prose and caption, and recompiled with XeLaTeX twice.
+
+## Dash And Range Audit
+
+- Replaced all Chinese-prose em dashes with sentence-appropriate commas, colons, semicolons, or periods.
+- Retained the English abstract em dash around the appositive network list.
+- Retained valid hyphens in algorithm names, product names, English compound words, and mathematical subtraction.
+- Converted citation-number ranges and bibliography page ranges to LaTeX en dashes.
+- Verified PDF output examples: `[1–3]`, `[16–17]`, and `2334–2360`.
+- LaTeX guard: 0 errors, 0 warnings; XeLaTeX compilation passed twice; PDF remains 21 pages.
+
+## Figure 3 Note Placement
+
+- Moved the panel-cell explanation from the Figure 3 caption to a separate centered line directly below the caption and above the image.
+- XeLaTeX compilation passed twice; visual inspection confirmed the note is correctly positioned.
+
+## Table 3 Parameter Formatting
+
+- Changed the first column of Table 3 to ragged-right alignment so wrapped Chinese text is no longer stretched across the cell.
+- Revised the attention-head value to `1（embed_dim=5，采用单头注意力）` to distinguish the selected single-head setting from a hard dimensional constraint.
+- LaTeX guard reported 0 errors and 0 warnings; XeLaTeX compilation passed twice and the PDF remains 21 pages.
+
 ## Remaining Warnings
 
 - Non-fatal `Underfull \hbox` warnings remain in narrow table cells and one long reference line.
