@@ -3,7 +3,7 @@
 % LaTeX 中文版（ctexart）
 %=================================================================
 \documentclass[10pt,a4paper]{ctexart}
-\usepackage{amsmath,amssymb,booktabs,graphicx,geometry,hyperref,array,float,caption}
+\usepackage{amsmath,amssymb,booktabs,graphicx,geometry,hyperref,array,float,caption,algorithm,algpseudocode}
 \geometry{left=2.0cm,right=2.0cm,top=2.7cm,bottom=2.1cm}
 \graphicspath{{./plots_chapter3_v2/}}
 \setmainfont{Liberation Serif}
@@ -17,6 +17,7 @@
 \captionsetup{font=small,labelformat=iotjournal,labelsep=quad}
 \captionsetup[table]{position=top,justification=centering,singlelinecheck=false}
 \captionsetup[figure]{justification=centering}
+\floatname{algorithm}{算法}
 \newcommand{\upcite}[1]{\textsuperscript{[#1]}}
 \ctexset{
   section={
@@ -40,7 +41,7 @@
 }
 
 \title{\heiti\zihao{3} 面向无人机遥感异构网络的注意力LSTM增强型风险感知垂直切换算法}
-\author{\fangsong 多滨$^{[1]}$，刘同$^{[1]}$，郑宇翔$^{[1]}$，苏文$^{[1]}$\\[2mm]
+\author{孙汉明$^{[1]}$，刘同$^{[1]}$，苏文$^{[1]}$，林杰$^{[1]}$，罗俊松$^{[1]}$，多滨$^{[1]}$\\[2mm]
 \small （1. 成都理工大学，四川省成都市 610000）}
 \date{}
 
@@ -50,37 +51,43 @@
 \maketitle
 \thispagestyle{plain}
 
-\noindent{\heiti 摘\quad 要：}{\songti 无人机遥感监测系统在灾害评估、环境监测等大范围对地观测场景中广泛应用。无人机巡航时需持续穿越5G、LTE和WiFi三种异构网络的覆盖边界，构成典型的候选网络垂直切换场景，面临决策滞后、乒乓切换频繁以及固定属性权重难以适应动态飞行阶段的挑战。该研究提出了一种基于长短期记忆网络与注意力机制的自适应垂直切换方法（Long Short-Term Memory-Attention based Adaptive Vertical Handover Algorithm，LAAVHA），并在其基础上引入自适应滞后（Adaptive Dynamic Hysteresis，ADH）与风险敏感TOPSIS（Risk-Sensitive TOPSIS，RS-TOPSIS）两项增强机制，形成增强型风险感知垂直切换算法（Attention-LSTM Enhanced Risk-aware Vertical Handoff Algorithm，ALERA）。该方法利用堆叠LSTM预测候选网络短期状态变化，通过注意力机制根据飞行阶段和移动状态动态生成属性权重，融合当前状态与预测状态来构建改进的逼近理想解排序法（Technique for Order Preference by Similarity to Ideal Solution，TOPSIS）决策矩阵；以TOPSIS贴近度评分优势阈值和连续确认窗口构成双重滞后机制，抑制不必要切换。增强机制进一步采用ADH依据飞行速度和信道波动自适应调节上述阈值与确认窗口，并以RS-TOPSIS对候选网络评分施加波动风险惩罚，提升信道剧烈波动场景下的决策鲁棒性。大量仿真实验表明，所提算法可减少无效切换、提高切换决策效率并保障遥感数据回传连续性，在信道突变条件下具有更强的抗扰能力。}\\[3mm]
+\noindent{\heiti 摘\quad 要：}{\songti 无人机遥感监测系统在灾害评估、环境监测等大范围对地观测场景中广泛应用。无人机巡航时需持续穿越5G、LTE和WiFi三种异构网络的覆盖边界，构成典型的候选网络垂直切换场景，面临决策滞后、乒乓切换频繁以及固定属性权重难以适应动态飞行阶段的挑战。该研究提出了一种基于长短期记忆网络与注意力机制的自适应垂直切换方法（Long Short-Term Memory-Attention based Adaptive Vertical Handover Algorithm，LAAVHA），并在其基础上引入自适应滞后（Adaptive Dynamic Hysteresis，ADH）与风险敏感TOPSIS（Risk-Sensitive TOPSIS，RS-TOPSIS）两项增强机制，形成增强型风险感知垂直切换算法（Attention-LSTM Enhanced Risk-aware Vertical Handoff Algorithm，ALERA）。LAAVHA由预测、动态加权、候选排序和切换判决构成的基础决策链包括：堆叠LSTM预测候选网络短期状态，注意力机制结合当前网络状态与移动特征生成动态属性权重，当前状态与预测状态经改进的逼近理想解排序法（Technique for Order Preference by Similarity to Ideal Solution，TOPSIS）融合排序，随后以贴近度评分优势阈值和连续确认窗口实施双重滞后判决，抑制不必要切换。在此基础上，ADH依据飞行速度和服务网络信道波动自适应调节切换阈值与确认窗口，RS-TOPSIS依据候选网络近期贴近度评分的波动程度施加风险罚分，并以鲁棒评分完成候选排序。两项增强机制在基础评分生成后、最终切换判决前提高了算法对信道波动的适应性和决策鲁棒性。大量仿真实验表明，所提算法可减少无效切换、提高切换决策效率并保障遥感数据回传连续性，在信道突变条件下具有更强的抗扰能力。}\\[3mm]
 \noindent{\heiti 关键词：}{\songti 无人机遥感；异构网络；垂直切换；LSTM；注意力机制；自适应滞后；风险敏感TOPSIS}\\[4mm]
 
 \begin{center}
 {\bfseries Attention-LSTM Enhanced Risk-aware Vertical Handoff Algorithm for UAV Remote Sensing Heterogeneous Networks}\\[1mm]
-DUO Bin$^{[1]}$, LIU Tong$^{[1]}$, ZHENG Yuxiang$^{[1]}$, SU Wen$^{[1]}$\\[1mm]
+SUN Hanming$^{[1]}$, LIU Tong$^{[1]}$, SU Wen$^{[1]}$, LIN Jie$^{[1]}$, LUO Junsong$^{[1]}$, DUO Bin$^{[1]}$\\[1mm]
 {\small 1. Chengdu University of Technology, Chengdu 610000, China}
 \end{center}
-\noindent{\bfseries Abstract:} Unmanned aerial vehicle (UAV) remote sensing systems are widely used in large-area earth observation scenarios such as disaster assessment and environmental monitoring. During cruise missions, UAVs continuously traverse the coverage boundaries of three heterogeneous networks---5G, LTE, and WiFi---forming a typical candidate-network vertical handover scenario that faces decision delay, frequent ping-pong handovers, and the inability of fixed attribute weights to adapt to dynamic flight phases. This study proposes an adaptive vertical handover method based on long short-term memory and an attention mechanism (Long Short-Term Memory-Attention based Adaptive Vertical Handover Algorithm, LAAVHA). On this basis, two enhancement mechanisms, adaptive dynamic hysteresis (Adaptive Dynamic Hysteresis, ADH) and risk-sensitive TOPSIS (Risk-Sensitive TOPSIS, RS-TOPSIS), are introduced to form an enhanced risk-aware vertical handoff algorithm (Attention-LSTM Enhanced Risk-aware Vertical Handoff Algorithm, ALERA). The proposed method uses a stacked LSTM to predict short-term changes in candidate-network states and an attention mechanism to generate dynamic attribute weights according to the flight phase and mobility state. Current and predicted states are fused to construct an improved Technique for Order Preference by Similarity to Ideal Solution (TOPSIS) decision matrix. A dual hysteresis mechanism, consisting of a TOPSIS closeness-score advantage threshold and a consecutive-confirmation window, suppresses unnecessary handovers. ADH further adjusts the threshold and confirmation window according to flight speed and channel fluctuations, while RS-TOPSIS applies a volatility-risk penalty to candidate-network scores, thereby improving decision robustness under severe channel fluctuations. Extensive simulations show that the proposed algorithm reduces unnecessary handovers, improves handover-decision efficiency, maintains the continuity of remote sensing data transmission, and provides stronger resistance to abrupt channel changes.\\[2mm]
+\noindent{\bfseries Abstract:} Unmanned aerial vehicle (UAV) remote sensing systems are widely used in large-area earth observation scenarios such as disaster assessment and environmental monitoring. During cruise missions, UAVs continuously traverse the coverage boundaries of three heterogeneous networks---5G, LTE, and WiFi---forming a typical candidate-network vertical handover scenario that faces decision delay, frequent ping-pong handovers, and the inability of fixed attribute weights to adapt to dynamic flight phases. This study proposes an adaptive vertical handover method based on long short-term memory and an attention mechanism (Long Short-Term Memory-Attention based Adaptive Vertical Handover Algorithm, LAAVHA). On this basis, two enhancement mechanisms, adaptive dynamic hysteresis (Adaptive Dynamic Hysteresis, ADH) and risk-sensitive TOPSIS (Risk-Sensitive TOPSIS, RS-TOPSIS), are introduced to form an enhanced risk-aware vertical handoff algorithm (Attention-LSTM Enhanced Risk-aware Vertical Handoff Algorithm, ALERA). LAAVHA comprises a basic decision chain of prediction, dynamic weighting, candidate ranking, and handover decision. A stacked LSTM predicts short-term candidate-network states; an attention mechanism combines current network states with mobility features to generate dynamic attribute weights; and current and predicted states are fused and ranked using an improved Technique for Order Preference by Similarity to Ideal Solution (TOPSIS). A dual hysteresis decision based on a closeness-score advantage threshold and a consecutive-confirmation window then suppresses unnecessary handovers. On this basis, ADH adapts the handover threshold and confirmation window according to flight speed and serving-network channel fluctuations, whereas RS-TOPSIS applies a risk penalty according to recent fluctuations in candidate-network closeness scores and ranks candidates using robust scores. The two enhancement mechanisms leave the LSTM and attention-network structures and training processes unchanged, and improve adaptation to channel fluctuations and decision robustness after base scores are generated and before the final handover decision. Extensive simulations show that the proposed algorithm reduces unnecessary handovers, improves handover-decision efficiency, maintains the continuity of remote sensing data transmission, and provides stronger resistance to abrupt channel changes.\\[2mm]
 \noindent{\bfseries Key words:} UAV remote sensing, heterogeneous network, vertical handover, LSTM, attention mechanism, adaptive hysteresis, risk-sensitive TOPSIS
 
 \setcounter{section}{-1}
 \section{引言}
 
-无人机遥感系统在灾害评估、农业普查、环境监测等领域广泛应用，无人机搭载的高分辨率光学/多光谱载荷在巡航过程中产生大量遥感图像数据，需通过5G、LTE和WiFi等异构无线网络实时回传至地面站\upcite{1--3}。然而，无人机的高机动性导致其频繁穿越不同网络的覆盖边界，触发垂直切换\upcite{4}。传统垂直切换研究主要围绕多属性决策方法展开，如TOPSIS\upcite{7--8}、VIKOR\upcite{22}、GRA\upcite{22}、COPRAS\upcite{22}、SPOTIS\upcite{22}、Fuzzy-VHO\upcite{4}和SAW等，通过构建信噪比、时延、吞吐量等网络属性的评价矩阵进行候选排序。这些方法存在两个共性问题：一是权重通常由熵权法或层次分析法一次性确定\upcite{10--11}，无法随飞行阶段和信道环境动态调整；二是仅依据当前时刻的网络指标做决策，缺乏对未来状态变化的前瞻性判断，例如，当无人机高速飞向WiFi覆盖边缘时，可能在链路实际中断后才触发切换\upcite{12--13}。此外，近年深度强化学习（DRL）方法被引入切换决策\upcite{12--14}，但其黑箱性质和训练不稳定性在安全攸关的遥感巡航场景中带来可解释性和可靠性方面的顾虑。
+无人机遥感系统在灾害评估、农业普查、环境监测等领域广泛应用，无人机搭载的高分辨率光学/多光谱载荷在巡航过程中产生大量遥感图像数据，需通过5G、LTE和WiFi等异构无线网络实时回传至地面站\upcite{1--3}。然而，无人机的高机动性导致其频繁穿越不同网络的覆盖边界，触发垂直切换\upcite{4}。传统垂直切换研究主要围绕多属性决策方法（Multiple Attribute Decision Making, MADM）展开，如TOPSIS\upcite{7--8}、VIKOR\upcite{22}、GRA\upcite{22}、COPRAS\upcite{22}、SPOTIS\upcite{22}、Fuzzy-VHO\upcite{4}和SAW等，通过构建信噪比、时延、吞吐量等网络属性的评价矩阵进行候选排序。这些方法存在两个共性问题：一是权重通常由熵权法或层次分析法一次性确定\upcite{10--11}，无法随飞行阶段和信道环境动态调整；二是仅依据当前时刻的网络指标做决策，缺乏对未来状态变化的前瞻性判断，例如，当无人机高速飞向WiFi覆盖边缘时，可能在链路实际中断后才触发切换\upcite{12--13}。此外，近年深度强化学习（DRL）方法被引入切换决策\upcite{12--14}，但其黑箱性质和训练不稳定性在安全攸关的遥感巡航场景中带来可解释性和可靠性方面的顾虑。
 
 长短期记忆网络（LSTM）通过门控结构有效缓解梯度消失问题\upcite{15}，具有捕获长时间序列依赖关系的能力，已被应用于5G异构网络的切换判决和网络状态预测\upcite{16--17}。然而，单一LSTM网络存在两方面局限：其一，LSTM将候选网络的5维状态指标视为独立的时间序列分别建模，无法显式捕获指标之间的耦合关系，例如吞吐量与丢包率的负相关性、SINR与时延的关联性等；其二，LSTM输出的预测状态仍需配合固定或人工设定的属性权重才能完成多属性决策，无法根据飞行阶段和移动状态自适应调整各指标的重要性。
 
-综上所述，当前无人机遥感异构网络中的垂直切换面临两个层面的挑战：在算法层面，传统多属性决策方法（Multiple Attribute Decision Making, MADM）权重固定、缺乏时序预测能力，单一LSTM即使引入预测机制仍无法自适应调节属性权重以适应飞行阶段变化；在场景层面，无人机巡航过程中信道环境动态变化：平稳飞行时信号波动小，跨越覆盖边界或遭遇遮挡时信号剧烈振荡，固定的切换阈值和确认窗口难以在两者之间取得平衡。两个层面的问题相互关联：算法适应性的不足加剧了场景波动带来的切换不稳定，而场景的动态变化又要求算法具备更强的环境感知能力。
+综上所述，当前无人机遥感异构网络中的垂直切换面临两个层面的挑战：在算法层面，传统多属性决策方法权重固定、缺乏时序预测能力，单一LSTM即使引入预测机制仍无法自适应调节属性权重以适应飞行阶段变化；在场景层面，平稳飞行时信号波动小，而跨越覆盖边界或遭遇遮挡时信号会剧烈振荡，固定的切换阈值和确认窗口难以同时适应两类环境。两个层面的问题相互关联：算法适应性的不足加剧了场景波动带来的切换不稳定，而场景的动态变化又要求算法具备更强的环境感知能力。
 
-针对上述两个层面相互关联的挑战，本文提出分层次的解决方案。在算法层面，构建基于长短期记忆神经网络和注意力机制的自适应垂直切换算法（LAAVHA），以引入注意力机制弥补传统MADM方法在动态权重与时序预测方面的不足。LAAVHA采用预测、权重与决策三阶段架构：堆叠LSTM预测候选网络短期状态变化；注意力机制以当前网络状态矩阵为自注意力输入，融合飞行速度与高度等移动特征，输出随飞行阶段自适应变化的动态属性权重；融合当前与预测状态构建改进TOPSIS决策矩阵，并以TOPSIS贴近度评分优势阈值和连续确认窗口组成的双重滞后机制完成候选排序与切换裁定。LAAVHA通过动态权重与前瞻预测，克服了传统MADM方法权重固定和被动响应的问题，实现了无人机遥感巡航场景下的稳定候选网络评价。在场景层面，无人机遥感探测任务具有广域巡航、高速跨越5G/LTE/WiFi覆盖边界以及跨越边界或遭遇遮挡时信道突变等特点；同时，高分辨率遥感图像需要在飞行过程中持续、可靠地回传。为满足这一场景需求，在LAAVHA决策框架之上进一步引入自适应滞后（ADH）与风险敏感TOPSIS（RS-TOPSIS）两项增强机制，形成注意力LSTM增强型风险感知垂直切换算法（ALERA）。ADH将固定的切换阈值与确认窗口替换为上下文感知的可变参数：以服务网络近5个周期的SINR标准差度量信道波动，阈值随波动从0.03线性增长至0.08，确认窗口随飞行速度在$[2,4]$范围内自适应缩短（此参数取值依据会在后续实验进行说明）。RS-TOPSIS依据候选网络近期TOPSIS贴近度评分的波动程度施加风险罚分：评分越不稳定，排序时扣减越大，从而优先选择历史表现更稳定的网络。两项增强机制不改变LSTM与注意力网络的模型结构和训练过程，而是在候选网络评分生成之后、最终执行切换之前的规则判定环节发挥作用：ADH调整切换阈值与确认窗口，RS-TOPSIS调整候选网络的排序依据，二者协同实现信道波动感知与风险规避决策，使算法更适配遥感探测场景下的持续可靠回传需求。
+针对上述两个层面相互关联的挑战，本文提出分层次的解决方案。在算法层面，构建基于长短期记忆神经网络和注意力机制的自适应垂直切换算法（LAAVHA），以引入注意力机制弥补传统MADM方法在动态权重与时序预测方面的不足。LAAVHA采用预测、权重与决策三阶段架构：堆叠LSTM预测候选网络短期状态变化；注意力机制以当前网络状态矩阵为自注意力输入，融合飞行速度与高度等移动特征，输出随飞行阶段自适应变化的动态属性权重；融合当前与预测状态构建改进TOPSIS决策矩阵，并以TOPSIS贴近度评分优势阈值和连续确认窗口组成的双重滞后机制完成候选排序与切换裁定。LAAVHA通过动态权重与前瞻预测，克服了传统MADM方法权重固定和被动响应的问题，实现了无人机遥感巡航场景下的稳定候选网络评价。在场景层面，无人机遥感探测任务具有广域巡航、高速跨越5G/LTE/WiFi覆盖边界以及跨越边界或遭遇遮挡时信道突变等特点；同时，高分辨率遥感图像需要在飞行过程中持续、可靠地回传。为满足这一场景需求，在LAAVHA决策框架之上进一步引入自适应滞后（Adaptive Dynamic Hysteresis，ADH）与风险敏感TOPSIS（Risk-Sensitive TOPSIS，RS-TOPSIS）两项增强机制，形成注意力LSTM增强型风险感知垂直切换算法（ALERA）。
+
+ADH针对固定阈值和固定确认窗口难以兼顾稳定性与时效性的问题，依据当前服务网络近5个决策周期的SINR标准差刻画信道波动，并结合飞行速度动态更新切换条件。信道波动增大时，ADH提高评分优势阈值以过滤短时扰动；飞行速度增大时，ADH缩短连续确认窗口，使无人机能够在覆盖边界快速变化时及时完成必要切换。由此，ADH在信道平稳时保持较低的切换门槛，在信道剧烈波动时提高防抖能力。
+
+RS-TOPSIS针对候选网络当前评分偏高但近期表现不稳定的问题，维护候选网络近5轮TOPSIS贴近度历史，计算各候选网络评分的标准差，并从当前贴近度中扣除与波动程度成正比的风险罚分。经惩罚后的鲁棒评分同时反映候选网络的即时性能和历史稳定性，使均值略高但波动剧烈的网络不再因短时峰值获得优先级，从而降低高波动信道诱发的误切换风险。
+
+第三章通过持续性链路劣化和瞬时波动两类竞争场景验证上述机制。ADH的切换阈值在$[0.03,0.08]$范围内随信道波动自适应调整，并与RS-TOPSIS共同构成ALERA；以固定低阈值$\Delta_{\mathrm{th}}=0.03$的双重滞后方案为对比，二者在持续性链路劣化区间均能完成必要切换，而固定低阈值方案在瞬时波动区间额外触发两次切换，形成乒乓切换过程，ALERA未发生此类无效切换。该对比表明，ADH与RS-TOPSIS能够在保留必要切换能力的同时抑制波动驱动的误切换，提高无人机遥感数据持续回传过程中的决策鲁棒性。
 
 \section{网络场景与网络状态参数}
 
-考虑无人机遥感巡航场景：无人机在$2000~\mathrm{m}\times2000~\mathrm{m}$的任务区域内沿预定航线飞行，飞行高度为$50\sim150~\mathrm{m}$，巡航速度为$5\sim30~\mathrm{m/s}$。任务区域内存在WiFi、LTE和5G三种候选接入网络，其覆盖范围与部署密度各不相同：WiFi热点覆盖半径约$200~\mathrm{m}$，部署于地面站和关键拍摄点周边；LTE基站覆盖半径约$1\sim2~\mathrm{km}$，沿航线稀疏分布；5G基站覆盖半径约$500~\mathrm{m}$，部署于任务区域东侧的遥感数据汇聚位置，提供高速率接入但覆盖尚不连续。无人机在飞行过程中周期性采集各候选网络的状态信息，用于切换决策\upcite{21}。
+考虑无人机遥感巡航场景，无人机在$2000~\mathrm{m}\times2000~\mathrm{m}$的任务区域内沿预定航线飞行，飞行高度为$50\sim150~\mathrm{m}$，巡航速度为$5\sim30~\mathrm{m/s}$。任务区域内存在WiFi、LTE和5G三种候选接入网络，其覆盖范围与部署密度各不相同：WiFi热点覆盖半径约$200~\mathrm{m}$，部署于地面站和关键拍摄点周边；LTE基站覆盖半径约$1\sim2~\mathrm{km}$，沿航线稀疏分布；5G基站覆盖半径约$500~\mathrm{m}$，部署于任务区域东侧的遥感数据汇聚位置，提供高速率接入但覆盖尚不连续。无人机在飞行过程中周期性采集各候选网络的状态信息，用于切换决策\upcite{21}。
 
 \begin{figure}[H]
 \centering
+\includegraphics[width=\textwidth]{plots_chapter3_v2.png}
 \caption{无人机遥感任务区域中的异构网络覆盖与移动轨迹示意}
 \label{fig:network_coverage}
-\includegraphics[width=\textwidth]{plots_chapter3_v2.png}
 \end{figure}
 
 如图\ref{fig:network_coverage}所示，任务区域内三类网络形成尺度不同且相互重叠的覆盖空间：WiFi热点覆盖范围较小，主要服务地面站和关键拍摄点附近的数据接入；LTE基站覆盖范围较广，为无人机广域巡航提供连续性较强的基础连接；5G基站部署于任务区域东侧的数据汇聚位置，在有限覆盖范围内提供高速率传输。图中的5G gNB（next generation NodeB）表示5G无线接入基站，负责为无人机提供5G信号覆盖、无线资源调度和高速数据传输服务。无人机沿预定轨迹飞行时依次进入、离开并穿越不同网络的重叠覆盖区域，当当前服务网络质量下降而其他候选网络的综合性能上升时，需要执行垂直切换。图中各覆盖圆的相对尺度与前述覆盖半径设置一致，为后续网络状态采集和候选网络评价提供场景基础。
@@ -103,15 +110,18 @@ S_i(t)=\left[\mathrm{SINR}_i(t),\,\mathrm{RSRP}_i(t),\,D_i(t),\,T_i(t),\,\mathrm
 
 \begin{figure}[H]
 \centering
+\includegraphics[width=\textwidth]{fig_laavha_framework_v3.png}\\[1mm]
+(a) LAAVHA算法框架\\[3mm]
+\includegraphics[width=\textwidth]{fig_alera_framework_v3.png}\\[1mm]
+(b) ALERA算法框架
 \caption{LAAVHA与ALERA算法框架}
 \label{fig:frameworks}
-(a) LAAVHA算法框架\\[1mm]
-\includegraphics[width=\textwidth]{fig_laavha_framework_v3.png}\\[3mm]
-(b) ALERA算法框架\\[1mm]
-\includegraphics[width=\textwidth]{fig_alera_framework_v3.png}
 \end{figure}
 
-图\ref{fig:frameworks}中的各模块并非并列孤立运行，而是围绕同一组网络状态形成端到端变量流：由第1章采集并归一化后的历史序列$X_k$首先进入堆叠LSTM，得到下一时刻预测状态$S_{\mathrm{pred}}$；同一决策周期的当前状态矩阵$S_{\mathrm{cur}}$进入注意力模块，与速度、高度等移动特征共同生成动态权重$w$；随后$S_{\mathrm{cur}}$、$S_{\mathrm{pred}}$和$w$在改进TOPSIS模块中汇合，输出候选网络贴近度$C_i$；最后，$C_i$与当前接入网络$N_{\mathrm{cur}}$共同进入滞后判决和ALERA增强机制，形成最终切换决策。按照这一链路，2.1节解决``未来状态是什么''，2.2节解决``当前任务更重视哪些指标''，2.3节解决``综合当前与未来后哪个网络更优''，2.4节进一步解决``在波动环境下是否应该执行这次切换''。
+如图\ref{fig:frameworks}所示，该图展示了LAAVHA从网络状态预测、动态权重生成、候选网络排序到双重滞后判决的基础算法框架，以及ADH与RS-TOPSIS两项机制对基础决策链的增强过程。
+图中的各模块并非并列孤立运行，而是围绕同一组网络状态形成端到端变量流：由第1章采集并归一化后的历史序列$X_k$首先进入堆叠LSTM，得到下一时刻预测状态$S_{\mathrm{pred}}$；同一决策周期的当前状态矩阵$S_{\mathrm{cur}}$进入注意力模块，与速度、高度等移动特征共同生成动态权重$w$；随后$S_{\mathrm{cur}}$、$S_{\mathrm{pred}}$和$w$在改进TOPSIS模块中汇合，输出候选网络贴近度$C_i$；最后，$C_i$与当前接入网络$N_{\mathrm{cur}}$共同进入滞后判决和ALERA增强机制，形成最终切换决策。按照这一链路，2.1节解决``未来状态是什么''，2.2节解决``当前任务更重视哪些指标''，2.3节解决``综合当前与未来后哪个网络更优''，2.4节进一步解决``在波动环境下是否应该执行这次切换''。
+
+图中预测分支的$\theta_1$、$\theta_2$表示两层LSTM参数，$W_{\mathrm{pred}}$和$b_{\mathrm{pred}}$表示预测头的权重与偏置。注意力分支中，$Q$、$K$、$V$为查询、键和值，$A$为注意力输出，$c$为均值池化后的上下文向量，$v$和$h$分别为飞行速度与高度，$W_{\mathrm{mob}}$将二者映射为移动特征$m$，$W_{\mathrm{weight}}$再将$c$与$m$的拼接结果投影为动态权重$w$。TOPSIS分支中，$D$为融合决策矩阵，$\alpha$为融合系数，$d_{ij}$、$r_{ij}$和$v_{ij}$分别表示融合、归一化和加权后的矩阵元素，$v_j^+$与$v_j^-$为正、负理想解，$D_i^+$与$D_i^-$为候选网络$i$到两类理想解的欧氏距离，$C_i$为贴近度，$N^*$为排序得到的目标网络，$\Delta_{\mathrm{th}}$和$T_h$分别为切换阈值与连续确认窗口。增强分支中，$K_c$为贴近度历史长度，$\sigma_i^C$为候选网络$i$的评分标准差，$\lambda$为风险系数，$C_i^{\mathrm{robust}}$为风险罚分后的鲁棒评分，$\sigma$为当前服务网络近5个周期的SINR标准差。
 
 \subsection{基于堆叠LSTM的网络状态预测}
 
@@ -143,7 +153,7 @@ w &= \mathrm{softmax}\!\left(W_{\mathrm{weight}}[c\parallel m]\right),\quad W_{\
 
 \subsection{融合预测状态的改进TOPSIS决策}
 
-本节是前述两个学习模块的汇合点：第2.1节输出的$S_{\mathrm{pred}}$提供短期未来状态，第2.2节输出的$w$提供当前飞行阶段下的属性重要性，第1章定义并实时采集的$S_{\mathrm{cur}}$提供当前观测状态。在遥感巡航场景中，候选网络的优劣需要综合权衡信号强度、传输能力与可靠性三个维度，不存在单一指标最优的``完美网络''。TOPSIS的基本思想是将各候选网络在多维属性空间中的位置与虚拟的``最优网络''和``最劣网络''进行比较\upcite{7--8}。为避免传统TOPSIS仅依赖当前状态导致的被动决策，LAAVHA首先将当前状态与LSTM预测状态进行融合，构建决策矩阵：
+本节是前述两个学习模块的汇合点。第2.1节输出的$S_{\mathrm{pred}}$提供短期未来状态，第2.2节输出的$w$提供当前飞行阶段下的属性重要性，第1章定义并实时采集的$S_{\mathrm{cur}}$提供当前观测状态。在遥感巡航场景中，候选网络的优劣需要综合权衡信号强度、传输能力与可靠性三个维度，不存在单一指标最优的``完美网络''。TOPSIS的基本思想是将各候选网络在多维属性空间中的位置与虚拟的``最优网络''和``最劣网络''进行比较\upcite{7--8}。为避免传统TOPSIS仅依赖当前状态导致的被动决策，LAAVHA首先将当前状态与LSTM预测状态进行融合，构建决策矩阵：
 \begin{align}
 s_{\mathrm{norm}} &= \frac{s-s_{\min}}{s_{\max}-s_{\min}},\quad \text{for each indicator }j, \label{eq:norm}\\
 d_{ij} &= \alpha s_{\mathrm{cur}}(i,j)+(1-\alpha)s_{\mathrm{pred}}(i,j),\quad \alpha=0.6, \label{eq:fuse}\\
@@ -167,29 +177,53 @@ N^* &= \arg\max_i C_i, \label{eq:select}\\
 \text{keep }N_{\mathrm{cur}}, & \text{otherwise},
 \end{cases} \label{eq:hysteresis}
 \end{align}
-式\eqref{eq:select}至式\eqref{eq:hysteresis}中，$N^*$表示当前决策周期内贴近度$C_i$最大的候选网络，$N_{\mathrm{cur}}$表示无人机当前正在接入的服务网络，$C(N^*)$和$C(N_{\mathrm{cur}})$分别表示目标候选网络和当前服务网络的TOPSIS贴近度。$\Delta_{\mathrm{th}}$为切换触发阈值，用于要求目标网络相对当前网络具有足够明显的评分优势；$T_h$为连续确认窗口，用于要求该优势连续保持若干个决策周期。本文设置$\Delta_{\mathrm{th}}=0.05$，$T_h=3$（此参数取值依据会在后续实验进行说明）。为降低网络状态瞬时波动引发的乒乓切换，算法设置双重滞后机制。式\eqref{eq:select}至式\eqref{eq:hysteresis}描述了切换的最终裁定逻辑：仅当得分最高的候选网络$N^*$的贴近度超过当前服务网络$N_{\mathrm{cur}}$达$\Delta_{\mathrm{th}}=0.05$以上，且该条件在连续$T_h=3$个决策周期内持续满足时，才正式执行切换。在遥感任务中，一次乒乓切换可能导致正在传输的图像数据包丢失。滞后机制通过阈值过滤小幅评分波动，通过时间窗口消除瞬时信道异常触发的虚假切换，两者协同保障遥感数据传输的连续性。表\ref{tab:process}是整个LAAVHA算法的总体流程，对上述预测、权重生成、TOPSIS排序和滞后裁定步骤进行汇总。
+式\eqref{eq:select}至式\eqref{eq:hysteresis}中，$N^*$表示当前决策周期内贴近度$C_i$最大的候选网络，$N_{\mathrm{cur}}$表示无人机当前正在接入的服务网络，$C(N^*)$和$C(N_{\mathrm{cur}})$分别表示目标候选网络和当前服务网络的TOPSIS贴近度。$\Delta_{\mathrm{th}}$为切换触发阈值，用于要求目标网络相对当前网络具有足够明显的评分优势；$T_h$为连续确认窗口，用于要求该优势连续保持若干个决策周期。本文设置$\Delta_{\mathrm{th}}=0.05$，$T_h=3$（此参数取值依据会在后续实验进行说明）。为降低网络状态瞬时波动引发的乒乓切换，算法设置双重滞后机制。仅当得分最高的候选网络$N^*$的贴近度超过当前服务网络$N_{\mathrm{cur}}$达$\Delta_{\mathrm{th}}=0.05$以上，且该条件在连续$T_h=3$个决策周期内持续满足时，才正式执行切换。算法\ref{alg:laavha}将上述预测、权重生成、TOPSIS排序和滞后裁定串联为一次完整的LAAVHA决策流程。
 
-\begin{table}[H]
-\centering
-\caption{LAAVHA垂直切换算法总体流程}
+\begin{algorithm}[H]
+\caption{LAAVHA垂直切换决策流程}
+\label{alg:laavha}
 \small
-\begin{tabular}{cp{11cm}}
-\toprule
-步骤 & 说明 \\
-\midrule
-1 & 采集5G、LTE和WiFi候选网络的SINR、RSRP、时延、吞吐量和丢包率 \\
-2 & 对效益型和成本型指标进行归一化处理，构建历史状态序列 \\
-3 & 利用堆叠LSTM预测各候选网络短期未来状态 \\
-4 & 基于注意力机制生成动态属性权重 \\
-5 & 融合当前状态与预测状态，构建改进TOPSIS决策矩阵 \\
-6 & 计算候选网络相对贴近度，选取得分最高的目标网络 \\
-7 & 结合贴近度阈值和时间窗口滞后机制输出最终切换决策 \\
-\bottomrule
-\end{tabular}
-\label{tab:process}
-\end{table}
+\begin{algorithmic}[1]
+\Require 历史状态$\{X_k\}_{k=1}^{3}$，当前状态$S_{\mathrm{cur}}$，移动状态$[v,h]$，当前服务网络$N_{\mathrm{cur}}$，上周期确认候选$N_{\mathrm{cand}}$及其连续计数$q$
+\Ensure 切换决策$\mathrm{Decision}$与更新后的$N_{\mathrm{cur}}$、$N_{\mathrm{cand}}$和$q$
+\State \textbf{阶段0：初始化}
+\State 读取当前决策周期的状态与上周期滞后状态$N_{\mathrm{cand}}$、$q$
+\State \textbf{阶段1：状态预测与动态权重生成}
+\For{$k\gets1$ \textbf{to} $3$}
+    \State $h_{1,k}\gets\mathrm{LSTM}_1(X_k;\theta_1)$，$h_{2,k}\gets\mathrm{LSTM}_2(h_{1,k};\theta_2)$
+    \State $s_{\mathrm{pred},k}\gets W_{\mathrm{pred}}h_{2,k}[-1]+b_{\mathrm{pred}}$
+\EndFor
+\State 将$\{s_{\mathrm{pred},k}\}_{k=1}^{3}$堆叠为$S_{\mathrm{pred}}$
+\State $A\gets\mathrm{Attention}(S_{\mathrm{cur}},S_{\mathrm{cur}},S_{\mathrm{cur}})$，$c\gets\mathrm{mean}(A,\mathrm{dim}=0)$
+\State $m\gets\mathrm{ReLU}(W_{\mathrm{mob}}[v,h]^\top)$，$w\gets\mathrm{softmax}(W_{\mathrm{weight}}[c\parallel m])$
+\State \textbf{阶段2：融合TOPSIS候选排序}
+\For{$i\gets1$ \textbf{to} $3$}
+    \For{$j\gets1$ \textbf{to} $5$}
+        \State $d_{ij}\gets0.6s_{\mathrm{cur}}(i,j)+0.4s_{\mathrm{pred}}(i,j)$
+        \If{$j\in\{\mathrm{delay},\mathrm{PLR}\}$} $d_{ij}\gets1-d_{ij}$ \EndIf
+    \EndFor
+\EndFor
+\State 按式\eqref{eq:topsis1}至式\eqref{eq:topsis5}计算$r_{ij}$、$v_{ij}$、$v_j^+$、$v_j^-$、$D_i^+$、$D_i^-$和$C_i$
+\State $N^*\gets\arg\max_i C_i$
+\State \textbf{阶段3：双重滞后切换判决}
+\If{$N^*\ne N_{\mathrm{cand}}$}
+    \State $N_{\mathrm{cand}}\gets N^*$，$q\gets0$
+\EndIf
+\If{$C(N^*)-C(N_{\mathrm{cur}})>\Delta_{\mathrm{th}}$}
+    \State $q\gets q+1$
+\Else
+    \State $q\gets0$
+\EndIf
+\If{$q\geq T_h$}
+    \State $\mathrm{Decision}\gets\text{切换至 }N^*$，$N_{\mathrm{cur}}\gets N^*$
+\Else
+    \State $\mathrm{Decision}\gets\text{保持 }N_{\mathrm{cur}}$
+\EndIf
+\State \Return $\mathrm{Decision}$，$N_{\mathrm{cur}}$，$N_{\mathrm{cand}}$，$q$
+\end{algorithmic}
+\end{algorithm}
 
-需要指出的是，上述TOPSIS决策流程和双重滞后机制在训练阶段用于生成监督标签：对每条历史网络状态记录，执行完整的融合决策矩阵构建、加权TOPSIS排序和滞后条件检查，将最终选定的最优网络编号作为该记录的训练目标。部署阶段，训练好的LAAVHA\_Net仅输出$S_{\mathrm{pred}}\in\mathbf{R}^{3\times5}$和$w\in\mathbf{R}^5$；神经网络不直接输出切换决策，而是作为``状态感知器''提供时序预测与动态权重；推理侧随后依次执行式\eqref{eq:fuse}的融合矩阵构建、式\eqref{eq:topsis1}至式\eqref{eq:topsis5}的TOPSIS排序和式\eqref{eq:select}至式\eqref{eq:hysteresis}的滞后裁定，最终输出目标网络编号。由此可见，$X_k$、$S_{\mathrm{cur}}$、$S_{\mathrm{pred}}$、$w$、$D$、$C_i$和$\mathrm{Decision}$构成一条连续的数据链，而不是多个互不相关的公式集合。这一``神经网络预测+规则化决策''的混合架构，使算法的每一步变换均可由式\eqref{eq:state}至式\eqref{eq:hysteresis}完整追踪，兼顾了深度学习的时序建模能力和传统多属性决策的透明性与可解释性。
+算法\ref{alg:laavha}表明，堆叠LSTM只提供预测状态$S_{\mathrm{pred}}$，注意力模块只提供动态权重$w$；两者与$S_{\mathrm{cur}}$共同进入TOPSIS计算贴近度$C_i$，最终由双重滞后规则给出切换结果。各变量的计算顺序与式\eqref{eq:lstm1}至式\eqref{eq:hysteresis}一致。
 
 \subsection{ALERA增强型风险感知垂直切换算法}
 
@@ -214,6 +248,45 @@ C_i^{\mathrm{robust}}=C_i-\lambda\sigma_i^C,\quad \lambda=0.5.
 其中$\sigma_i^C$为网络$i$近5轮评分的标准差，$\lambda=0.5$为风险厌恶系数（此参数取值依据会在后续实验进行说明）。该机制的核心思想是：在多个候选网络贴近度接近时，优先选择评分稳定的网络而非均值略高但波动剧烈的网络。例如，在遥感巡航场景中，若LTE在近5个周期内贴近度持续上升、方差较小，而WiFi贴近度在高低之间大幅跳动，即使WiFi的当前贴近度略高于LTE，$C_i^{\mathrm{robust}}$排序仍将偏好LTE，保障遥感数据传输的连续性。
 
 两项增强机制无需重新训练LSTM-Attention模型，也不改变其前向推理结构，仅在已有状态与评分序列上进行轻量统计和规则更新，因此新增计算开销相对于堆叠LSTM预测与注意力权重生成较小。ADH负责根据信道波动和飞行速度调整切换门槛，RS-TOPSIS负责抑制高波动候选网络的排序优势：信道平稳时，两者对原有决策的影响较弱；信道波动加剧时，自适应阈值、确认窗口和风险罚分协同作用，以较低额外开销增强环境感知与乒乓切换抑制能力。
+
+算法\ref{alg:alera}给出ALERA在每个决策周期对基础贴近度的增强过程。其输入$C_i$来自算法\ref{alg:laavha}的TOPSIS步骤；RS-TOPSIS先修正排序分数，ADH再更新双重滞后的触发参数，最后仍依据评分优势的连续性决定是否切换。
+
+\begin{algorithm}[H]
+\caption{ALERA风险感知垂直切换增强流程}
+\label{alg:alera}
+\small
+\begin{algorithmic}[1]
+\Require 基础贴近度$\{C_i\}_{i=1}^{3}$及其近$K_c=5$轮历史，当前服务网络SINR近5轮历史，飞行速度$v$，当前服务网络$N_{\mathrm{cur}}$，上周期确认候选$N_{\mathrm{cand}}$及其连续计数$q$
+\Ensure 增强切换决策$\mathrm{Decision}$与更新后的$N_{\mathrm{cur}}$、$N_{\mathrm{cand}}$和$q$
+\State \textbf{阶段0：状态与历史缓存初始化}
+\State 读取基础贴近度、SINR历史、飞行速度及上周期滞后状态$N_{\mathrm{cand}}$、$q$
+\State \textbf{阶段1：RS-TOPSIS风险敏感排序}
+\For{$i\gets1$ \textbf{to} $3$}
+    \State 将$C_i$写入贴近度历史缓存并保留最近$K_c$轮
+    \State $\sigma_i^C\gets\mathrm{std}(C_i\text{的近}K_c\text{轮历史})$
+    \State $C_i^{\mathrm{robust}}\gets C_i-0.5\sigma_i^C$
+\EndFor
+\State $N^*\gets\arg\max_i C_i^{\mathrm{robust}}$
+\State \textbf{阶段2：ADH自适应滞后参数更新}
+\State $\sigma\gets\mathrm{std}(N_{\mathrm{cur}}\text{的近5轮SINR})$
+\State $\Delta_{\mathrm{th}}\gets0.03+0.05(\sigma/10)$，$T_h\gets\max(2,\lfloor4-2v/30\rfloor)$
+\State \textbf{阶段3：鲁棒评分双重滞后判决}
+\If{$N^*\ne N_{\mathrm{cand}}$}
+    \State $N_{\mathrm{cand}}\gets N^*$，$q\gets0$
+\EndIf
+\If{$C^{\mathrm{robust}}(N^*)-C^{\mathrm{robust}}(N_{\mathrm{cur}})>\Delta_{\mathrm{th}}$}
+    \State $q\gets q+1$
+\Else
+    \State $q\gets0$
+\EndIf
+\If{$q\geq T_h$}
+    \State $\mathrm{Decision}\gets\text{切换至 }N^*$，$N_{\mathrm{cur}}\gets N^*$
+\Else
+    \State $\mathrm{Decision}\gets\text{保持 }N_{\mathrm{cur}}$
+\EndIf
+\State \Return $\mathrm{Decision}$，$N_{\mathrm{cur}}$，$N_{\mathrm{cand}}$，$q$
+\end{algorithmic}
+\end{algorithm}
 
 \subsection{复杂度分析与算法总结}
 
@@ -251,11 +324,10 @@ RS-TOPSIS & 输入：近期贴近度历史；输出：LCB调整后排序 & 历�
 
 \begin{figure}[H]
 \centering
+\includegraphics[width=\textwidth]{fig_parameter_sensitivity.png}
 \caption{融合系数、双重滞后参数与增强机制参数的灵敏度实验}
 \label{fig:param_sensitivity}
 {\small （图b、图c单元格上行为平均误切换次数，下行为平均检测时延）\par}
-\vspace{1mm}
-\includegraphics[width=\textwidth]{fig_parameter_sensitivity.png}
 \end{figure}
 
 在上述参数取值实验基础上，表\ref{tab:params}汇总本节采用的平台、网络场景、模型结构和训练/推理参数。后续对比算法、指标来源和结果分析均基于同一组仿真设置，以避免算法差异与实验环境差异相互混淆。
@@ -314,7 +386,7 @@ LTE & 基于MobilityModel位置的传播代理值 & FlowMonitor & FlowMonitor & 
 \label{tab:metrics}
 \end{table}
 
-表\ref{tab:metrics}用于说明第3章实验中五类网络状态指标的采集来源。SINR和RSRP主要反映物理层链路质量，实验中依据无人机与接入点或基站的相对位置及传播代理模型计算得到；时延、吞吐量和丢包率主要反映传输层服务质量，其中WiFi吞吐量由PacketSink在相邻决策周期内的接收字节数换算，LTE和5G的传输类指标由FlowMonitor统计得到。需要强调的是，该表刻画的是决策级仿真平台中的指标来源映射，而非完整协议栈实网测量流程：各候选网络在同一决策周期内提供同维度指标，随后由LAAVHA及对比算法统一归一化并输入多属性决策模块。这样设置可以保证不同算法面对完全一致的候选网络状态，避免因采集口径差异影响横向比较。
+表\ref{tab:metrics}用于说明第3章实验中五类网络状态指标的采集来源。SINR和RSRP主要反映物理层链路质量，实验中依据无人机与接入点或基站的相对位置及传播代理模型计算得到；时延、吞吐量和丢包率主要反映传输层服务质量，其中WiFi吞吐量由PacketSink在相邻决策周期内的接收字节数换算，LTE和5G的传输类指标由FlowMonitor统计得到。需要强调的是，该表刻画的是决策级仿真平台中的指标来源映射，而非完整协议栈实网测量流程。各候选网络在同一决策周期内提供同维度指标，随后由LAAVHA及对比算法统一归一化并输入多属性决策模块。这样设置可以保证不同算法面对完全一致的候选网络状态，避免因采集口径差异影响横向比较。
 
 \subsection{对比算法横向比较}
 
@@ -324,9 +396,9 @@ LTE & 基于MobilityModel位置的传播代理值 & FlowMonitor & FlowMonitor & 
 
 \begin{figure}[H]
 \centering
+\includegraphics[width=\textwidth]{fig_handover_count_by_algorithm.png}
 \caption{11种算法平均切换次数对比（mean $\pm$ std, n=50）}
 \label{fig:ho_comparison}
-\includegraphics[width=\textwidth]{fig_handover_count_by_algorithm.png}
 \end{figure}
 
 \subsection{代表性算法决策过程对比}
@@ -335,9 +407,9 @@ LTE & 基于MobilityModel位置的传播代理值 & FlowMonitor & FlowMonitor & 
 
 \begin{figure}[H]
 \centering
+\includegraphics[width=\textwidth]{fig_scoring_timeline_comparison.png}
 \caption{LAAVHA/TOPSIS-Q/Fuzzy-VHO候选网络评分与SINR时序对比（seed=200，竖线=切换时刻）}
 \label{fig:scoring}
-\includegraphics[width=\textwidth]{fig_scoring_timeline_comparison.png}
 \end{figure}
 
 \subsection{消融实验验证}
@@ -346,9 +418,9 @@ LTE & 基于MobilityModel位置的传播代理值 & FlowMonitor & FlowMonitor & 
 
 \begin{figure}[H]
 \centering
+\includegraphics[width=0.68\textwidth]{fig_laavha_handover_count.png}
 \caption{LAAVHA消融实验切换次数对比（mean $\pm$ std, n=50）}
 \label{fig:ablation}
-\includegraphics[width=0.68\textwidth]{fig_laavha_handover_count.png}
 \end{figure}
 
 上述消融结果表明，LSTM预测模块和注意力动态权重模块对LAAVHA决策质量的贡献具有显著的协同效应：单独保留任一模块均无法维持低切换水平。Attention模块的缺失影响最为严重（平均切换从0.24次增至2.00次，增幅达8倍，且50次运行无一例外），说明在遥感巡航场景下，基于飞行状态和候选网络状态生成的动态权重比静态统计权重更能区分不同飞行阶段的网络需求；LSTM模块的缺失导致切换次数上升至1.08次且方差增大（std=1.01），说明时序预测能力对维持决策稳定性同样关键。两个模块的消融结果从正反两面共同验证了LAAVHA架构设计的合理性。
@@ -369,9 +441,9 @@ LTE & 基于MobilityModel位置的传播代理值 & FlowMonitor & FlowMonitor & 
 
 \begin{figure}[H]
 \centering
+\includegraphics[width=0.86\textwidth]{fig_adaptive_hysteresis_proof.png}
 \caption{自适应滞后机制验证：固定低阈值（$\Delta_{\mathrm{th}}=0.03$）与ALERA在持续性链路劣化和瞬时波动竞争场景下的对比}
 \label{fig:enhanced}
-\includegraphics[width=0.86\textwidth]{fig_adaptive_hysteresis_proof.png}
 \end{figure}
 
 \section{结束语}
