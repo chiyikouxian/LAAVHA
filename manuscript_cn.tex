@@ -65,7 +65,7 @@ SUN Hanming$^{[1]}$, LIU Tong$^{[1]}$, SU Wen$^{[1]}$, LIN Jie$^{[1]}$, LUO Juns
 \setcounter{section}{-1}
 \section{引言}
 
-无人机遥感系统在灾害评估、农业普查、环境监测等领域广泛应用，无人机搭载的高分辨率光学/多光谱载荷在巡航过程中产生大量遥感图像数据，需通过5G、LTE和WiFi等异构无线网络实时回传至地面站\upcite{1--3}。然而，无人机的高机动性导致其频繁穿越不同网络的覆盖边界，触发垂直切换\upcite{4}。传统垂直切换研究主要围绕多属性决策方法（Multiple Attribute Decision Making, MADM）展开，如TOPSIS\upcite{6--7}、VIKOR\upcite{20}、GRA\upcite{20}、COPRAS\upcite{20}、SPOTIS\upcite{20}、Fuzzy-VHO\upcite{4}和SAW等\upcite{5}，通过构建信噪比、时延、吞吐量等网络属性的评价矩阵进行候选排序。这些方法存在两个共性问题：一是权重通常由熵权法或层次分析法一次性确定\upcite{8--9}，无法随飞行阶段和信道环境动态调整；二是仅依据当前时刻的网络指标做决策，缺乏对未来状态变化的前瞻性判断，例如，当无人机高速飞向WiFi覆盖边缘时，可能在链路实际中断后才触发切换\upcite{10--11}。此外，近年深度强化学习（DRL）方法被引入切换决策\upcite{10--12}，但其黑箱性质和训练不稳定性在安全攸关的遥感巡航场景中带来可解释性和可靠性方面的顾虑。
+无人机遥感系统在灾害评估、农业普查、环境监测等领域广泛应用，无人机搭载的高分辨率光学/多光谱载荷在巡航过程中产生大量遥感图像数据，需通过5G、LTE和WiFi等异构无线网络实时回传至地面站\upcite{1--3}。然而，无人机的高机动性导致其频繁穿越不同网络的覆盖边界，触发垂直切换\upcite{4}。传统垂直切换研究主要围绕多属性决策方法（Multiple Attribute Decision Making, MADM）展开\upcite{5}，如TOPSIS\upcite{6--7,25}、VIKOR\upcite{20}，以及GRA、COPRAS、SPOTIS和SAW等多属性决策范式\upcite{9}；Fuzzy-VHO则采用模糊推理实现切换判决\upcite{4}。这些方法存在两个共性问题：一是权重通常由熵权法或层次分析法一次性确定\upcite{8--9}，无法随飞行阶段和信道环境动态调整；二是仅依据当前时刻的网络指标做决策，缺乏对未来状态变化的前瞻性判断，例如，当无人机高速飞向WiFi覆盖边缘时，可能在链路实际中断后才触发切换\upcite{10--11}。此外，近年深度强化学习（DRL）方法被引入切换决策\upcite{10--12}，但其黑箱性质和训练不稳定性在安全攸关的遥感巡航场景中带来可解释性和可靠性方面的顾虑。
 
 长短期记忆网络（LSTM）通过门控结构有效缓解梯度消失问题\upcite{13}，具有捕获长时间序列依赖关系的能力，已被应用于5G异构网络的切换判决和网络状态预测\upcite{14--15}。然而，单一LSTM网络存在两方面局限：其一，LSTM将候选网络的5维状态指标视为独立的时间序列分别建模，无法显式捕获指标之间的耦合关系，例如吞吐量与丢包率的负相关性、SINR与时延的关联性等；其二，LSTM输出的预测状态仍需配合固定或人工设定的属性权重才能完成多属性决策，无法根据飞行阶段和移动状态自适应调整各指标的重要性。
 
@@ -102,7 +102,7 @@ S_i(t)=\left[\mathrm{SINR}_i(t),\,\mathrm{RSRP}_i(t),\,D_i(t),\,T_i(t),\,\mathrm
 
 因此，式\eqref{eq:state}不是单独用于描述网络状态的静态定义，而是后续算法链路的统一输入接口。对同一时刻3个候选网络的$S_i(t)$按网络维度堆叠，可得到当前状态矩阵$S_{\mathrm{cur}}\in\mathbf{R}^{3\times5}$，该矩阵直接输入第2.2节的注意力权重生成模块；对单个候选网络连续10个决策周期的状态向量按时间维度堆叠，可得到历史状态张量$X_k\in\mathbf{R}^{10\times5}$，该张量输入第2.1节的堆叠LSTM预测模块。也就是说，第1章给出的网络状态参数同时承担两类作用：横向上刻画同一时刻不同候选网络的优劣差异，纵向上刻画同一网络随无人机运动产生的短期演化趋势。
 
-无人节点移动会引起候选网络信号质量和传输性能持续变化。在遥感巡航场景中，若仅依据当前时刻指标进行切换决策，无人机可能在高速接近WiFi覆盖边缘时未能提前切换，导致正在回传的图像数据因链路突然中断而丢失\upcite{21}。因此，算法将过去若干个决策周期的网络状态组织为时序输入，用于预测短期未来状态，并将预测结果与当前状态共同用于最终决策。
+无人节点移动会引起候选网络信号质量和传输性能持续变化。在遥感巡航场景中，若仅依据当前时刻指标进行切换决策，无人机在高速接近覆盖边缘时可能无法及时完成网络迁移，从而增加链路中断和业务连续性下降的风险；无人机蜂窝网络的覆盖与切换特性可参见\upcite{19}。已有研究也从自优化角度针对5G网络乒乓切换开展抑制研究\upcite{21}。因此，算法将过去若干个决策周期的网络状态组织为时序输入，用于预测短期未来状态，并将预测结果与当前状态共同用于最终决策。
 
 \section{LAAVHA自适应垂直切换算法}
 
@@ -366,9 +366,9 @@ LSTM隐藏单元 & 第一层128，第二层64 \\
 \label{tab:params}
 \end{table}
 
-实验除LAAVHA外，还运行了TOPSIS-Q、Fuzzy-VHO、SAW、VIKOR、GRA、COPRAS、SPOTIS和最强信号法等8种对比算法以及LAAVHA-L、LAAVHA-A两种消融变体。这8种对比算法覆盖了模糊逻辑式（Fuzzy-VHO）、简单加权式（SAW）、补偿式（VIKOR）、距离式（TOPSIS-Q）、关联度式（GRA）、比例式（COPRAS）和参考点式（SPOTIS）七种主流决策范式，为全面评估LAAVHA的决策性能提供了多维参照。对比算法来源与设置如下：TOPSIS-Q基于TOPSIS网络选择思想及熵权改进TOPSIS方法\upcite{6--7,25}；Fuzzy-VHO参考无人机5G网络中的模糊切换机制\upcite{4}；SAW作为经典加权和MADM基线，VIKOR、GRA、COPRAS和SPOTIS选自主流MADM决策范式及其网络选择综述\upcite{9,20,25}；最强信号法为本文设置的单因素启发式基线，仅依据SINR最大原则选择候选网络。LAAVHA-L表示去除LSTM预测分支的消融变体，直接以当前状态替代预测状态，保留Attention权重与双重滞后；LAAVHA-A表示去除Attention动态权重分支的消融变体，保留LSTM预测和双重滞后，并以熵权法生成TOPSIS权重。
+实验除LAAVHA外，还运行了TOPSIS-Q、Fuzzy-VHO、SAW、VIKOR、GRA、COPRAS、SPOTIS和最强信号法等8种对比算法以及LAAVHA-L、LAAVHA-A两种消融变体。这8种对比算法覆盖了模糊逻辑式（Fuzzy-VHO）、简单加权式（SAW）、补偿式（VIKOR）、距离式（TOPSIS-Q）、关联度式（GRA）、比例式（COPRAS）和参考点式（SPOTIS）七种主流决策范式，为全面评估LAAVHA的决策性能提供了多维参照。对比算法来源与设置如下：TOPSIS-Q基于TOPSIS网络选择思想及熵权改进TOPSIS方法\upcite{6--7,25}；Fuzzy-VHO参考无人机5G网络中的模糊切换机制\upcite{4}；VIKOR采用折中排序思想\upcite{20}；GRA、COPRAS、SPOTIS和SAW作为主流多属性移动性决策范式，其网络选择应用与分类参见综述\upcite{9}；最强信号法为本文设置的单因素启发式基线，仅依据SINR最大原则选择候选网络。LAAVHA-L表示去除LSTM预测分支的消融变体，直接以当前状态替代预测状态，保留Attention权重与双重滞后；LAAVHA-A表示去除Attention动态权重分支的消融变体，保留LSTM预测和双重滞后，并以熵权法生成TOPSIS权重。
 
-5G候选网络由代理链路表示，其SINR和RSRP由基于位置的传播模型计算\upcite{23}，传输类指标来自点到点代理流的FlowMonitor统计；切换事件表示LAAVHA输出的网络编号变化，并未执行真实WiFi解除关联、LTE分离或5G新空口（NR, new radio）协议栈切换。各候选网络指标来源见表\ref{tab:metrics}。
+5G候选网络由代理链路表示，其SINR和RSRP由基于位置的传播代理模型计算；模型参数设置遵循无线传播与链路预算的基本原理\upcite{23}。传输类指标来自点到点代理流的FlowMonitor统计；切换事件表示LAAVHA输出的网络编号变化，并未执行真实WiFi解除关联、LTE分离或5G新空口（NR, new radio）协议栈切换。各候选网络指标来源见表\ref{tab:metrics}。
 
 \begin{table}[H]
 \centering
@@ -480,7 +480,7 @@ LTE & 基于MobilityModel位置的传播代理值 & FlowMonitor & FlowMonitor & 
 \bibitem{ref24} NDEGWA S, NYACHIONJEKA K, MHARAKURWA E T. User preference-based heterogeneous network management system for vertical handover[J]. Journal of Electrical and Computer Engineering, 2023: 1--20.
 \bibitem{ref28} RAPPAPORT T S. Wireless communications: principles and practice[M]. 2nd ed. Upper Saddle River: Prentice Hall, 2002.
 \bibitem{ref29} VASWANI A, SHAZEER N, PARMAR N, et al. Attention is all you need[C]//Advances in Neural Information Processing Systems 30. Red Hook: Curran Associates, 2017: 5998--6008.
-\bibitem{ref30} HWANG C L, YOON K. Multiple attribute decision making: methods and applications[M]. Berlin: Springer-Verlag, 1981.
+\bibitem{ref30} HWANG C L, YOON K. Multiple attribute decision making: methods and applications. A state-of-the-art survey[M]. Berlin: Springer-Verlag, 1981.
 \end{thebibliography}
 }
 
