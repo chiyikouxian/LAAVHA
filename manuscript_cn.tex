@@ -65,9 +65,9 @@ SUN Hanming$^{[1]}$, LIU Tong$^{[1]}$, SU Wen$^{[1]}$, LIN Jie$^{[1]}$, LUO Juns
 \setcounter{section}{-1}
 \section{引言}
 
-无人机遥感系统在灾害评估、农业普查、环境监测等领域广泛应用，无人机搭载的高分辨率光学/多光谱载荷在巡航过程中产生大量遥感图像数据，需通过5G、LTE和WiFi等异构无线网络实时回传至地面站\upcite{1--3}。然而，无人机的高机动性导致其频繁穿越不同网络的覆盖边界，触发垂直切换\upcite{4}。传统垂直切换研究主要围绕多属性决策方法（Multiple Attribute Decision Making, MADM）展开，如TOPSIS\upcite{7--8}、VIKOR\upcite{22}、GRA\upcite{22}、COPRAS\upcite{22}、SPOTIS\upcite{22}、Fuzzy-VHO\upcite{4}和SAW等，通过构建信噪比、时延、吞吐量等网络属性的评价矩阵进行候选排序。这些方法存在两个共性问题：一是权重通常由熵权法或层次分析法一次性确定\upcite{10--11}，无法随飞行阶段和信道环境动态调整；二是仅依据当前时刻的网络指标做决策，缺乏对未来状态变化的前瞻性判断，例如，当无人机高速飞向WiFi覆盖边缘时，可能在链路实际中断后才触发切换\upcite{12--13}。此外，近年深度强化学习（DRL）方法被引入切换决策\upcite{12--14}，但其黑箱性质和训练不稳定性在安全攸关的遥感巡航场景中带来可解释性和可靠性方面的顾虑。
+无人机遥感系统在灾害评估、农业普查、环境监测等领域广泛应用，无人机搭载的高分辨率光学/多光谱载荷在巡航过程中产生大量遥感图像数据，需通过5G、LTE和WiFi等异构无线网络实时回传至地面站\upcite{1--3}。然而，无人机的高机动性导致其频繁穿越不同网络的覆盖边界，触发垂直切换\upcite{4}。传统垂直切换研究主要围绕多属性决策方法（Multiple Attribute Decision Making, MADM）展开，如TOPSIS\upcite{6--7}、VIKOR\upcite{20}、GRA\upcite{20}、COPRAS\upcite{20}、SPOTIS\upcite{20}、Fuzzy-VHO\upcite{4}和SAW等\upcite{5}，通过构建信噪比、时延、吞吐量等网络属性的评价矩阵进行候选排序。这些方法存在两个共性问题：一是权重通常由熵权法或层次分析法一次性确定\upcite{8--9}，无法随飞行阶段和信道环境动态调整；二是仅依据当前时刻的网络指标做决策，缺乏对未来状态变化的前瞻性判断，例如，当无人机高速飞向WiFi覆盖边缘时，可能在链路实际中断后才触发切换\upcite{10--11}。此外，近年深度强化学习（DRL）方法被引入切换决策\upcite{10--12}，但其黑箱性质和训练不稳定性在安全攸关的遥感巡航场景中带来可解释性和可靠性方面的顾虑。
 
-长短期记忆网络（LSTM）通过门控结构有效缓解梯度消失问题\upcite{15}，具有捕获长时间序列依赖关系的能力，已被应用于5G异构网络的切换判决和网络状态预测\upcite{16--17}。然而，单一LSTM网络存在两方面局限：其一，LSTM将候选网络的5维状态指标视为独立的时间序列分别建模，无法显式捕获指标之间的耦合关系，例如吞吐量与丢包率的负相关性、SINR与时延的关联性等；其二，LSTM输出的预测状态仍需配合固定或人工设定的属性权重才能完成多属性决策，无法根据飞行阶段和移动状态自适应调整各指标的重要性。
+长短期记忆网络（LSTM）通过门控结构有效缓解梯度消失问题\upcite{13}，具有捕获长时间序列依赖关系的能力，已被应用于5G异构网络的切换判决和网络状态预测\upcite{14--15}。然而，单一LSTM网络存在两方面局限：其一，LSTM将候选网络的5维状态指标视为独立的时间序列分别建模，无法显式捕获指标之间的耦合关系，例如吞吐量与丢包率的负相关性、SINR与时延的关联性等；其二，LSTM输出的预测状态仍需配合固定或人工设定的属性权重才能完成多属性决策，无法根据飞行阶段和移动状态自适应调整各指标的重要性。
 
 综上所述，当前无人机遥感异构网络中的垂直切换面临两个层面的挑战：在算法层面，传统多属性决策方法权重固定、缺乏时序预测能力，单一LSTM即使引入预测机制仍无法自适应调节属性权重以适应飞行阶段变化；在场景层面，平稳飞行时信号波动小，而跨越覆盖边界或遭遇遮挡时信号会剧烈振荡，固定的切换阈值和确认窗口难以同时适应两类环境。两个层面的问题相互关联：算法适应性的不足加剧了场景波动带来的切换不稳定，而场景的动态变化又要求算法具备更强的环境感知能力。
 
@@ -77,11 +77,11 @@ ADH针对固定阈值和固定确认窗口难以兼顾稳定性与时效性的�
 
 RS-TOPSIS针对候选网络当前评分偏高但近期表现不稳定的问题，维护候选网络近5轮TOPSIS贴近度历史，计算各候选网络评分的标准差，并从当前贴近度中扣除与波动程度成正比的风险罚分。经惩罚后的鲁棒评分同时反映候选网络的即时性能和历史稳定性，使均值略高但波动剧烈的网络不再因短时峰值获得优先级，从而降低高波动信道诱发的误切换风险。
 
-第三章通过持续性链路劣化和瞬时波动两类竞争场景验证上述机制。ADH的切换阈值在$[0.03,0.08]$范围内随信道波动自适应调整，并与RS-TOPSIS共同构成ALERA；以固定低阈值$\Delta_{\mathrm{th}}=0.03$的双重滞后方案为对比，二者在持续性链路劣化区间均能完成必要切换，而固定低阈值方案在瞬时波动区间额外触发两次切换，形成乒乓切换过程，ALERA未发生此类无效切换。该对比表明，ADH与RS-TOPSIS能够在保留必要切换能力的同时抑制波动驱动的误切换，提高无人机遥感数据持续回传过程中的决策鲁棒性。
+仿真结果表明，LAAVHA的平均切换次数为$0.24$次，在11种算法中最低，较8种对比算法降低$84.8\%\sim99.1\%$，50次运行中有38次实现零切换。去除LSTM预测分支或注意力动态权重分支后，该值分别增至$1.08$次和$2.00$次，表明两模块的协同作用是切换稳定性的主要来源。ALERA在持续性链路劣化区间完成全部必要切换，在瞬时波动区间保持零误切换，而固定低阈值方案额外触发两次乒乓切换，表明ADH与RS-TOPSIS能够在保证必要切换的同时增强波动环境下的抗扰能力。
 
 \section{网络场景与网络状态参数}
 
-考虑无人机遥感巡航场景，无人机在$2000~\mathrm{m}\times2000~\mathrm{m}$的任务区域内沿预定航线飞行，飞行高度为$50\sim150~\mathrm{m}$，巡航速度为$5\sim30~\mathrm{m/s}$。任务区域内存在WiFi、LTE和5G三种候选接入网络，其覆盖范围与部署密度各不相同：WiFi热点覆盖半径约$200~\mathrm{m}$，部署于地面站和关键拍摄点周边；LTE基站覆盖半径约$1\sim2~\mathrm{km}$，沿航线稀疏分布；5G基站覆盖半径约$500~\mathrm{m}$，部署于任务区域东侧的遥感数据汇聚位置，提供高速率接入但覆盖尚不连续。无人机在飞行过程中周期性采集各候选网络的状态信息，用于切换决策\upcite{21}。
+考虑无人机遥感巡航场景，无人机在$2000~\mathrm{m}\times2000~\mathrm{m}$的任务区域内沿预定航线飞行，飞行高度为$50\sim150~\mathrm{m}$，巡航速度为$5\sim30~\mathrm{m/s}$。任务区域内存在WiFi、LTE和5G三种候选接入网络，其覆盖范围与部署密度各不相同：WiFi热点覆盖半径约$200~\mathrm{m}$，部署于地面站和关键拍摄点周边；LTE基站覆盖半径约$1\sim2~\mathrm{km}$，沿航线稀疏分布；5G基站覆盖半径约$500~\mathrm{m}$，部署于任务区域东侧的遥感数据汇聚位置，提供高速率接入但覆盖尚不连续。无人机在飞行过程中周期性采集各候选网络的状态信息，用于切换决策\upcite{19}。
 
 \begin{figure}[H]
 \centering
@@ -98,11 +98,11 @@ S_i(t)=\left[\mathrm{SINR}_i(t),\,\mathrm{RSRP}_i(t),\,D_i(t),\,T_i(t),\,\mathrm
 \label{eq:state}
 \end{equation}
 
-在遥感飞行场景中，上述五个指标从不同维度刻画了候选网络服务遥感任务的能力：当无人机从WiFi热点上空飞向任务区域边缘时，信噪比$\mathrm{SINR}_i(t)$从数十dB单调下降至接近噪声底限，直接反映了信号质量随距离和遮挡的衰减过程，是判断是否触发切换的最直观依据；参考信号接收功率$\mathrm{RSRP}_i(t)$与$\mathrm{SINR}_i(t)$共同决定链路预算是否满足解调门限；若$\mathrm{RSRP}_i(t)$低于接收灵敏度，即使$\mathrm{SINR}_i(t)$尚可，物理层也无法建立可靠连接；端到端时延$D_i(t)$定义为数据包从地面站到达无人机应用层的往返时间，在高速巡航阶段直接决定飞控指令的响应速度与飞行安全冗余度；吞吐量$T_i(t)$衡量候选网络单位时间内可交付的有效载荷比特数，对单张可达数MB的高分辨率遥感图像而言，$T_i(t)$不足将导致单次过顶时间内无法完成图像下传；丢包率$\mathrm{PLR}_i(t)$反映网络传输的可靠性，即使在信号较强、吞吐量充裕的位置，较高的$\mathrm{PLR}_i(t)$也会使接收端重建的遥感图像出现条带缺失或块状模糊。上述指标中，$\mathrm{SINR}_i(t)$、$\mathrm{RSRP}_i(t)$和$T_i(t)$属于效益型指标（数值越大越优），$D_i(t)$和$\mathrm{PLR}_i(t)$属于成本型指标（数值越小越优）。为消除各指标量纲差异，采用min-max归一化方法将所有指标映射至$[0,1]$区间，并使归一化后的值越大表示候选网络在该维度上越优\upcite{22}。
+在遥感飞行场景中，上述五个指标从不同维度刻画了候选网络服务遥感任务的能力：当无人机从WiFi热点上空飞向任务区域边缘时，信噪比$\mathrm{SINR}_i(t)$从数十dB单调下降至接近噪声底限，直接反映了信号质量随距离和遮挡的衰减过程，是判断是否触发切换的最直观依据；参考信号接收功率$\mathrm{RSRP}_i(t)$与$\mathrm{SINR}_i(t)$共同决定链路预算是否满足解调门限；若$\mathrm{RSRP}_i(t)$低于接收灵敏度，即使$\mathrm{SINR}_i(t)$尚可，物理层也无法建立可靠连接；端到端时延$D_i(t)$定义为数据包从地面站到达无人机应用层的往返时间，在高速巡航阶段直接决定飞控指令的响应速度与飞行安全冗余度；吞吐量$T_i(t)$衡量候选网络单位时间内可交付的有效载荷比特数，对单张可达数MB的高分辨率遥感图像而言，$T_i(t)$不足将导致单次过顶时间内无法完成图像下传；丢包率$\mathrm{PLR}_i(t)$反映网络传输的可靠性，即使在信号较强、吞吐量充裕的位置，较高的$\mathrm{PLR}_i(t)$也会使接收端重建的遥感图像出现条带缺失或块状模糊。上述指标中，$\mathrm{SINR}_i(t)$、$\mathrm{RSRP}_i(t)$和$T_i(t)$属于效益型指标（数值越大越优），$D_i(t)$和$\mathrm{PLR}_i(t)$属于成本型指标（数值越小越优）。为消除各指标量纲差异，采用min-max归一化方法将所有指标映射至$[0,1]$区间，并使归一化后的值越大表示候选网络在该维度上越优\upcite{20}。
 
 因此，式\eqref{eq:state}不是单独用于描述网络状态的静态定义，而是后续算法链路的统一输入接口。对同一时刻3个候选网络的$S_i(t)$按网络维度堆叠，可得到当前状态矩阵$S_{\mathrm{cur}}\in\mathbf{R}^{3\times5}$，该矩阵直接输入第2.2节的注意力权重生成模块；对单个候选网络连续10个决策周期的状态向量按时间维度堆叠，可得到历史状态张量$X_k\in\mathbf{R}^{10\times5}$，该张量输入第2.1节的堆叠LSTM预测模块。也就是说，第1章给出的网络状态参数同时承担两类作用：横向上刻画同一时刻不同候选网络的优劣差异，纵向上刻画同一网络随无人机运动产生的短期演化趋势。
 
-无人节点移动会引起候选网络信号质量和传输性能持续变化。在遥感巡航场景中，若仅依据当前时刻指标进行切换决策，无人机可能在高速接近WiFi覆盖边缘时未能提前切换，导致正在回传的图像数据因链路突然中断而丢失\upcite{23}。因此，算法将过去若干个决策周期的网络状态组织为时序输入，用于预测短期未来状态，并将预测结果与当前状态共同用于最终决策。
+无人节点移动会引起候选网络信号质量和传输性能持续变化。在遥感巡航场景中，若仅依据当前时刻指标进行切换决策，无人机可能在高速接近WiFi覆盖边缘时未能提前切换，导致正在回传的图像数据因链路突然中断而丢失\upcite{21}。因此，算法将过去若干个决策周期的网络状态组织为时序输入，用于预测短期未来状态，并将预测结果与当前状态共同用于最终决策。
 
 \section{LAAVHA自适应垂直切换算法}
 
@@ -137,9 +137,9 @@ h_{2,k} &= \mathrm{LSTM}_2(h_{1,k};\theta_2), && h_{2,k}\in\mathbf{R}^{10\times6
 
 \subsection{面向飞行阶段的动态权重生成}
 
-在垂直切换决策中，不同网络属性的重要性会随场景变化而变化。例如，无人机处于巡航飞行阶段时，链路稳定性和控制指令时延对飞行安全更加关键；当抵达拍摄点进入图像回传阶段时，吞吐量和丢包率的权重应显著提升，以确保高分辨率遥感图像在有限时间窗口内完整送达地面站\upcite{24}。固定权重难以刻画这种动态变化。
+在垂直切换决策中，不同网络属性的重要性会随场景变化而变化。例如，无人机处于巡航飞行阶段时，链路稳定性和控制指令时延对飞行安全更加关键；当抵达拍摄点进入图像回传阶段时，吞吐量和丢包率的权重应显著提升，以确保高分辨率遥感图像在有限时间窗口内完整送达地面站\upcite{22}。固定权重难以刻画这种动态变化。
 
-为解决固定权重无法匹配遥感飞行中不同阶段需求差异的问题，LAAVHA引入自注意力机制（Self-Attention）\upcite{18}。将当前3个候选网络的5维状态向量按行堆叠为矩阵$S_{\mathrm{cur}}\in\mathbf{R}^{3\times5}$，令自注意力的查询（Query）、键（Key）、值（Value）均等于$S_{\mathrm{cur}}$（即$Q=K=V=S_{\mathrm{cur}}$，\texttt{embed\_dim}=5, \texttt{num\_heads}=1）。其中，\texttt{embed\_dim}表示注意力模块中每个输入向量的特征维度；本文每个候选网络由SINR、RSRP、时延、吞吐量和丢包率5个归一化指标描述，因此\texttt{embed\_dim}取5，与$S_{\mathrm{cur}}$的列数一致。\texttt{num\_heads}表示并行注意力头的数量；由于本文属性维度仅为5，若采用多头注意力会使每个头分到的特征维度过小，不利于解释各指标权重，因此采用单头注意力（\texttt{num\_heads}=1）直接学习5个属性之间的相关性。随后通过缩放点积注意力计算属性间的交互权重，其中注意力矩阵$A$的每个元素$a_{ij}$表示属性$j$对属性$i$的重要性。再经跨网络均值池化提取属性级上下文$c\in\mathbf{R}^5$，并联飞行速度$v$与高度$h$经$W_{\mathrm{mob}}\in\mathbf{R}^{16\times2}$映射为移动特征$m\in\mathbf{R}^{16}$，拼接后经全连接层投影与softmax归一化输出5维动态权重$w$：
+为解决固定权重无法匹配遥感飞行中不同阶段需求差异的问题，LAAVHA引入自注意力机制（Self-Attention）\upcite{16,24}。将当前3个候选网络的5维状态向量按行堆叠为矩阵$S_{\mathrm{cur}}\in\mathbf{R}^{3\times5}$，令自注意力的查询（Query）、键（Key）、值（Value）均等于$S_{\mathrm{cur}}$（即$Q=K=V=S_{\mathrm{cur}}$，\texttt{embed\_dim}=5, \texttt{num\_heads}=1）。其中，\texttt{embed\_dim}表示注意力模块中每个输入向量的特征维度；本文每个候选网络由SINR、RSRP、时延、吞吐量和丢包率5个归一化指标描述，因此\texttt{embed\_dim}取5，与$S_{\mathrm{cur}}$的列数一致。\texttt{num\_heads}表示并行注意力头的数量；由于本文属性维度仅为5，若采用多头注意力会使每个头分到的特征维度过小，不利于解释各指标权重，因此采用单头注意力（\texttt{num\_heads}=1）直接学习5个属性之间的相关性。随后通过缩放点积注意力计算属性间的交互权重，其中注意力矩阵$A$的每个元素$a_{ij}$表示属性$j$对属性$i$的重要性。再经跨网络均值池化提取属性级上下文$c\in\mathbf{R}^5$，并联飞行速度$v$与高度$h$经$W_{\mathrm{mob}}\in\mathbf{R}^{16\times2}$映射为移动特征$m\in\mathbf{R}^{16}$，拼接后经全连接层投影与softmax归一化输出5维动态权重$w$：
 \begin{align}
 Q &= K = V = S_{\mathrm{cur}}\in\mathbf{R}^{3\times5}, \label{eq:attn1}\\
 A &= \mathrm{Attention}(Q,K,V)=\mathrm{softmax}\!\left(\frac{QK^\top}{\sqrt{5}}\right)V,\quad A\in\mathbf{R}^{3\times5}, \label{eq:attn2}\\
@@ -153,7 +153,7 @@ w &= \mathrm{softmax}\!\left(W_{\mathrm{weight}}[c\parallel m]\right),\quad W_{\
 
 \subsection{融合预测状态的改进TOPSIS决策}
 
-本节是前述两个学习模块的汇合点。第2.1节输出的$S_{\mathrm{pred}}$提供短期未来状态，第2.2节输出的$w$提供当前飞行阶段下的属性重要性，第1章定义并实时采集的$S_{\mathrm{cur}}$提供当前观测状态。在遥感巡航场景中，候选网络的优劣需要综合权衡信号强度、传输能力与可靠性三个维度，不存在单一指标最优的``完美网络''。TOPSIS的基本思想是将各候选网络在多维属性空间中的位置与虚拟的``最优网络''和``最劣网络''进行比较\upcite{7--8}。为避免传统TOPSIS仅依赖当前状态导致的被动决策，LAAVHA首先将当前状态与LSTM预测状态进行融合，构建决策矩阵：
+本节是前述两个学习模块的汇合点。第2.1节输出的$S_{\mathrm{pred}}$提供短期未来状态，第2.2节输出的$w$提供当前飞行阶段下的属性重要性，第1章定义并实时采集的$S_{\mathrm{cur}}$提供当前观测状态。在遥感巡航场景中，候选网络的优劣需要综合权衡信号强度、传输能力与可靠性三个维度，不存在单一指标最优的``完美网络''。TOPSIS的基本思想是将各候选网络在多维属性空间中的位置与虚拟的``最优网络''和``最劣网络''进行比较\upcite{6--7}。为避免传统TOPSIS仅依赖当前状态导致的被动决策，LAAVHA首先将当前状态与LSTM预测状态进行融合，构建决策矩阵：
 \begin{align}
 s_{\mathrm{norm}} &= \frac{s-s_{\min}}{s_{\max}-s_{\min}},\quad \text{for each indicator }j, \label{eq:norm}\\
 d_{ij} &= \alpha s_{\mathrm{cur}}(i,j)+(1-\alpha)s_{\mathrm{pred}}(i,j),\quad \alpha=0.6, \label{eq:fuse}\\
@@ -314,7 +314,7 @@ RS-TOPSIS & 输入：近期贴近度历史；输出：LCB调整后排序 & 历�
 
 \subsection{实验平台与参数设置}
 
-为验证LAAVHA/ALERA在无人机遥感探测异构网络场景中的决策效果，基于ns-3.45\upcite{19}和其AI扩展模块ns3-ai\upcite{20}搭建网络仿真与模型推理协同平台。ns-3负责部署5G/LTE/WiFi异构网络拓扑、模拟无人机移动模型并采集物理层和传输层指标；ns3-ai通过共享内存在仿真侧与推理侧之间建立双向通信。每个决策周期内，仿真侧将3个候选网络各10步历史$\times$5维指标（共150维）以及移动状态写入共享内存，推理侧加载训练好的LAAVHA模型，读取网络状态、速度、高度和当前网络编号后返回目标网络编号及候选网络评分（网络编号约定：0=5G，1=LTE，2=WiFi）。模型输入为3个候选网络各自5维指标的历史序列（3网络$\times$10时间步$\times$5指标=150维总输入），每个网络独立经堆叠LSTM处理；移动状态输入为2维（速度、高度）；输出为5维预测状态向量及5维动态权重向量，经改进TOPSIS后得到候选网络评分。实验采用50组随机种子（200$\sim$249），模拟无人机在不同初始位置和高度条件下执行遥感巡航任务。仿真时长为$10~\mathrm{s}$，决策周期为$0.1~\mathrm{s}$，每组实验产生100次决策。为模拟实际飞行中的位置偏差和高度波动，启用位置扰动（$30~\mathrm{m}$）和高度扰动（$10~\mathrm{m}$）。
+为验证LAAVHA/ALERA在无人机遥感探测异构网络场景中的决策效果，基于ns-3.45\upcite{17}和其AI扩展模块ns3-ai\upcite{18}搭建网络仿真与模型推理协同平台。ns-3负责部署5G/LTE/WiFi异构网络拓扑、模拟无人机移动模型并采集物理层和传输层指标；ns3-ai通过共享内存在仿真侧与推理侧之间建立双向通信。每个决策周期内，仿真侧将3个候选网络各10步历史$\times$5维指标（共150维）以及移动状态写入共享内存，推理侧加载训练好的LAAVHA模型，读取网络状态、速度、高度和当前网络编号后返回目标网络编号及候选网络评分（网络编号约定：0=5G，1=LTE，2=WiFi）。模型输入为3个候选网络各自5维指标的历史序列（3网络$\times$10时间步$\times$5指标=150维总输入），每个网络独立经堆叠LSTM处理；移动状态输入为2维（速度、高度）；输出为5维预测状态向量及5维动态权重向量，经改进TOPSIS后得到候选网络评分。实验采用50组随机种子（200$\sim$249），模拟无人机在不同初始位置和高度条件下执行遥感巡航任务。仿真时长为$10~\mathrm{s}$，决策周期为$0.1~\mathrm{s}$，每组实验产生100次决策。为模拟实际飞行中的位置偏差和高度波动，启用位置扰动（$30~\mathrm{m}$）和高度扰动（$10~\mathrm{m}$）。
 
 为说明第2章关键参数的取值依据，在总体实验参数之前先进行三组灵敏度实验，结果如图\ref{fig:param_sensitivity}所示。融合系数$\alpha$实验在50组包含持续性链路劣化和瞬时波动的压力时序上进行重放，当前观测状态包含信道测量波动，预测状态则包含突变条件下的短期预测滞后，分别取$\alpha=0.2,0.4,0.6,0.8$进行对比。四种取值的平均误切换次数依次为1.20、0.90、0.08和1.00次：$\alpha$偏小时算法对预测滞后较为敏感，$\alpha$偏大时又更容易受到当前测量波动影响；$\alpha=0.6$能够更好地平衡两类误差，误切换次数最低。因此本文取$\alpha=0.6$，使当前实测状态占60\%，同时保留40\%的短期预测信息。
 
@@ -366,9 +366,9 @@ LSTM隐藏单元 & 第一层128，第二层64 \\
 \label{tab:params}
 \end{table}
 
-实验除LAAVHA外，还运行了TOPSIS-Q、Fuzzy-VHO、SAW、VIKOR、GRA、COPRAS、SPOTIS和最强信号法等8种对比算法以及LAAVHA-L、LAAVHA-A两种消融变体。这8种对比算法覆盖了模糊逻辑式（Fuzzy-VHO）、简单加权式（SAW）、补偿式（VIKOR）、距离式（TOPSIS-Q）、关联度式（GRA）、比例式（COPRAS）和参考点式（SPOTIS）七种主流决策范式，为全面评估LAAVHA的决策性能提供了多维参照。对比算法来源与设置如下：TOPSIS-Q基于TOPSIS网络选择思想及熵权改进TOPSIS方法\upcite{7--8,30}；Fuzzy-VHO参考无人机5G网络中的模糊切换机制\upcite{4}；SAW作为经典加权和MADM基线，VIKOR、GRA、COPRAS和SPOTIS选自主流MADM决策范式及其网络选择综述\upcite{11,22,30}；最强信号法为本文设置的单因素启发式基线，仅依据SINR最大原则选择候选网络。LAAVHA-L表示去除LSTM预测分支的消融变体，直接以当前状态替代预测状态，保留Attention权重与双重滞后；LAAVHA-A表示去除Attention动态权重分支的消融变体，保留LSTM预测和双重滞后，并以熵权法生成TOPSIS权重。
+实验除LAAVHA外，还运行了TOPSIS-Q、Fuzzy-VHO、SAW、VIKOR、GRA、COPRAS、SPOTIS和最强信号法等8种对比算法以及LAAVHA-L、LAAVHA-A两种消融变体。这8种对比算法覆盖了模糊逻辑式（Fuzzy-VHO）、简单加权式（SAW）、补偿式（VIKOR）、距离式（TOPSIS-Q）、关联度式（GRA）、比例式（COPRAS）和参考点式（SPOTIS）七种主流决策范式，为全面评估LAAVHA的决策性能提供了多维参照。对比算法来源与设置如下：TOPSIS-Q基于TOPSIS网络选择思想及熵权改进TOPSIS方法\upcite{6--7,25}；Fuzzy-VHO参考无人机5G网络中的模糊切换机制\upcite{4}；SAW作为经典加权和MADM基线，VIKOR、GRA、COPRAS和SPOTIS选自主流MADM决策范式及其网络选择综述\upcite{9,20,25}；最强信号法为本文设置的单因素启发式基线，仅依据SINR最大原则选择候选网络。LAAVHA-L表示去除LSTM预测分支的消融变体，直接以当前状态替代预测状态，保留Attention权重与双重滞后；LAAVHA-A表示去除Attention动态权重分支的消融变体，保留LSTM预测和双重滞后，并以熵权法生成TOPSIS权重。
 
-5G候选网络由代理链路表示，其SINR和RSRP由基于位置的传播模型计算，传输类指标来自点到点代理流的FlowMonitor统计；切换事件表示LAAVHA输出的网络编号变化，并未执行真实WiFi解除关联、LTE分离或5G新空口（NR, new radio）协议栈切换。各候选网络指标来源见表\ref{tab:metrics}。
+5G候选网络由代理链路表示，其SINR和RSRP由基于位置的传播模型计算\upcite{23}，传输类指标来自点到点代理流的FlowMonitor统计；切换事件表示LAAVHA输出的网络编号变化，并未执行真实WiFi解除关联、LTE分离或5G新空口（NR, new radio）协议栈切换。各候选网络指标来源见表\ref{tab:metrics}。
 
 \begin{table}[H]
 \centering
@@ -400,6 +400,8 @@ LTE & 基于MobilityModel位置的传播代理值 & FlowMonitor & FlowMonitor & 
 \caption{11种算法平均切换次数对比（mean $\pm$ std, n=50）}
 \label{fig:ho_comparison}
 \end{figure}
+
+如图\ref{fig:ho_comparison}所示，LAAVHA的平均切换次数为$0.24$次（std=0.43），在11种算法中最低；8种对比算法中，最强信号法的平均切换次数最低，为$1.58$次。7种MADM方法中，SAW、TOPSIS-Q、Fuzzy-VHO、VIKOR、GRA、SPOTIS和COPRAS的平均切换次数分别为$2.00$、$4.04$、$8.64$、$13.52$、$19.24$、$23.88$和$25.88$次，均高于LAAVHA且数值分布跨度较大。这7种MADM方法未同时引入时序预测与动态权重机制，属性权重一次性确定且仅依据当前时刻指标决策，容易在覆盖边界处因候选网络评分交替领先而反复切换；最强信号法则仅依据SINR单因素进行选择，未综合考虑时延、吞吐量和丢包率等其他网络状态指标。总体而言，在切换次数这一决策级指标上，LAAVHA较8种对比算法降低$84.8\%\sim99.1\%$，且50次运行中有38次实现零切换，体现出所提方法在降低切换频度和提升切换稳定性方面的整体优势。
 
 \subsection{代表性算法决策过程对比}
 
@@ -450,21 +452,19 @@ LTE & 基于MobilityModel位置的传播代理值 & FlowMonitor & FlowMonitor & 
 
 面向无人机遥感监测中广域飞行、异构覆盖和链路状态快速变化带来的垂直切换问题，本文提出了基于LSTM-Attention的LAAVHA自适应垂直切换方法，并在其决策层进一步构建增强型风险感知垂直切换算法ALERA。LAAVHA以5G、LTE和WiFi候选网络的SINR、RSRP、时延、吞吐量和丢包率作为统一状态输入，将历史状态序列$X_k$输入堆叠LSTM得到短期预测状态$S_{\mathrm{pred}}$，将当前状态矩阵$S_{\mathrm{cur}}$和移动状态输入注意力模块得到动态权重$w$，再通过融合当前与预测状态的改进TOPSIS计算候选网络贴近度$C_i$，最后结合双重滞后机制输出切换决策。ALERA在不改变LSTM-Attention模型结构和不重新训练参数的前提下，进一步引入自适应滞后（ADH）和风险敏感TOPSIS（RS-TOPSIS）：前者根据当前服务网络近期SINR波动度和飞行速度动态调整切换阈值$\Delta_{\mathrm{th}}$与确认窗口$T_h$，后者基于贴近度历史波动对候选网络评分施加置信下界风险惩罚。由此，全文形成了状态采集、时序预测、动态加权、融合排序、滞后裁定与风险增强的连续决策链路，使每个模块的输出都成为后续模块的输入，同时兼顾了深度学习的前瞻建模能力和TOPSIS决策过程的可解释性。
 
-基于由ns-3.45与ns3-ai搭建的决策级协同仿真平台，本文在50组随机种子、每组100个决策周期的设置下，对LAAVHA、8种对比算法和2种消融变体进行了横向比较。仿真结果从两个层面对前文的设计形成验证：在算法层面，时序预测、动态权重和双重滞后的协同作用能够提高切换稳定性。在遥感探测场景适配层面，ALERA能在覆盖条件持续劣化时完成必要切换、在发生信道瞬时波动时抑制误切换和乒乓切换，表明ADH与RS-TOPSIS分别从``何时切换''和``切向谁''两个环节增强了无人机遥感数据持续回传过程中的抗扰能力。需要指出的是，本文实验仍属于决策级验证，5G链路和切换事件采用代理建模方式表示；后续工作将进一步结合更完整的协议栈切换过程和真实飞行轨迹数据，验证LAAVHA/ALERA在实网异构接入场景中的时延开销、链路重建代价和遥感数据传输完整性。
+基于由ns-3.45与ns3-ai搭建的决策级协同仿真平台，本文在50组随机种子、每组100个决策周期的设置下，对LAAVHA、8种对比算法和2种消融变体进行了横向比较。仿真结果从两个层面对前文的设计形成验证：在算法层面，LAAVHA的平均切换次数为$0.24$次，在11种算法中最低，较8种对比算法降低$84.8\%\sim99.1\%$，其中50次运行有38次实现零切换；消融实验中去除LSTM预测分支或注意力动态权重分支后该值分别增至$1.08$次和$2.00$次，说明时序预测、动态权重和双重滞后的协同作用能够提高切换稳定性。在遥感探测场景适配层面，ALERA能在覆盖条件持续劣化时完成必要切换、在发生信道瞬时波动时抑制误切换和乒乓切换，表明ADH与RS-TOPSIS分别从``何时切换''和``切向谁''两个环节增强了无人机遥感数据持续回传过程中的抗扰能力。需要指出的是，本文实验仍属于决策级验证，5G链路和切换事件采用代理建模方式表示；后续工作将进一步结合更完整的协议栈切换过程和真实飞行轨迹数据，验证LAAVHA/ALERA在实网异构接入场景中的时延开销、链路重建代价和遥感数据传输完整性。
 
 \section*{参考文献}
 {\renewcommand{\refname}{}
 \vspace{-2.5em}
-\begin{thebibliography}{30}
+\begin{thebibliography}{25}
 \bibitem{ref1} YANG K, WANG Y, GAO X, et al. Communications in space-air-ground integrated networks: an overview[J]. Space: Science \& Technology, 2025, 5: 0199.
-\bibitem{ref2} MOZAFFARI M, SAAD W, BENNIS M, et al. A tutorial on UAVs for wireless networks: applications, challenges, and open problems[J]. IEEE Communications Surveys \& Tutorials, 2019, 21(3): 2334--2360.
+\bibitem{ref2} GERACI G, GARCIA-RODRIGUEZ A, AZARI M M, et al. What will the future of UAV cellular communications be? A flight from 5G to 6G[J]. IEEE Communications Surveys \& Tutorials, 2022, 24(3): 1304--1335.
 \bibitem{ref3} RIBEIRO L M B, MÜLLER I, BECKER L B. Communication interface manager for improving performance of heterogeneous UAV networks[J]. Sensors, 2021, 21(13): 4255.
 \bibitem{ref4} AYASS T, COQUEIRO T, CARVALHO T, et al. Unmanned aerial vehicle with handover management fuzzy system for 5G networks: challenges and perspectives[J]. Intelligence \& Robotics, 2022, 2(1): 20--36.
 \bibitem{ref5} WANG Z, LV Z, XU X, et al. Vertical switching algorithm for unmanned aerial vehicle in power grid heterogeneous communication networks[J]. Electronics, 2024, 13(13): 2612.
-\bibitem{ref6} ALAM S, SULISTYO S, MUSTIKA I W, et al. Handover decision for V2V communication in VANET based on moving average slope of RSS[J]. Journal of Communications, 2021, 16(7): 284--293.
-\bibitem{ref7} GOUTAM S, UNNIKRISHNAN S, KARANDIKAR A. Algorithm for handover decision based on TOPSIS[C]//2020 International Conference on UK-China Emerging Technologies. Piscataway: IEEE Press, 2020: 1--4.
-\bibitem{ref8} XIAO K Y, LI C G. Vertical handoff decision algorithm for heterogeneous wireless networks based on entropy and improved TOPSIS[C]//2018 IEEE 18th International Conference on Communication Technology. Piscataway: IEEE Press, 2018: 706--710.
-\bibitem{ref9} AHMED I I O, IPAYE A A, MITROPOULOS D N G, et al. Vertical handover E-TOPSIS algorithm mathematical model using AHP and standard deviation weighing method[C]//2019 International Conference on Computer, Control, Electrical, and Electronics Engineering. Piscataway: IEEE Press, 2019: 1--5.
+\bibitem{ref7} ZHONG J, ZHANG L, ALHABO M, et al. A hybrid scheme using TOPSIS and Q-learning for handover decision making in UAV assisted heterogeneous network[J]. IEEE Access, 2024, 12: 31422--31430.
+\bibitem{ref8} GOH M I, MBULWA A I, YEW H T, et al. Handover decision-making algorithm for 5G heterogeneous networks[J]. Electronics, 2023, 12(11): 2384.
 \bibitem{ref10} SATAPATHY P, MAHAPATRO J. An efficient multicriteria-based vertical handover decision-making algorithm for heterogeneous networks[J]. Transactions on Emerging Telecommunications Technologies, 2022, 33(4): e4409.
 \bibitem{ref11} DANTAS SILVA F S, LIMA M P S, CORUJO D, et al. A comprehensive step-wise survey of multiple attribute decision-making mobility approaches[J]. IEEE Access, 2024, 12: 108616--108656.
 \bibitem{ref12} TAN K, BREMNER D, LE KERNEC J, et al. Intelligent handover algorithm for vehicle-to-network communications with double-deep Q-learning[J]. IEEE Transactions on Vehicular Technology, 2022, 71(7): 7848--7862.
@@ -472,18 +472,14 @@ LTE & 基于MobilityModel位置的传播代理值 & FlowMonitor & FlowMonitor & 
 \bibitem{ref14} ZAID M, KADIR M K A, SHAYEA I, et al. Machine learning-based approaches for handover decision of cellular-connected drones in future networks: a comprehensive review[J]. Engineering Science and Technology, an International Journal, 2024, 55: 101732.
 \bibitem{ref15} HOCHREITER S, SCHMIDHUBER J. Long short-term memory[J]. Neural Computation, 1997, 9(8): 1735--1780.
 \bibitem{ref16} KAUR G, GOYAL R K, MEHTA R. An efficient handover mechanism for 5G networks using hybridization of LSTM and SVM[J]. Multimedia Tools and Applications, 2022, 81(26): 37057--37085.
-\bibitem{ref17} MOLLEL M S, ABUBAKAR A I, OZTURK M, et al. A survey of machine learning applications to handover management in 5G and beyond[J]. IEEE Access, 2021, 9: 45770--45802.
+\bibitem{ref17} ALRAIH S, NORDIN R, ABU-SAMAH A, et al. A survey on handover optimization in beyond 5G mobile networks: challenges and solutions[J]. IEEE Access, 2023, 11: 59317--59345.
 \bibitem{ref18} SOYDANER D. Attention mechanism in neural networks: where it comes and where it goes[J]. Neural Computing and Applications, 2022, 34(16): 13371--13385.
 \bibitem{ref19} MANZOOR S, MANZOOR M, MANZOOR H, et al. Which simulator to choose for next generation wireless network simulations? ns-3 or OMNeT++[J]. Engineering Proceedings, 2023, 46(1): 36.
 \bibitem{ref20} YIN H, LIU P, LIU K, et al. ns3-ai: fostering artificial intelligence algorithms for networking research[C]//Proceedings of the 2020 Workshop on ns-3. New York: ACM, 2020: 57--64.
-\bibitem{ref21} AL-HOURANI A, KANDEEPAN S, LARDNER S. Optimal LAP altitude for maximum coverage[J]. IEEE Wireless Communications Letters, 2014, 3(6): 569--572.
+\bibitem{ref21} ZHOU S, LIU X, TANG B, et al. Handover and coverage analysis in 3-D mobile UAV cellular networks[J]. IEEE Internet of Things Journal, 2024, 11(18): 29911--29925.
 \bibitem{ref22} ZOLFANI S, YAZDANI M, PAMUCAR D, et al. A VIKOR and TOPSIS focused reanalysis of the MADM methods based on logarithmic normalization[J]. Facta Universitatis, Series: Mechanical Engineering, 2020, 18(3): 341--355.
-\bibitem{ref23} 赵雪圻, 崔玉波. 乒乓切换问题的区域用户预测研究[J]. 山东通信技术, 2022, 42(4): 40--42.\\
-ZHAO X Q, CUI Y B. Research on regional user prediction for ping-pong handover problem[J]. Shandong Communication Technology, 2022, 42(4): 40--42.
-\bibitem{ref24} YU H, MA Y, YU J. Network selection algorithm for multiservice multimode terminals in heterogeneous wireless networks[J]. IEEE Access, 2019, 7: 46240--46260.
-\bibitem{ref25} TAN X, CHEN G, SUN H. Vertical handover algorithm based on multi-attribute and neural network in heterogeneous integrated network[J]. EURASIP Journal on Wireless Communications and Networking, 2020, 2020(1): 202.
-\bibitem{ref26} PANAITOPOL D, JIN Y, TANG R, et al. Requirements on satellite access node and user equipment for non-terrestrial networks in 5G new radio of 3GPP Release-17[J]. International Journal of Satellite Communications and Networking, 2023, 41(3): 289--301.
-\bibitem{ref27} PATRICIELLO N, LAGEN S, BOJOVIC B, et al. An E2E simulator for 5G NR networks[J]. Simulation Modelling Practice and Theory, 2019, 96: 101933.
+\bibitem{ref23} TASHAN W, SHAYEA I, ALDIRMAZ-COLAK S, et al. Voronoi-based handover self-optimization technique for handover ping-pong reduction in 5G networks[C]//2023 10th International Conference on Wireless Networks and Mobile Communications (WINCOM). Piscataway: IEEE Press, 2023: 1--6.
+\bibitem{ref24} NDEGWA S, NYACHIONJEKA K, MHARAKURWA E T. User preference-based heterogeneous network management system for vertical handover[J]. Journal of Electrical and Computer Engineering, 2023: 1--20.
 \bibitem{ref28} RAPPAPORT T S. Wireless communications: principles and practice[M]. 2nd ed. Upper Saddle River: Prentice Hall, 2002.
 \bibitem{ref29} VASWANI A, SHAZEER N, PARMAR N, et al. Attention is all you need[C]//Advances in Neural Information Processing Systems 30. Red Hook: Curran Associates, 2017: 5998--6008.
 \bibitem{ref30} HWANG C L, YOON K. Multiple attribute decision making: methods and applications[M]. Berlin: Springer-Verlag, 1981.
