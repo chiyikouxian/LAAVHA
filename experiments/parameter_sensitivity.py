@@ -8,7 +8,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 import numpy as np
-import pandas as pd
+import csv
 
 
 ROOT = Path("/home/suwen/reproduce")
@@ -179,16 +179,16 @@ def enhancement_sensitivity():
     return history_lengths, risks, false_means, delay_means, detection_rates
 
 
-def annotate_heatmap(axis, false_values, delay_values):
+def annotate_heatmap(axis, false_values, delay_values, handover_unit="次"):
     for row in range(false_values.shape[0]):
         for column in range(false_values.shape[1]):
             color = "white" if false_values[row, column] > false_values.max() * 0.55 else "black"
-            label = f"{false_values[row, column]:.2f}次\n{delay_values[row, column]:.2f}s"
+            label = f"{false_values[row, column]:.2f}{handover_unit}\n{delay_values[row, column]:.2f}s"
             axis.text(column, row, label, ha="center", va="center",
                       color=color, fontsize=8, linespacing=1.15)
 
 
-def main():
+def main(english=False):
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     alphas, alpha_means, alpha_stds = fusion_sensitivity()
     thresholds, windows, fixed_false, fixed_delay, fixed_detection = fixed_hysteresis_sensitivity()
@@ -211,9 +211,9 @@ def main():
     axis.errorbar(alphas, alpha_means, yerr=alpha_errors, fmt="none",
                   ecolor="black", capsize=3, linewidth=0.8)
     axis.set_xticks(alphas)
-    axis.set_xlabel("融合系数 α")
-    axis.set_ylabel("平均误切换次数")
-    axis.set_title("(a) 融合系数灵敏度（50组压力重放）")
+    axis.set_xlabel("Fusion coefficient α")
+    axis.set_ylabel("Average false handovers")
+    axis.set_title("(a) Fusion coefficient sensitivity (50 stress replays)")
     for alpha, mean in zip(alphas, alpha_means):
         axis.text(alpha, mean + 0.025, f"{mean:.2f}", ha="center", va="bottom", fontsize=9)
     axis.grid(axis="y", alpha=0.25)
@@ -221,32 +221,34 @@ def main():
 
     axis = axes[1]
     image = axis.imshow(fixed_false, cmap="YlOrRd", vmin=0, vmax=fixed_false.max())
-    annotate_heatmap(axis, fixed_false, fixed_delay)
+    handover_unit = " times" if english else "次"
+    annotate_heatmap(axis, fixed_false, fixed_delay, handover_unit)
     axis.set_xticks(range(len(thresholds)), [f"{value:.2f}" for value in thresholds])
     axis.set_yticks(range(len(windows)), [str(value) for value in windows])
-    axis.set_xlabel("评分优势阈值 Δ_th")
-    axis.set_ylabel("确认窗口 T")
-    axis.set_title("(b) 双重滞后（误切换次数/检测时延）")
+    axis.set_xlabel("Score advantage threshold Δ_th")
+    axis.set_ylabel("Confirmation window T")
+    axis.set_title("(b) Dual hysteresis (false handovers / detection delay)")
     axis.add_patch(Rectangle((0.5, 0.5), 1, 1, fill=False,
                              edgecolor="#1976D2", linewidth=2.2))
     colorbar = fig.colorbar(image, ax=axis, fraction=0.046, pad=0.04)
-    colorbar.set_label("平均误切换次数", fontsize=8)
+    colorbar.set_label("Average false handovers", fontsize=8)
 
     axis = axes[2]
     image = axis.imshow(enhanced_false, cmap="YlGnBu", vmin=0, vmax=enhanced_false.max())
-    annotate_heatmap(axis, enhanced_false, enhanced_delay)
+    annotate_heatmap(axis, enhanced_false, enhanced_delay, handover_unit)
     axis.set_xticks(range(len(risks)), [f"{value:.1f}" for value in risks])
     axis.set_yticks(range(len(histories)), [str(value) for value in histories])
-    axis.set_xlabel("风险系数 λ")
-    axis.set_ylabel("历史长度 K_c")
-    axis.set_title("(c) 增强参数（误切换次数/检测时延）")
+    axis.set_xlabel("Risk coefficient λ")
+    axis.set_ylabel("History length K_c")
+    axis.set_title("(c) Enhanced parameters (false handovers / detection delay)")
     axis.add_patch(Rectangle((0.5, 0.5), 1, 1, fill=False,
                              edgecolor="#D32F2F", linewidth=2.2))
     colorbar = fig.colorbar(image, ax=axis, fraction=0.046, pad=0.04)
-    colorbar.set_label("平均误切换次数", fontsize=8)
+    colorbar.set_label("Average false handovers", fontsize=8)
 
     fig.tight_layout()
-    figure_path = OUT_DIR / "fig_parameter_sensitivity.png"
+    figure_name = "fig_parameter_sensitivity_en.png" if english else "fig_parameter_sensitivity.png"
+    figure_path = OUT_DIR / figure_name
     fig.savefig(figure_path, dpi=300, bbox_inches="tight")
     plt.close(fig)
 
@@ -266,7 +268,15 @@ def main():
                          "risk_lambda": risk, "mean_false_handovers": enhanced_false[row, column],
                          "mean_detection_delay_s": enhanced_delay[row, column],
                          "required_detection_rate": enhanced_detection[row, column]})
-    pd.DataFrame(rows).to_csv(ROOT / "experiments/parameter_sensitivity_results.csv", index=False)
+    csv_path = ROOT / "experiments/parameter_sensitivity_results.csv"
+    with open(csv_path, 'w', newline='') as csvfile:
+        all_keys = set()
+        for row in rows:
+            all_keys.update(row.keys())
+        fieldnames = sorted(all_keys)
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(rows)
 
     print(f"Saved: {figure_path}")
     print("Fusion means:", dict(zip(alphas, alpha_means)))
@@ -277,4 +287,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    main(english="--english" in sys.argv[1:])
