@@ -21,6 +21,7 @@ PROJECT = Path(__file__).resolve().parents[2]
 SOURCE_DIR = PROJECT / "softcopyright"
 OUTPUT_DIR = Path("/home/suwen/IBN5100/无人机自组网/软著/LAAVHA软件著作权材料")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+SOFTWARE_PREFIX = "无人机遥感异构网络垂直切换智能决策软件 V1.0"
 
 
 def set_cell_shading(cell, fill):
@@ -124,12 +125,10 @@ def add_markdown(doc, path, skip_leading_title=False):
         stripped = line.strip()
         if not stripped:
             flush_paragraph(); flush_table(); continue
+        # Markdown comments and block quotes in the editable sources are
+        # drafting instructions, not part of the formal registration text.
         if stripped.startswith("<!--") or stripped.startswith(">"):
             flush_paragraph(); flush_table()
-            p = doc.add_paragraph()
-            r = p.add_run(stripped.lstrip("> "))
-            r.italic = True
-            r.font.color.rgb = RGBColor(95, 95, 95)
             continue
         image = re.match(r"!\[([^]]*)\]\(([^)]+)\)", stripped)
         if image:
@@ -170,30 +169,50 @@ def add_markdown(doc, path, skip_leading_title=False):
 
 def build_summary():
     doc = configure_doc(Document())
-    add_title(doc, "计算机软件著作权登记内容摘要", "LAAVHA无人机异构网络垂直切换仿真软件（草案）")
+    add_title(doc, "计算机软件著作权登记内容摘要", SOFTWARE_PREFIX)
     add_markdown(doc, SOURCE_DIR / "summary.md", skip_leading_title=True)
-    doc.save(OUTPUT_DIR / "content_summary.docx")
+    doc.save(OUTPUT_DIR / f"{SOFTWARE_PREFIX}-内容摘要.docx")
 
 
 def build_application():
     doc = configure_doc(Document())
     add_title(doc, "计算机软件著作权登记申请表（内容草案）")
     add_markdown(doc, SOURCE_DIR / "application_form.md", skip_leading_title=True)
-    doc.save(OUTPUT_DIR / "application_form_content.docx")
+    doc.save(OUTPUT_DIR / f"{SOFTWARE_PREFIX}-申请表.docx")
 
 
 def build_design():
     doc = configure_doc(Document())
-    add_title(doc, "LAAVHA无人机异构网络垂直切换仿真软件", "软件设计说明书 V1.0（草案）")
+    add_title(doc, SOFTWARE_PREFIX, "软件设计说明书 V1.0（草案）")
     add_markdown(doc, SOURCE_DIR / "design_description.md", skip_leading_title=True)
-    doc.save(OUTPUT_DIR / "design_description.docx")
+    doc.save(OUTPUT_DIR / f"{SOFTWARE_PREFIX}-设计说明书v1.0.docx")
 
 
+# Fixed registration scope: all current authored functional code.  Material
+# generation scripts, generated data, model weights, caches and deprecated
+# files are deliberately excluded.
 CORE_FILES = [
-    "LAAVHA改进算法训练程序.py", "laavha_inference.py", "laavha_msg.h",
-    "laavha_py.cc", "laavha-handover.cc", "topsis_q.py", "madm_comparison.py",
-    "saw_madm.py", "fuzzy_vho.py", "laavha_batch_runner.py", "laavha_plot.py",
+    "CMakeLists_laavha.txt",
+    "LAAVHA改进算法训练程序.py",
+    "fuzzy_vho.py",
+    "laavha-handover.cc",
+    "laavha_batch_runner.py",
+    "laavha_inference.py",
+    "laavha_msg.h",
+    "laavha_plot.py",
+    "laavha_py.cc",
+    "madm_comparison.py",
     "make_pub_figures.py",
+    "regenerate_figures.py",
+    "saw_madm.py",
+    "topsis_q.py",
+    "experiments/enhanced_proof_experiments.py",
+    "experiments/exp_a_adaptive_hysteresis.py",
+    "experiments/gen_fig5_6.py",
+    "experiments/generate_nature_figures.py",
+    "experiments/generate_network_coverage_en.py",
+    "experiments/parameter_sensitivity.py",
+    "experiments/stress_5g_degradation.py",
 ]
 
 
@@ -204,7 +223,10 @@ def source_inventory():
         data = path.read_bytes()
         records.append({
             "file": rel,
-            "lines": len(path.read_text(encoding="utf-8", errors="replace").splitlines()),
+            # Match the conventional `wc -l` source-program count used in
+            # the application form, including its treatment of a final line
+            # without a terminating newline.
+            "lines": data.count(b"\n"),
             "bytes": len(data),
             "sha256": hashlib.sha256(data).hexdigest(),
         })
@@ -234,14 +256,19 @@ def add_code_block(doc, rel, start=None, end=None):
 def build_source_listing():
     records = source_inventory()
     doc = configure_doc(Document(), landscape=True)
-    add_title(doc, "LAAVHA软件源程序文档", "完整源程序清单（草案）")
-    p = doc.add_paragraph("本清单按固定顺序收录核心源程序。模型权重、训练数据、NS-3外部工作区和编译生成文件列入依赖清单，不作为源代码正文。")
+    total_lines = sum(record["lines"] for record in records)
+    add_title(doc, "LAAVHA软件源程序文档", "完整源程序")
+    p = doc.add_paragraph(f"本文件按固定顺序收录21个现行功能代码文件，共{total_lines}行。模型权重、训练数据、NS-3外部工作区、软著材料生成脚本、编译生成文件及弃用文件不作为源代码正文。")
     p.paragraph_format.space_after = Pt(6)
     for idx, rec in enumerate(records, start=1):
         doc.add_heading(f"{idx}. {rec['file']}", level=2)
-        doc.add_paragraph(f"行数：{rec['lines']}；字节数：{rec['bytes']}；SHA-256：{rec['sha256']}")
+        display_lines = len((PROJECT / rec["file"]).read_text(encoding="utf-8", errors="replace").splitlines())
+        line_text = f"行数（wc -l）：{rec['lines']}"
+        if display_lines != rec["lines"]:
+            line_text += f"；正文显示行数：{display_lines}（文件末尾无换行符）"
+        doc.add_paragraph(f"{line_text}；字节数：{rec['bytes']}；SHA-256：{rec['sha256']}")
         add_code_block(doc, rec["file"])
-    doc.save(OUTPUT_DIR / "source_submission_full.docx")
+    doc.save(OUTPUT_DIR / f"{SOFTWARE_PREFIX}-源程序.docx")
 
 
 def build_fallback_listing():
@@ -259,7 +286,7 @@ def build_fallback_listing():
             p.paragraph_format.space_after = Pt(0)
             p.add_run(f"{number+1:04d} | {lines[number]}")
         doc.add_page_break()
-    doc.save(OUTPUT_DIR / "source_submission_line_preview.docx")
+    doc.save(OUTPUT_DIR / f"{SOFTWARE_PREFIX}-源程序行级预览.docx")
 
 
 def main():

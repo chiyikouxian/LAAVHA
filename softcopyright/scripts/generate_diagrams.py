@@ -33,7 +33,7 @@ def arrow(ax, x1, y1, x2, y2):
 def architecture():
     fig, ax = plt.subplots(figsize=(12, 6.2), dpi=180)
     ax.set_xlim(0, 12); ax.set_ylim(0, 6.2); ax.axis("off")
-    ax.text(6, 5.82, "LAAVHA无人机异构网络垂直切换仿真软件总体架构",
+    ax.text(6, 5.82, "无人机遥感异构网络垂直切换智能决策软件总体架构",
             ha="center", va="center", fontsize=18, fontweight="bold", fontproperties=FONT)
     box(ax, .45, 4.25, 2.55, 1.05, "数据与模型层", "训练数据\nLAAVHA_Net / 权重", "#e9f5ec")
     box(ax, 3.25, 4.25, 2.55, 1.05, "推理决策层", "预测、Attention\nTOPSIS、滞后判决", "#eaf2f8")

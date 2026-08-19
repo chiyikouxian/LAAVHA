@@ -1,0 +1,167 @@
+<mxfile host="Electron" agent="Claude">
+  <diagram id="alera-framework" name="ALERA Framework">
+    <mxGraphModel dx="3343" dy="1987" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2780" pageHeight="1410" background="#f5f5f3" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="xbase" parent="1" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 5;fillColor=#ffffff;strokeColor=#111111;strokeWidth=2;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=top;spacingTop=18;" value="&lt;div style=&quot;font-size:35px&quot;&gt;&lt;b&gt;LAAVHA 基础决策链路（结构与训练过程不变）&lt;/b&gt; /&lt;br&gt;&lt;span style=&quot;font-size:32px&quot;&gt;LAAVHA Base Chain (trained model unchanged)&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="720" width="1610" x="20" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="xstate" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#111111;strokeWidth=2;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=middle;" value="&lt;div style=&quot;font-size:30px;line-height:1.4&quot;&gt;状态输入&lt;br&gt;(&lt;i&gt;X&lt;sub&gt;k&lt;/sub&gt;&lt;/i&gt;, &lt;i&gt;S&lt;/i&gt;&lt;sub style=&quot;font-style:normal&quot;&gt;cur&lt;/sub&gt;, [&lt;i&gt;v, h&lt;/i&gt;])&lt;br&gt;&lt;span style=&quot;font-size:27px&quot;&gt;State Input&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="180" width="270" x="50" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="xlstm" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#111111;strokeWidth=2;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=middle;" value="&lt;div style=&quot;font-size:30px;line-height:1.4&quot;&gt;堆叠 LSTM 预测&lt;br&gt;&lt;span style=&quot;font-size:27px&quot;&gt;Stacked LSTM Prediction&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:26px&quot;&gt;(LSTM&lt;sub&gt;1&lt;/sub&gt; → LSTM&lt;sub&gt;2&lt;/sub&gt; → fc&lt;sub&gt;pred&lt;/sub&gt;)&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="180" width="360" x="390" y="155" as="geometry" />
+        </mxCell>
+        <mxCell id="xattn" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#111111;strokeWidth=2;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=middle;" value="&lt;div style=&quot;font-size:30px;line-height:1.4&quot;&gt;注意力动态权重&lt;br&gt;&lt;span style=&quot;font-size:27px&quot;&gt;Attention Dynamic Weights&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:26px&quot;&gt;(Self-Attention → Softmax)&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="180" width="360" x="390" y="480" as="geometry" />
+        </mxCell>
+        <mxCell id="xspred" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#111111;strokeWidth=2;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=middle;" value="&lt;div style=&quot;font-size:30px&quot;&gt;&lt;i&gt;S&lt;/i&gt;&lt;sub style=&quot;font-style:normal&quot;&gt;pred&lt;/sub&gt; ∈ &lt;b&gt;R&lt;/b&gt;&lt;sup&gt;3×5&lt;/sup&gt;&lt;br&gt;&lt;span style=&quot;font-size:27px&quot;&gt;Predicted State&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="170" x="840" y="185" as="geometry" />
+        </mxCell>
+        <mxCell id="xw" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#111111;strokeWidth=2;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=middle;" value="&lt;div style=&quot;font-size:30px&quot;&gt;&lt;i&gt;w&lt;/i&gt; ∈ &lt;b&gt;R&lt;/b&gt;&lt;sup&gt;5&lt;/sup&gt;&lt;br&gt;&lt;span style=&quot;font-size:27px&quot;&gt;Dynamic Weights&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="170" x="840" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="xtopsis" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#111111;strokeWidth=2;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=middle;" value="&lt;div style=&quot;font-size:30px;line-height:1.45&quot;&gt;改进 TOPSIS 决策&lt;br&gt;&lt;span style=&quot;font-size:27px&quot;&gt;Improved TOPSIS&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:26px&quot;&gt;融合 → 成本型取反 →&lt;br&gt;归一化 → 加权 →&lt;br&gt;理想解 → 贴近度&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:26px&quot;&gt;&lt;i&gt;S&lt;/i&gt;&lt;sub style=&quot;font-style:normal&quot;&gt;cur&lt;/sub&gt; + &lt;i&gt;S&lt;/i&gt;&lt;sub style=&quot;font-style:normal&quot;&gt;pred&lt;/sub&gt; + &lt;i&gt;w&lt;/i&gt;&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="300" width="360" x="1080" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="xci" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#111111;strokeWidth=2;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=middle;" value="&lt;div style=&quot;&quot;&gt;&lt;font style=&quot;font-size:28px;&quot;&gt;&lt;i style=&quot;&quot;&gt;C&lt;sub style=&quot;&quot;&gt;i&lt;/sub&gt;&lt;/i&gt; ∈ [0, 1]&lt;br&gt;Closeness Coefficient&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="150" x="1470" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="xnote" parent="1" style="text;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=middle;" value="&lt;div style=&quot;font-size:28px;line-height:1.35&quot;&gt;ALERA 仅在决策层引入 ADH 与 RS-TOPSIS 两项增强机制&lt;br&gt;&lt;span style=&quot;font-size:26px&quot;&gt;ALERA introduces ADH and RS-TOPSIS at the decision layer only&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="70" width="1530" x="50" y="675" as="geometry" />
+        </mxCell>
+        <mxCell id="xrs" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#111111;strokeWidth=2;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=top;spacingTop=18;" value="&lt;div style=&quot;font-size:35px&quot;&gt;&lt;b&gt;2.4.2 RS-TOPSIS 风险敏感排序&lt;/b&gt; /&lt;br&gt;&lt;span style=&quot;font-size:32px&quot;&gt;Risk-Sensitive TOPSIS&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="690" width="600" x="1750" y="35" as="geometry" />
+        </mxCell>
+        <mxCell id="xhistory" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#111111;strokeWidth=2;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=middle;" value="&lt;div style=&quot;font-size:29px;line-height:1.4&quot;&gt;贴近度历史缓存 (近 &lt;i&gt;K&lt;sub&gt;c&lt;/sub&gt;&lt;/i&gt; = 5 轮)&lt;br&gt;&lt;span style=&quot;font-size:26px&quot;&gt;Closeness History Buffer (last &lt;i&gt;K&lt;sub&gt;c&lt;/sub&gt;&lt;/i&gt; = 5 rounds)&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="105" width="530" x="1785" y="165" as="geometry" />
+        </mxCell>
+        <mxCell id="xsigma" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#111111;strokeWidth=2;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=middle;" value="&lt;div style=&quot;font-size:29px;line-height:1.4&quot;&gt;贴近度波动 &lt;i&gt;σ&lt;sub&gt;i&lt;/sub&gt;&lt;sup&gt;C&lt;/sup&gt;&lt;/i&gt; = &lt;span style=&quot;font-style:normal&quot;&gt;std&lt;/span&gt;(&lt;i&gt;C&lt;sub&gt;i&lt;/sub&gt;&lt;/i&gt;)&lt;br&gt;&lt;span style=&quot;font-size:26px&quot;&gt;Closeness Volatility &lt;i&gt;σ&lt;sub&gt;i&lt;/sub&gt;&lt;sup&gt;C&lt;/sup&gt;&lt;/i&gt;&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="105" width="530" x="1785" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="xrobust" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#111111;strokeWidth=2;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=middle;" value="&lt;div style=&quot;font-size:29px;line-height:1.4&quot;&gt;风险惩罚 &lt;i&gt;C&lt;sub&gt;i&lt;/sub&gt;&lt;/i&gt;&lt;sup style=&quot;font-style:normal&quot;&gt;robust&lt;/sup&gt; = &lt;i&gt;C&lt;sub&gt;i&lt;/sub&gt;&lt;/i&gt; − &lt;i&gt;λσ&lt;sub&gt;i&lt;/sub&gt;&lt;sup&gt;C&lt;/sup&gt;&lt;/i&gt;, &lt;i&gt;λ&lt;/i&gt; = 0.5&lt;br&gt;&lt;span style=&quot;font-size:26px&quot;&gt;Risk Penalty&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="115" width="530" x="1785" y="435" as="geometry" />
+        </mxCell>
+        <mxCell id="xrank" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#111111;strokeWidth=2;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=middle;" value="&lt;div style=&quot;font-size:29px;line-height:1.4&quot;&gt;鲁棒排序 &lt;i&gt;N&lt;sup&gt;*&lt;/sup&gt;&lt;/i&gt; = &lt;span style=&quot;font-style:normal&quot;&gt;arg max&lt;/span&gt;&lt;sub&gt;&lt;i&gt;i&lt;/i&gt;&lt;/sub&gt; &lt;i&gt;C&lt;sub&gt;i&lt;/sub&gt;&lt;/i&gt;&lt;sup style=&quot;font-style:normal&quot;&gt;robust&lt;/sup&gt;&lt;br&gt;&lt;span style=&quot;font-size:26px&quot;&gt;Robust Ranking&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="105" width="530" x="1785" y="580" as="geometry" />
+        </mxCell>
+        <mxCell id="xadh" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#111111;strokeWidth=2;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=top;spacingTop=18;" value="&lt;div style=&quot;font-size:35px&quot;&gt;&lt;b&gt;2.4.1 ADH 自适应滞后&lt;/b&gt; /&lt;br&gt;&lt;span style=&quot;font-size:32px&quot;&gt;Adaptive Hysteresis&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="560" width="600" x="460" y="795" as="geometry" />
+        </mxCell>
+        <mxCell id="xsinr" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#111111;strokeWidth=2;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=middle;" value="&lt;div style=&quot;font-size:29px;line-height:1.4&quot;&gt;服务网络近 5 周期&lt;br&gt;SINR 标准差 &lt;i&gt;σ&lt;/i&gt; ∈ [0, 10]&lt;br&gt;&lt;span style=&quot;font-size:26px&quot;&gt;SINR Std. of Serving Network&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="165" width="350" x="30" y="882.5" as="geometry" />
+        </mxCell>
+        <mxCell id="xvel" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#111111;strokeWidth=2;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=middle;" value="&lt;div style=&quot;font-size:29px;line-height:1.4&quot;&gt;飞行速度&lt;br&gt;&lt;i&gt;v&lt;/i&gt; ∈ [0, 30] m/s&lt;br&gt;&lt;span style=&quot;font-size:26px&quot;&gt;Flight Velocity&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="165" width="350" x="40" y="1157.5" as="geometry" />
+        </mxCell>
+        <mxCell id="xdelta" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#111111;strokeWidth=2;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=middle;" value="&lt;div style=&quot;font-size:29px;line-height:1.4&quot;&gt;自适应门限 &lt;i&gt;Δ&lt;/i&gt;&lt;sub style=&quot;font-style:normal&quot;&gt;th&lt;/sub&gt; = 0.03 + 0.05(&lt;i&gt;σ&lt;/i&gt; / 10)&lt;br&gt;&lt;span style=&quot;font-size:26px&quot;&gt;Adaptive Threshold, &lt;i&gt;Δ&lt;/i&gt;&lt;sub style=&quot;font-style:normal&quot;&gt;th&lt;/sub&gt; ∈ [0.03, 0.08]&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="130" width="520" x="500" y="900" as="geometry" />
+        </mxCell>
+        <mxCell id="xth" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#111111;strokeWidth=2;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=middle;" value="&lt;div style=&quot;font-size:29px;line-height:1.4&quot;&gt;自适应周期 &lt;i&gt;T&lt;sub&gt;h&lt;/sub&gt;&lt;/i&gt; = max(2, ⌊4 − 2&lt;i&gt;v&lt;/i&gt; / 30⌋)&lt;br&gt;&lt;span style=&quot;font-size:26px&quot;&gt;Adaptive Duration, &lt;i&gt;T&lt;sub&gt;h&lt;/sub&gt;&lt;/i&gt; ∈ [2, 4]&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="130" width="520" x="500" y="1175" as="geometry" />
+        </mxCell>
+        <mxCell id="xadhnote" parent="1" style="text;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=middle;" value="&lt;div style=&quot;font-size:27px;line-height:1.2&quot;&gt;信道波动越大 → 门限越高; 飞行速度越快 → 周期越短&lt;br&gt;&lt;span style=&quot;font-size:25px&quot;&gt;Higher volatility → higher threshold; higher velocity → shorter duration&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="115" width="520" x="500" y="1040" as="geometry" />
+        </mxCell>
+        <mxCell id="xncur" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#111111;strokeWidth=2;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=middle;" value="&lt;div style=&quot;font-size:29px;line-height:1.35&quot;&gt;当前服务网络 &lt;i&gt;N&lt;/i&gt;&lt;sub style=&quot;font-style:normal&quot;&gt;cur&lt;/sub&gt;&lt;br&gt;&lt;span style=&quot;font-size:26px&quot;&gt;Current Serving Network &lt;i&gt;N&lt;/i&gt;&lt;sub style=&quot;font-style:normal&quot;&gt;cur&lt;/sub&gt;&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="480" x="1725" y="800" as="geometry" />
+        </mxCell>
+        <mxCell id="xdual" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#111111;strokeWidth=2;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=middle;" value="&lt;div style=&quot;font-size:33px;line-height:1.35&quot;&gt;&lt;b&gt;双重滞后判决&lt;/b&gt;&lt;br&gt;&lt;span style=&quot;font-size:30px&quot;&gt;Dual Hysteresis Decision&lt;/span&gt;&lt;br&gt;&lt;br&gt;&lt;span style=&quot;font-size:29px&quot;&gt;&lt;i&gt;C&lt;/i&gt;&lt;sup style=&quot;font-style:normal&quot;&gt;robust&lt;/sup&gt;(&lt;i&gt;N&lt;sup&gt;*&lt;/sup&gt;&lt;/i&gt;) − &lt;i&gt;C&lt;/i&gt;&lt;sup style=&quot;font-style:normal&quot;&gt;robust&lt;/sup&gt;(&lt;i&gt;N&lt;/i&gt;&lt;sub style=&quot;font-style:normal&quot;&gt;cur&lt;/sub&gt;) &amp;gt; &lt;i&gt;Δ&lt;/i&gt;&lt;sub style=&quot;font-style:normal&quot;&gt;th&lt;/sub&gt;&lt;br&gt;且连续 &lt;i&gt;T&lt;sub&gt;h&lt;/sub&gt;&lt;/i&gt; 个决策周期成立&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="350" width="530" x="1700" y="980" as="geometry" />
+        </mxCell>
+        <mxCell id="xout" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#111111;strokeWidth=2;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=middle;" value="&lt;div style=&quot;font-size:29px;line-height:1.4&quot;&gt;切换至 &lt;i&gt;N&lt;sup&gt;*&lt;/sup&gt;&lt;/i&gt;&lt;br&gt;&lt;span style=&quot;font-size:26px&quot;&gt;(输出目标网络编号)&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:26px&quot;&gt;Switch to &lt;i&gt;N&lt;sup&gt;*&lt;/sup&gt;&lt;/i&gt;&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="150" width="330" x="2410" y="1000" as="geometry" />
+        </mxCell>
+        <mxCell id="xkeep" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#111111;strokeWidth=2;fontColor=#111111;fontFamily=Times New Roman;align=center;verticalAlign=middle;" value="&lt;div style=&quot;font-size:29px;line-height:1.4&quot;&gt;保持 &lt;i&gt;N&lt;/i&gt;&lt;sub style=&quot;font-style:normal&quot;&gt;cur&lt;/sub&gt;&lt;br&gt;&lt;span style=&quot;font-size:26px&quot;&gt;(不执行切换)&lt;/span&gt;&lt;br&gt;&lt;span style=&quot;font-size:26px&quot;&gt;Keep &lt;i&gt;N&lt;/i&gt;&lt;sub style=&quot;font-style:normal&quot;&gt;cur&lt;/sub&gt;&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="150" width="330" x="2410" y="1178" as="geometry" />
+        </mxCell>
+        <mxCell id="f1" edge="1" parent="1" source="xstate" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;" target="xlstm" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f2" edge="1" parent="1" source="xstate" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;" target="xattn" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f3" edge="1" parent="1" source="xlstm" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;" target="xspred" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f4" edge="1" parent="1" source="xattn" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;" target="xw" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f5" edge="1" parent="1" source="xspred" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;" target="xtopsis" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f6" edge="1" parent="1" source="xw" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;" target="xtopsis" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f7" edge="1" parent="1" source="xtopsis" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;" target="xci" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f8" edge="1" parent="1" source="xci" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitPerimeter=1;entryX=0;entryY=0.5;entryPerimeter=1;endArrow=block;endFill=1;strokeWidth=3;fontSize=29;fontFamily=Times New Roman;labelBackgroundColor=#f5f5f3;" target="xhistory" value="逐周期写入">
+          <mxGeometry relative="1" x="0.12" as="geometry">
+            <mxPoint y="-24" as="offset" />
+            <Array as="points">
+              <mxPoint x="1690" y="360" />
+              <mxPoint x="1690" y="217" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f9" edge="1" parent="1" source="xhistory" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;" target="xsigma" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f10" edge="1" parent="1" source="xsigma" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;" target="xrobust" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f11" edge="1" parent="1" source="xrobust" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;" target="xrank" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="f12" edge="1" parent="1" source="xrank" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0;exitY=0.5;exitPerimeter=1;entryX=0;entryY=0.12;entryPerimeter=1;endArrow=block;endFill=1;strokeWidth=3;fontSize=29;fontFamily=Times New Roman;labelBackgroundColor=#f5f5f3;" target="xdual" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1650" y="632" />
+              <mxPoint x="1650" y="1022" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f12label" parent="1" style="text;whiteSpace=wrap;html=1;fillColor=none;strokeColor=none;fontColor=#111111;fontFamily=Times New Roman;align=right;verticalAlign=middle;" value="&lt;div style=&quot;font-size:29px;line-height:1.25&quot;&gt;&lt;i&gt;N&lt;sup&gt;*&lt;/sup&gt;&lt;/i&gt;, &lt;i&gt;C&lt;/i&gt;&lt;sup&gt;robust&lt;/sup&gt;(&lt;i&gt;N&lt;sup&gt;*&lt;/sup&gt;&lt;/i&gt;),&lt;i&gt;C&lt;/i&gt;&lt;sup&gt;robust&lt;/sup&gt;(&lt;i&gt;N&lt;/i&gt;&lt;sub&gt;cur&lt;/sub&gt;)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="80" width="500" x="1143" y="790" as="geometry" />
+        </mxCell>
+        <mxCell id="f14" edge="1" parent="1" source="xsinr" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=29;fontFamily=Times New Roman;labelBackgroundColor=#f5f5f3;" target="xdelta" value="&lt;i&gt;σ&lt;/i&gt;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint y="-20" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f15" edge="1" parent="1" source="xvel" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=29;fontFamily=Times New Roman;labelBackgroundColor=#f5f5f3;" target="xth" value="&lt;i&gt;v&lt;/i&gt;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint y="-18" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f16" edge="1" parent="1" source="xdelta" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitPerimeter=1;entryX=0;entryY=0.16;entryPerimeter=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=29;fontFamily=Times New Roman;labelBackgroundColor=#f5f5f3;" target="xdual" value="&lt;i&gt;Δ&lt;/i&gt;&lt;sub style=&quot;font-style:normal&quot;&gt;th&lt;/sub&gt; ∈ [0.03, 0.08]">
+          <mxGeometry relative="1" x="-0.15" as="geometry">
+            <mxPoint y="-24" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f17" edge="1" parent="1" source="xth" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.5;exitPerimeter=1;entryX=0;entryY=0.70;entryPerimeter=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=29;fontFamily=Times New Roman;labelBackgroundColor=#f5f5f3;" target="xdual" value="&lt;i&gt;T&lt;sub&gt;h&lt;/sub&gt;&lt;/i&gt; ∈ [2, 4]">
+          <mxGeometry relative="1" x="-0.15" as="geometry">
+            <mxPoint y="-24" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f18" edge="1" parent="1" source="xdual" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.27;exitPerimeter=1;entryX=0;entryY=0.5;entryPerimeter=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=29;fontFamily=Times New Roman;labelBackgroundColor=#f5f5f3;" target="xout" value="满足条件 / yes">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint y="-28" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="f19" edge="1" parent="1" source="xdual" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=1;exitY=0.78;exitPerimeter=1;entryX=0;entryY=0.5;entryPerimeter=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=29;fontFamily=Times New Roman;labelBackgroundColor=#f5f5f3;" target="xkeep" value="不满足 / no">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint y="-28" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="SPpHhf1D-bh8M6aI2IEF-3" edge="1" parent="1" source="xncur" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;exitX=0.5;exitY=1;exitPerimeter=1;entryX=0.5;entryY=0;entryPerimeter=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=29;fontFamily=Times New Roman;labelBackgroundColor=#f5f5f3;" target="xdual" value="&lt;i&gt;N&lt;/i&gt;&lt;sub style=&quot;font-style:normal&quot;&gt;cur&lt;/sub&gt;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="24" as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

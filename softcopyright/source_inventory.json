@@ -2,10 +2,34 @@
   "project": "/home/suwen/reproduce",
   "files": [
     {
+      "file": "CMakeLists_laavha.txt",
+      "lines": 19,
+      "bytes": 605,
+      "sha256": "db92451b3efc0d0d677227555a1a49a1f7c7ee5d81e1e226649be4e1a71ee032"
+    },
+    {
       "file": "LAAVHA改进算法训练程序.py",
-      "lines": 110,
+      "lines": 109,
       "bytes": 4353,
       "sha256": "9fb00135ec146e16b7e8fca4e678000da12d5223efefc27ef82e3c5d4b39d136"
+    },
+    {
+      "file": "fuzzy_vho.py",
+      "lines": 134,
+      "bytes": 4439,
+      "sha256": "76fd9abcb4af71fa1eda66e2e03addc36b56ade6e11fcf98fc4dd8d56d1a64cb"
+    },
+    {
+      "file": "laavha-handover.cc",
+      "lines": 1353,
+      "bytes": 49354,
+      "sha256": "61f1631c8ff3b9ff3381f68fcf78ff29a11f076ece399f4ead616bb3c9efa8fd"
+    },
+    {
+      "file": "laavha_batch_runner.py",
+      "lines": 206,
+      "bytes": 8194,
+      "sha256": "48199d358671287a14c1b65e4db40de21d553ec8d09800578d0a4061a6247661"
     },
     {
       "file": "laavha_inference.py",
@@ -20,22 +44,16 @@
       "sha256": "791cffc416874fce0f45dacb976e465268917995afa3f6a49a3924c878ac152d"
     },
     {
+      "file": "laavha_plot.py",
+      "lines": 613,
+      "bytes": 23387,
+      "sha256": "825440f668fdc3442471473da2e18d3085b00306aeed2d1a681fe00a2d0065ab"
+    },
+    {
       "file": "laavha_py.cc",
       "lines": 57,
       "bytes": 2186,
       "sha256": "936e713429501c1725fa98ff11a8adb1ee73d3a338cd009ce8427f2a5a20f338"
-    },
-    {
-      "file": "laavha-handover.cc",
-      "lines": 1353,
-      "bytes": 49354,
-      "sha256": "61f1631c8ff3b9ff3381f68fcf78ff29a11f076ece399f4ead616bb3c9efa8fd"
-    },
-    {
-      "file": "topsis_q.py",
-      "lines": 226,
-      "bytes": 8862,
-      "sha256": "5b54f3b721836f75919ee5fd9ee88feb35b679f67b7d3bd0890cdf7be73aa12a"
     },
     {
       "file": "madm_comparison.py",
@@ -44,34 +62,70 @@
       "sha256": "a1c17b13733a9a4018b9d9fedb98848e60bd4e740b5421fdaaeeac1a69b9ebf7"
     },
     {
+      "file": "make_pub_figures.py",
+      "lines": 144,
+      "bytes": 4848,
+      "sha256": "652b58440a9944b720faa4d0afcfb06203fb5080c76baf4e5228c71cf5a4c4a6"
+    },
+    {
+      "file": "regenerate_figures.py",
+      "lines": 332,
+      "bytes": 13443,
+      "sha256": "efd10d759877d1b51ed9bdf35eff8dc9a487314daa802cd580bc59379264fa7f"
+    },
+    {
       "file": "saw_madm.py",
       "lines": 93,
       "bytes": 3140,
       "sha256": "aa8ebeefc48d3dec377d6e2263072cde43d8860f32af29523382698a20385edb"
     },
     {
-      "file": "fuzzy_vho.py",
-      "lines": 134,
-      "bytes": 4439,
-      "sha256": "76fd9abcb4af71fa1eda66e2e03addc36b56ade6e11fcf98fc4dd8d56d1a64cb"
+      "file": "topsis_q.py",
+      "lines": 226,
+      "bytes": 8862,
+      "sha256": "5b54f3b721836f75919ee5fd9ee88feb35b679f67b7d3bd0890cdf7be73aa12a"
     },
     {
-      "file": "laavha_batch_runner.py",
-      "lines": 206,
-      "bytes": 8194,
-      "sha256": "48199d358671287a14c1b65e4db40de21d553ec8d09800578d0a4061a6247661"
+      "file": "experiments/enhanced_proof_experiments.py",
+      "lines": 338,
+      "bytes": 14070,
+      "sha256": "51f53c905b9eaf26856070f592ba9c100b5d7070cb505056343c2988135686ed"
     },
     {
-      "file": "laavha_plot.py",
-      "lines": 613,
-      "bytes": 23387,
-      "sha256": "825440f668fdc3442471473da2e18d3085b00306aeed2d1a681fe00a2d0065ab"
+      "file": "experiments/exp_a_adaptive_hysteresis.py",
+      "lines": 145,
+      "bytes": 7081,
+      "sha256": "4c49f8e48fcdd1f83913505210c192471a8ced0dbf6198a65a3e30a15ba268ab"
     },
     {
-      "file": "make_pub_figures.py",
-      "lines": 144,
-      "bytes": 4848,
-      "sha256": "652b58440a9944b720faa4d0afcfb06203fb5080c76baf4e5228c71cf5a4c4a6"
+      "file": "experiments/gen_fig5_6.py",
+      "lines": 100,
+      "bytes": 4468,
+      "sha256": "839f19acd9148d08a501e88742bfbc4e0ac0a405d23027b52288089aa0d0d36e"
+    },
+    {
+      "file": "experiments/generate_nature_figures.py",
+      "lines": 189,
+      "bytes": 7894,
+      "sha256": "dc0e99c91e71d4593a30b5be9e6592bcafe1b79eecea78e4ee9723d223a765a4"
+    },
+    {
+      "file": "experiments/generate_network_coverage_en.py",
+      "lines": 163,
+      "bytes": 7915,
+      "sha256": "7869e8c4cc1f2b042b31b0ddd2053272a6bdf184e89ca6d5e88645eed2a0023b"
+    },
+    {
+      "file": "experiments/parameter_sensitivity.py",
+      "lines": 291,
+      "bytes": 12577,
+      "sha256": "0c045d5704996df5161283f990a40d6724dc7c02d5d9aeaaa619b36c266ce201"
+    },
+    {
+      "file": "experiments/stress_5g_degradation.py",
+      "lines": 163,
+      "bytes": 6900,
+      "sha256": "7b3394e3fe09c48ee49031ff3343a7f647ec0b68e09cda35bc3a6bde3f740c53"
     }
   ]
 }
