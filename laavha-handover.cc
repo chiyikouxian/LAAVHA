@@ -12,6 +12,16 @@
  *   - 5G candidate uses proxy metrics (propagation + synthetic transport)
  *     until NR/5G-LENA module is integrated.
  *
+ * Optional netanim animation trace (CLI --animFile):
+ *   When a filename is given, this program writes a netanim-compatible XML
+ *   trace. The UAV node is recoloured and relabelled at every decision cycle
+ *   to reflect the serving network returned by the Python decision service
+ *   (0=5G proxy, 1=LTE, 2=WiFi), so the handover decision sequence is visible
+ *   during playback. Playback requires the separate third-party NetAnim
+ *   viewer; netanim renders x/y only, so UAV altitude is not shown.
+ *   Disabled by default: writing the trace adds I/O cost and must not perturb
+ *   the batch experiment runs.
+ *
  * FlowMonitor modes (CLI --flowmonMode):
  *   off  - no FlowMonitor installed
  *   log  - FlowMonitor installed, stats printed every 10 decisions,
@@ -32,6 +42,7 @@
 #include <ns3/internet-module.h>
 #include <ns3/lte-module.h>
 #include <ns3/mobility-helper.h>
+#include <ns3/netanim-module.h>
 #include <ns3/node-container.h>
 #include <ns3/nstime.h>
 #include <ns3/point-to-point-module.h>
@@ -105,8 +116,16 @@ class LaavhaScheduledSimulation
           m_5gFmThroughput(0.0f),
           m_5gFmPlr(0.0f),
           m_historyInitialized(false),
-          m_numBackgroundNodes(0)
+          m_numBackgroundNodes(0),
+          m_animFile(""),
+          m_anim(nullptr),
+          m_animMaxPkts(100000)
     {
+    }
+
+    ~LaavhaScheduledSimulation()
+    {
+        delete m_anim;
     }
 
     void Configure(int argc, char* argv[])
@@ -139,6 +158,12 @@ class LaavhaScheduledSimulation
         cmd.AddValue("randomizeScenario", "Enable random perturbations", randomizeScenario);
         cmd.AddValue("positionJitter", "Max x/y offset (m)", positionJitter);
         cmd.AddValue("altitudeJitter", "Max altitude offset (m)", altitudeJitter);
+        cmd.AddValue("animFile",
+                     "netanim XML trace output path; empty disables animation",
+                     m_animFile);
+        cmd.AddValue("animMaxPkts",
+                     "Max packets per netanim trace file (limits XML size)",
+                     m_animMaxPkts);
         cmd.Parse(argc, argv);
 
         RngSeedManager::SetRun(rngRun);
@@ -184,6 +209,8 @@ class LaavhaScheduledSimulation
         {
             SetupFlowMonitor();
         }
+
+        SetupAnimation();
 
         std::cout << "=== LAAVHA ns3-ai integration - Stage 3 ===" << std::endl;
         std::cout << "Duration: " << m_duration << "s, period: " << m_period
@@ -409,6 +436,92 @@ class LaavhaScheduledSimulation
         ApplicationContainer clientApp = onoff.Install(m_uavNodes.Get(0));
         clientApp.Start(Seconds(0.2));
         clientApp.Stop(Seconds(m_duration));
+    }
+
+    // -----------------------------------------------------------------------
+    // Animation trace (optional, netanim-compatible XML)
+    // -----------------------------------------------------------------------
+    void SetupAnimation()
+    {
+        if (m_animFile.empty())
+        {
+            return;
+        }
+
+        m_anim = new AnimationInterface(m_animFile);
+        m_anim->SetMaxPktsPerTraceFile(m_animMaxPkts);
+
+        // Label every node by its role in the vertical-handover scenario so the
+        // playback identifies the candidate networks rather than bare node ids.
+        m_anim->UpdateNodeDescription(m_uavNodes.Get(0), "UAV");
+        m_anim->UpdateNodeSize(m_uavNodes.Get(0), 40.0, 40.0);
+
+        m_anim->UpdateNodeDescription(m_apNode.Get(0), "WiFi-AP");
+        m_anim->UpdateNodeColor(m_apNode.Get(0), 0, 160, 0);
+        m_anim->UpdateNodeSize(m_apNode.Get(0), 30.0, 30.0);
+
+        m_anim->UpdateNodeDescription(m_enbNode.Get(0), "LTE-eNB");
+        m_anim->UpdateNodeColor(m_enbNode.Get(0), 0, 0, 220);
+        m_anim->UpdateNodeSize(m_enbNode.Get(0), 30.0, 30.0);
+
+        m_anim->UpdateNodeDescription(m_5gProxyNodes.Get(1), "5G-proxy-gNB");
+        m_anim->UpdateNodeColor(m_5gProxyNodes.Get(1), 230, 140, 0);
+        m_anim->UpdateNodeSize(m_5gProxyNodes.Get(1), 30.0, 30.0);
+
+        // Nodes that exist only to terminate proxy/EPC traffic are marked as
+        // such: they are not candidate networks the algorithm ranks.
+        m_anim->UpdateNodeDescription(m_5gProxyNodes.Get(0), "5G-proxy-UE");
+        m_anim->UpdateNodeColor(m_5gProxyNodes.Get(0), 150, 150, 150);
+        m_anim->UpdateNodeDescription(m_lteUeNode.Get(0), "LTE-UE");
+        m_anim->UpdateNodeColor(m_lteUeNode.Get(0), 150, 150, 150);
+        m_anim->UpdateNodeDescription(m_remoteHost.Get(0), "RemoteHost");
+        m_anim->UpdateNodeColor(m_remoteHost.Get(0), 150, 150, 150);
+
+        for (uint32_t i = 0; i < m_backgroundStaNodes.GetN(); ++i)
+        {
+            m_anim->UpdateNodeDescription(m_backgroundStaNodes.Get(i),
+                                          "BG-STA-" + std::to_string(i));
+            m_anim->UpdateNodeColor(m_backgroundStaNodes.Get(i), 190, 190, 190);
+            m_anim->UpdateNodeSize(m_backgroundStaNodes.Get(i), 15.0, 15.0);
+        }
+
+        UpdateAnimationServingNet();
+
+        std::cout << "[netanim] animation trace: " << m_animFile
+                  << " (maxPktsPerFile=" << m_animMaxPkts << ")" << std::endl;
+        std::cout << "[netanim] UAV colour/label follows serving network: "
+                  << "5G=orange, LTE=blue, WiFi=green. 2D only (x/y); "
+                  << "altitude is not rendered." << std::endl;
+    }
+
+    /**
+     * Recolour and relabel the UAV node according to the serving network
+     * currently selected by the decision service. Called once at setup and
+     * after every decision so that playback shows the handover sequence.
+     */
+    void UpdateAnimationServingNet()
+    {
+        if (!m_anim)
+        {
+            return;
+        }
+
+        Ptr<Node> uav = m_uavNodes.Get(0);
+        switch (m_currentNet)
+        {
+        case 0: // 5G proxy
+            m_anim->UpdateNodeColor(uav, 230, 140, 0);
+            m_anim->UpdateNodeDescription(uav, "UAV|serving=5G");
+            break;
+        case 1: // LTE
+            m_anim->UpdateNodeColor(uav, 0, 0, 220);
+            m_anim->UpdateNodeDescription(uav, "UAV|serving=LTE");
+            break;
+        default: // WiFi
+            m_anim->UpdateNodeColor(uav, 0, 160, 0);
+            m_anim->UpdateNodeDescription(uav, "UAV|serving=WiFi");
+            break;
+        }
     }
 
     void SetupFlowMonitor()
@@ -742,6 +855,9 @@ class LaavhaScheduledSimulation
             m_currentNet = targetNet;
         }
         std::cout << std::endl;
+
+        // Reflect the (possibly changed) serving network in the animation trace.
+        UpdateAnimationServingNet();
 
         if (now + m_period < m_duration)
         {
@@ -1234,6 +1350,11 @@ class LaavhaScheduledSimulation
         std::cout << "handover_count: " << m_handoverCount << std::endl;
         std::cout << "final_net: " << m_currentNet << std::endl;
         std::cout << "decisions: " << m_decisions << std::endl;
+        if (!m_animFile.empty())
+        {
+            std::cout << "anim_trace: " << m_animFile
+                      << " (open with the NetAnim viewer)" << std::endl;
+        }
         std::cout << "=== LAAVHA stage 3 complete ===" << std::endl;
     }
 
@@ -1337,6 +1458,11 @@ class LaavhaScheduledSimulation
     // Background congestion nodes (thesis Section 3.5: node count 50-350)
     uint32_t m_numBackgroundNodes;
     NodeContainer m_backgroundStaNodes;
+
+    // Optional netanim animation trace
+    std::string m_animFile;
+    AnimationInterface* m_anim;
+    uint64_t m_animMaxPkts;
     Ipv4InterfaceContainer m_bgIpIfs;
 };
 

@@ -19,6 +19,11 @@ from build_docs import CORE_FILES, PROJECT, add_markdown, source_inventory
 
 TEMPLATE_DIR = Path("/home/suwen/IBN5100/无人机自组网/软著/软著模板")
 OUTPUT_DIR = Path("/home/suwen/IBN5100/无人机自组网/软著/LAAVHA软件著作权材料")
+# This generated design document has the preferred cover, whitespace, and
+# page geometry. Only its sample body is replaced during regeneration.
+DESIGN_LAYOUT_TEMPLATE = OUTPUT_DIR.parent / "LAAVHA软件著作权材料_backup_20260901_154233" / (
+    "无人机遥感异构网络垂直切换智能决策软件 V1.0-设计说明书v1.0.docx"
+)
 SOFTWARE_NAME = "无人机遥感异构网络垂直切换智能决策软件 V1.0"
 SOURCE_PROGRAM_PAGE_COUNT = 97
 
@@ -53,6 +58,18 @@ def clear_body_from_child(doc, first_child_index: int):
     body = doc._element.body
     sect_pr = body.find(qn("w:sectPr"))
     for child in list(body)[first_child_index:]:
+        if child is not sect_pr:
+            body.remove(child)
+
+
+def clear_body_after_paragraph(doc, marker: str):
+    """Remove sample content after a marker paragraph, preserving front matter."""
+    paragraph = next(p for p in doc.paragraphs if p.text.strip() == marker)
+    body = doc._element.body
+    sect_pr = body.find(qn("w:sectPr"))
+    children = list(body)
+    start = children.index(paragraph._p)
+    for child in children[start:]:
         if child is not sect_pr:
             body.remove(child)
 
@@ -250,11 +267,14 @@ def replace_template_toc(doc, entries):
     for child in list(content):
         content.remove(child)
 
-    title = doc.add_paragraph("目 录", style="TOC 标题1")
+    title_style = "TOC 标题1" if "TOC 标题1" in [s.name for s in doc.styles] else "Normal"
+    title = doc.add_paragraph("目 录", style=title_style)
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER
     content.append(title._p)
+    style_names = {style.name for style in doc.styles}
     for text, level, page in entries:
-        style = "toc 1" if level == 1 else "toc 2"
+        preferred = "toc 1" if level == 1 else "toc 2"
+        style = preferred if preferred in style_names else "Normal"
         paragraph = doc.add_paragraph(style=style)
         set_paragraph_text(paragraph, f"{text}{'.' * 58}{page}", color="000000", size=10)
         content.append(paragraph._p)
@@ -265,15 +285,23 @@ def apply_template_body_format(doc, start_index, body_template, section_template
     for paragraph in doc.paragraphs[start_index:]:
         if paragraph.style.name == "Heading 2":
             source = section_template
+            font, size, bold = "黑体", 16, True
         elif paragraph.style.name == "Heading 3":
             source = subsection_template
+            font, size, bold = "黑体", 16, False
         else:
             source = body_template
+            font, size, bold = "宋体", 10, False
         paragraph._p.get_or_add_pPr().clear()
         paragraph._p.insert(0, deepcopy(source._p.pPr))
+        # Markdown already supplies heading numbers.  The template stores its
+        # own automatic number field, which would otherwise duplicate them.
+        num_pr = paragraph._p.pPr.find(qn("w:numPr"))
+        if num_pr is not None:
+            paragraph._p.pPr.remove(num_pr)
         for run in paragraph.runs:
             if run.text:
-                set_run_font(run, name="宋体", size=10, color="000000", bold=False)
+                set_run_font(run, name=font, size=size, color="000000", bold=bold)
 
     for table in doc.tables:
         table._tbl.tblPr.clear()
@@ -290,47 +318,72 @@ def ensure_list_style(doc):
         style.base_style = doc.styles["Normal"]
 
 
+def ensure_heading_styles(doc):
+    names = {style.name for style in doc.styles}
+    for name in ("Heading 2", "Heading 3"):
+        if name not in names:
+            style = doc.styles.add_style(name, WD_STYLE_TYPE.PARAGRAPH)
+            style.base_style = doc.styles["Normal"]
+
+
 def build_design():
     target = OUTPUT_DIR / f"{SOFTWARE_NAME}-设计说明书v1.0.docx"
-    template = TEMPLATE_DIR / "面向应急救援的无人机异构双网协同规划软件-设计说明书v1.0.docx"
+    template = DESIGN_LAYOUT_TEMPLATE
+    if not template.exists():
+        template = TEMPLATE_DIR / "面向应急救援的无人机异构双网协同规划软件-设计说明书v1.0.docx"
     shutil.copy2(template, target)
     doc = Document(target)
-    # The first 17 body children are the original cover, date page, page break,
-    # and TOC content control.  All sample content starts at child 17.
-    body_template = doc.paragraphs[19]
-    section_template = doc.paragraphs[17]
-    subsection_template = doc.paragraphs[18]
+    # The backup is the layout master: retain its cover and front matter, and
+    # use its original body paragraphs as direct-format exemplars.
+    body_template = doc.paragraphs[17]
+    section_template = doc.paragraphs[15]
+    subsection_template = doc.paragraphs[16]
     table_template = doc.tables[1]
     set_paragraph_text(doc.paragraphs[0], SOFTWARE_NAME.rsplit(" V1.0", 1)[0], color="000000", size=18, bold=True, font="黑体")
     set_paragraph_text(doc.paragraphs[1], "（V1.0）", color="000000", size=18, bold=True, font="黑体")
-    set_paragraph_text(doc.paragraphs[13], "申请单位：[待确认]", color="000000", size=12)
-    set_paragraph_text(doc.paragraphs[14], "[待确认]年[待确认]月[待确认]日", color="000000", size=12)
-    doc.paragraphs[13].paragraph_format.page_break_before = True
+    set_paragraph_text(doc.paragraphs[12], "申请单位：[待确认]    [待确认]年[待确认]月[待确认]日", color="000000", size=10)
     replace_template_toc(doc, [
-        ("1. 软件介绍", 1, 1), ("1.1 开发目的", 2, 1), ("1.2 面向领域", 2, 1),
-        ("1.3 软件的主要功能", 2, 2), ("1.4 软件的技术特点", 2, 2),
-        ("2. 软件开发信息", 1, 3), ("3. 开发与运行环境", 1, 3),
-        ("3.1 Python环境", 2, 3), ("3.2 C++与仿真环境", 2, 3),
-        ("3.3 数据与模型依赖", 2, 4), ("4. 软件总体架构", 1, 4),
-        ("4.1 数据与模型层", 2, 4), ("4.2 推理决策层", 2, 5),
-        ("4.3 仿真交互层", 2, 5), ("4.4 实验分析层", 2, 5),
-        ("5. 软件工作流程", 1, 6), ("6. 核心算法设计", 1, 6),
-        ("6.1 LAAVHA_Net", 2, 6), ("6.2 改进TOPSIS", 2, 7),
-        ("6.3 双重滞后判决", 2, 7), ("6.4 风险感知增强", 2, 8),
-        ("6.5 基线与消融", 2, 8), ("7. 接口设计", 1, 8),
-        ("7.1 C++到Python消息", 2, 8), ("7.2 Python到C++消息", 2, 9),
-        ("7.3 Python绑定", 2, 9), ("7.4 命令行接口", 2, 9),
-        ("8. 运行设计", 1, 9), ("9. 测试与性能分析", 1, 10),
-        ("9.1 静态检查", 2, 10), ("9.2 功能检查", 2, 10),
-        ("9.3 实现边界", 2, 10), ("10. 文件与模块索引", 1, 10),
-        ("11. 与模板示例的范围差异", 1, 11),
+        ("1. 软件介绍", 1, 5), ("1.1 开发目的", 2, 5), ("1.2 面向领域", 2, 5),
+        ("1.3 软件的主要功能", 2, 6), ("1.4 软件的技术特点", 2, 6),
+        ("2. 软件开发信息", 1, 7), ("3. 开发与运行环境", 1, 7),
+        ("3.1 Python环境", 2, 7), ("3.2 C++与仿真环境", 2, 7),
+        ("3.3 数据与模型依赖", 2, 8), ("4. 软件架构", 1, 8),
+        ("4.1 软件总体架构", 2, 8), ("4.1.1 数据与模型层", 3, 8),
+        ("4.1.2 推理决策层", 3, 9), ("4.1.3 仿真交互层", 3, 9),
+        ("4.1.4 实验分析层", 3, 9), ("4.2 系统流程", 2, 10),
+        ("5. 软件的详细设计", 1, 11), ("5.1 数据与模型构建", 2, 11),
+        ("5.2 改进TOPSIS排序", 2, 12), ("5.3 双重滞后判决", 2, 12),
+        ("5.4 风险感知增强", 2, 13), ("5.5 算法伪代码", 2, 13),
+        ("5.6 基线与消融", 2, 15), ("5.7 接口与模块协同设计", 2, 15),
+        ("5.7.1 C++到Python消息", 3, 15), ("5.7.2 Python到C++消息", 3, 15),
+        ("5.7.3 Python绑定", 3, 15), ("5.7.4 命令行接口", 3, 15),
+        ("6. UI软件设计与运行操作", 1, 16), ("6.1 命令行运行界面", 2, 16),
+        ("6.2 运行结果界面", 2, 17), ("7. 运行设计", 1, 18),
+        ("8. 系统测试与性能分析", 1, 18), ("8.1 静态检查", 2, 18),
+        ("8.2 功能检查", 2, 19), ("8.3 实现边界", 2, 19),
+        ("9. 文件与模块索引", 1, 19), ("10. 说明", 1, 20),
     ])
-    clear_body_from_child(doc, 17)
+    # The layout backup keeps one sample heading as the first body paragraph;
+    # remove that paragraph and all following sample content.  Locate the
+    # direct body child so TOC paragraphs inside the content control are not
+    # mistaken for the sample body.
+    body = doc._element.body
+    direct_paragraphs = [child for child in body if child.tag == qn("w:p")]
+    marker = next(child for child in direct_paragraphs if "1 软件介绍" in "".join(child.itertext()))
+    clear_body_from_child(doc, list(body).index(marker))
     ensure_list_style(doc)
+    ensure_heading_styles(doc)
     start_index = len(doc.paragraphs)
     add_markdown(doc, PROJECT / "softcopyright/design_description.md", skip_leading_title=True)
     for paragraph in list(doc.paragraphs[start_index:]):
         if paragraph.text.strip() == "软件设计说明书（V1.0草案）":
+            paragraph._element.getparent().remove(paragraph._element)
+    # A few layout masters keep the first sample heading inside the front
+    # matter container. Remove such stale headings without touching the new
+    # Markdown body appended after start_index.
+    heading_re = re.compile(r"^\d(?:\.\d+)*\s+\S")
+    for paragraph in list(doc.paragraphs[:start_index]):
+        if heading_re.match(paragraph.text.strip()):
             paragraph._element.getparent().remove(paragraph._element)
     apply_template_body_format(doc, start_index, body_template, section_template, subsection_template, table_template)
     if len(doc.paragraphs) > start_index:

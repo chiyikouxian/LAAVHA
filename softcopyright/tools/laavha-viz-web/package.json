@@ -1,0 +1,20 @@
+{
+  "name": "laavha-viz-web",
+  "private": true,
+  "version": "1.0.0",
+  "description": "无人机遥感异构网络垂直切换智能决策软件 V1.0 运行可视化界面",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "4.3.4",
+    "vite": "5.4.11"
+  }
+}

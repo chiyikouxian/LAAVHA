@@ -80,3 +80,33 @@
 - TeX Live 2026：/home/suwen/texlive/2026
 - Python：miniconda3/envs/deeplearn（torch 2.2.2）
 - MCP：image-draw (nano-banana-pro), context7, github-mcp
+
+## 五、软著材料整改计划（2026-08-17）
+
+变更目录：`openspec/changes/laavha-softcopyright-remediation/`
+
+当前状态：阶段四“重写设计说明书”已完成，阶段五“补充软件操作界面”进入执行。
+
+已完成：
+- 核对LAAVHA软著材料与软著模板目录。
+- 确认登记软件边界为训练、推理、NS-3交互、基线、批处理和绘图模块。
+- 排除模板中的应急双网规划、Web地图、ECSN/DPN和三维A*等无关功能。
+- 记录现有材料页数、源程序范围、运行依赖和代码图片化问题。
+- 建立后续七个整改阶段及最终用户信息确认阶段。
+
+已完成阶段二至阶段四：
+- 按模板重建申请表、内容摘要和设计说明书版式；
+- 重写内容摘要，完成字数和术语检查；
+- 重写设计说明书，并补充FlowMonitor口径、接口字段、测试证据和实现边界；
+- 设计说明书当前PDF为A4 18页，正文可提取。
+
+阶段五状态：真实命令行运行证据已采集，但UI绘制和软著插图按用户要求暂停，待后续UI完成后继续。
+
+当前入口：阶段七统一生成与最终验收，先完成源程序页数、可检索性、哈希和交付文件检查；UI插图不作为当前阶段的已完成项。
+
+阶段基线：`openspec/changes/laavha-softcopyright-remediation/phase-1-baseline.md`
+阶段二记录：`openspec/changes/laavha-softcopyright-remediation/phase-2-template-layout.md`
+阶段三记录：`openspec/changes/laavha-softcopyright-remediation/phase-3-summary-rewrite.md`
+阶段四记录：`openspec/changes/laavha-softcopyright-remediation/phase-4-design-rewrite.md`
+阶段五记录：`openspec/changes/laavha-softcopyright-remediation/phase-5-interface-evidence.md`
+阶段六记录：`openspec/changes/laavha-softcopyright-remediation/phase-6-source-rebuild.md`

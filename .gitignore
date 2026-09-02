@@ -24,6 +24,16 @@ __pycache__/
 *.pyc
 *.pyo
 
+# Third-party/frontend dependencies
+node_modules/
+
+# Additional generated/temporary artifacts
+*.xdv
+*.bkp
+
+# Local LaTeX verification workspace
+mdpi_submission/_pdftest/
+
 # OS files
 .DS_Store
 Thumbs.db

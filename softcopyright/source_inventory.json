@@ -21,9 +21,9 @@
     },
     {
       "file": "laavha-handover.cc",
-      "lines": 1353,
-      "bytes": 49354,
-      "sha256": "61f1631c8ff3b9ff3381f68fcf78ff29a11f076ece399f4ead616bb3c9efa8fd"
+      "lines": 1479,
+      "bytes": 54540,
+      "sha256": "c9be81de1311db52cdc2f84b7abe2cf9772e8bd74ed8be1e92d19e485f48c462"
     },
     {
       "file": "laavha_batch_runner.py",
@@ -33,9 +33,9 @@
     },
     {
       "file": "laavha_inference.py",
-      "lines": 653,
-      "bytes": 26031,
-      "sha256": "4c3fc08c4ae7dc8d586b7458b52d7b07fb5d0851837d845cd5deac1b92126751"
+      "lines": 655,
+      "bytes": 26133,
+      "sha256": "4d3ee397e1a7e6a9424e310f72640b8b2b4624725606b42d964eb3ef0bdc1dcf"
     },
     {
       "file": "laavha_msg.h",
@@ -84,6 +84,42 @@
       "lines": 226,
       "bytes": 8862,
       "sha256": "5b54f3b721836f75919ee5fd9ee88feb35b679f67b7d3bd0890cdf7be73aa12a"
+    },
+    {
+      "file": "softcopyright/tools/laavha_viz/__init__.py",
+      "lines": 16,
+      "bytes": 667,
+      "sha256": "faa93944f14bf2acf78f9c5213798d498983c3f195278a6a24fd73fd94236cb3"
+    },
+    {
+      "file": "softcopyright/tools/laavha_viz/trace_model.py",
+      "lines": 367,
+      "bytes": 12198,
+      "sha256": "bc25a76b230ff1d6dab8a5e946c527695bb11e5f9f862049034379640b311a5b"
+    },
+    {
+      "file": "softcopyright/tools/laavha_viz/surface.py",
+      "lines": 253,
+      "bytes": 9051,
+      "sha256": "cf64730ebdb37766c7d5656dbf0f284e94044e1c1b1c736fc9379e7fcf7b6763"
+    },
+    {
+      "file": "softcopyright/tools/laavha_viz/render.py",
+      "lines": 1003,
+      "bytes": 39124,
+      "sha256": "50429f432d41ac5ca6993263f7488534b7a5df2265081147a37afc4f2ca0ac81"
+    },
+    {
+      "file": "softcopyright/tools/laavha_viz/app.py",
+      "lines": 386,
+      "bytes": 14810,
+      "sha256": "191ef81b64ad670727fd2a655ab11b485833b85938ea6ed6e9e80d08a04bfd4b"
+    },
+    {
+      "file": "softcopyright/tools/laavha_viz/__main__.py",
+      "lines": 10,
+      "bytes": 197,
+      "sha256": "ae234ccd2e1af8f9b5ec93836d18a8c0436c10a76dbee1633e1e6f7d1d7a32a9"
     },
     {
       "file": "experiments/enhanced_proof_experiments.py",

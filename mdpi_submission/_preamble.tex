@@ -1,0 +1,61 @@
+%=================================================================
+% MDPI submission version of manuscript_en.tex
+% Journal code below: change "remotesensing" if the target journal differs
+%   (e.g. drones, sensors, iot) -- nothing else needs to be touched.
+% Compile: latexmk -xelatex main.tex   (pdflatex also works)
+%=================================================================
+\documentclass[remotesensing,article,submit,moreauthors]{Definitions/mdpi}
+
+% MDPI internal commands - do not modify
+\firstpage{1}
+\makeatletter
+\setcounter{page}{\@firstpage}
+\makeatother
+\pubvolume{1}
+\issuenum{1}
+\articlenumber{0}
+\pubyear{2026}
+\copyrightyear{2026}
+\datereceived{ }
+\daterevised{ }
+\dateaccepted{ }
+\datepublished{ }
+
+%=================================================================
+% Packages beyond those already loaded by the MDPI class.
+% The class provides: amsmath, amssymb, graphicx, booktabs, caption,
+% hyperref, cleveref, natbib, array, tabularx, float, multirow, ...
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\floatname{algorithm}{Algorithm}
+\captionsetup[algorithm]{labelsep=period,font=small}
+
+% Breakable arrow for the pipeline descriptions in Table~\ref{tab:complexity}:
+% a bare $\rightarrow$ offers no line-break point and overflows the cell.
+\newcommand{\arw}{$\rightarrow$\allowbreak\hspace{0pt}}
+
+%=================================================================
+\Title{Attention-LSTM Enhanced Risk-Aware Vertical Handoff Algorithm for UAV Remote Sensing Heterogeneous Networks}
+
+% TODO(author): add real ORCID iDs, or delete the unused \orcidauthor* lines
+% and the matching \orcidA{}/\orcidB{} markers in \Author below.
+\newcommand{\orcidauthorA}{0000-0000-0000-000X}
+
+\Author{Hanming Sun $^{1}$, Tong Liu $^{1}$, Wen Su $^{1}$, Jie Lin $^{1}$, Junsong Luo $^{1}$ and Bin Duo $^{1,}$*\orcidA{}}
+
+\AuthorNames{Hanming Sun, Tong Liu, Wen Su, Jie Lin, Junsong Luo and Bin Duo}
+
+\address{%
+$^{1}$ \quad College of Information Science and Technology, Chengdu University of Technology, Chengdu 610059, China; TODO-email@cdut.edu.cn}
+
+% TODO(author): confirm corresponding author, e-mail and telephone.
+\corres{Correspondence: TODO-corresponding@cdut.edu.cn}
+
+% Abstract (Do not insert blank lines, i.e. \\)
+\abstract{Unmanned aerial vehicle (UAV) remote-sensing systems support large-area Earth observation, including disaster assessment and environmental monitoring. During cruise missions, UAVs frequently cross fifth-generation (5G), Long-Term Evolution (LTE), and Wi-Fi coverage boundaries, creating vertical-handover (VHO) challenges involving decision latency, ping-pong handovers, and fixed attribute weights that cannot adapt to changing flight phases. This study proposes the long short-term memory (LSTM)-attention-based adaptive vertical handover algorithm (LAAVHA) and further develops the attention-LSTM enhanced risk-aware vertical handoff algorithm (ALERA) using adaptive dynamic hysteresis (ADH) and a risk-sensitive technique for order preference by similarity to the ideal solution (RS-TOPSIS). LAAVHA integrates stacked-LSTM state prediction, attention-based dynamic weighting, improved TOPSIS ranking, and dual-hysteresis decision-making. The stacked LSTM predicts short-term candidate-network states, while attention generates dynamic attribute weights from current network states and mobility features. Current and predicted states are then fused for TOPSIS ranking, followed by dual hysteresis based on a closeness-score advantage threshold and a consecutive-confirmation window to suppress unnecessary handovers. ADH adapts these hysteresis parameters to flight speed and serving-network channel fluctuations, while RS-TOPSIS penalizes volatile closeness scores to improve candidate ranking. Both enhancements operate after the base scores are generated and before the final handover decision, improving adaptation to channel fluctuations and decision robustness without modifying the LSTM-attention architecture or training process. Simulation results demonstrate reduced unnecessary handovers, improved decision efficiency, sustained remote-sensing data continuity, and greater robustness to abrupt channel~variations.}
+
+\keyword{UAV remote sensing; heterogeneous network; vertical handover; LSTM; attention mechanism; adaptive hysteresis; risk-sensitive TOPSIS}
+
+%=================================================================
+\begin{document}
+

@@ -149,7 +149,12 @@ def add_markdown(doc, path, skip_leading_title=False):
             if skip_leading_title and not skipped_title and level == 1:
                 skipped_title = True
                 continue
-            doc.add_heading(text, level=level)
+            try:
+                doc.add_heading(text, level=level)
+            except KeyError:
+                # Some localized DOCX templates do not expose the English
+                # built-in heading names used by python-docx.
+                doc.add_paragraph(text)
             continue
         if stripped.startswith("|") and stripped.endswith("|"):
             flush_paragraph()
@@ -206,6 +211,12 @@ CORE_FILES = [
     "regenerate_figures.py",
     "saw_madm.py",
     "topsis_q.py",
+    "softcopyright/tools/laavha_viz/__init__.py",
+    "softcopyright/tools/laavha_viz/trace_model.py",
+    "softcopyright/tools/laavha_viz/surface.py",
+    "softcopyright/tools/laavha_viz/render.py",
+    "softcopyright/tools/laavha_viz/app.py",
+    "softcopyright/tools/laavha_viz/__main__.py",
     "experiments/enhanced_proof_experiments.py",
     "experiments/exp_a_adaptive_hysteresis.py",
     "experiments/gen_fig5_6.py",

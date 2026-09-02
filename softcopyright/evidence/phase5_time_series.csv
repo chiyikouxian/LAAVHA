@@ -1,0 +1,4 @@
+run_index,algorithm,seed,decision_index,sim_time,current_net,target_net,handover,score_5g,score_lte,score_wifi,sinr_5g,rsrp_5g,delay_5g,throughput_5g,plr_5g,sinr_lte,rsrp_lte,delay_lte,throughput_lte,plr_lte,sinr_wifi,rsrp_wifi,delay_wifi,throughput_wifi,plr_wifi
+0,laavha-enhanced,,0,0.000,0,0,0,0.997594,0.283578,0.002406,4.4932,-90.5068,1.0000,0.0000,0.000000,-14.6541,-114.6541,10.0000,0.0000,0.000000,73.0000,-20.0000,10.0000,0.0000,0.000000
+0,laavha-enhanced,,1,0.100,0,0,0,0.999381,0.282286,0.000619,4.5106,-90.4894,1.0000,0.0000,0.000000,-14.6110,-114.6110,10.0000,0.0000,0.000000,63.9691,-29.0309,10.0000,0.0000,0.000000
+0,laavha-enhanced,,2,0.200,0,0,0,0.999972,0.000007,0.483670,4.5257,-90.4743,1.0000,0.0000,0.000000,-14.5738,-114.5738,10.0000,0.0000,0.000000,55.7502,-37.2498,0.0001,0.0000,0.000000

@@ -603,6 +603,8 @@ def main():
                     "seed": args.seed if args.seed is not None else "",
                     "decision_index": step_count,
                     "sim_time": f"{step_count * period:.3f}",
+                    "altitude": f"{altitude:.4f}",
+                    "velocity": f"{velocity:.4f}",
                     "current_net": current_net,
                     "target_net": target_net_id,
                     "handover": handover,
