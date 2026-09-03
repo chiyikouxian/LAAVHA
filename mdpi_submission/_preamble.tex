@@ -37,23 +37,19 @@
 %=================================================================
 \Title{Attention-LSTM Enhanced Risk-Aware Vertical Handoff Algorithm for UAV Remote Sensing Heterogeneous Networks}
 
-\Author{Hanming Sun $^{1}$, Tong Liu $^{1}$, Wen Su $^{1}$, Jie Lin $^{1}$, Junsong Luo $^{1}$ and Bin Duo $^{1,}$*}
+\Author{Hanming Sun $^{1}$, Tong Liu $^{2,}$*, Wen Su $^{2}$, Jie Lin $^{2}$, Junsong Luo $^{2}$ and Bin Duo $^{2}$}
 
 \AuthorNames{Hanming Sun, Tong Liu, Wen Su, Jie Lin, Junsong Luo and Bin Duo}
 
-% 单位按中文原稿保留（"成都理工大学，成都 610000"），未补学院名。
-% TODO(author): 投稿前把六位作者邮箱占位替换为真实地址。MDPI 要求逐位列出。
+% 孙汉明单位 1 待填；其余五位作者单位为成都理工大学计算机与网络安全学院。
 \address{%
-$^{1}$ \quad Chengdu University of Technology, Chengdu 610000, China;
-TODO-hanming.sun@cdut.edu.cn (H.S.);
-TODO-tong.liu@cdut.edu.cn (T.L.);
-TODO-wen.su@cdut.edu.cn (W.S.);
-TODO-jie.lin@cdut.edu.cn (J.L.);
-TODO-junsong.luo@cdut.edu.cn (J.S.L.)}
+$^{1}$ \quad TODO: affiliation for Hanming Sun; 202210043@jnxy.edu.cn (H.S.)\\
+$^{2}$ \quad School of Computer and Network Security, Chengdu University of Technology, Chengdu 610059, China;\\
+\phantom{$^{2}$ \quad }liutong1982@cdut.edu.cn (T.L.); 2168468713@qq.com (W.S.); linjie07@cdut.edu.cn (J.L.);\\
+\phantom{$^{2}$ \quad }luojuns@cdut.edu.cn (J.S.L.); duobin@cdut.edu.cn (B.D.)}
 
-% 通讯作者：多滨 Bin Duo。
-% TODO(author): 投稿前替换为真实邮箱与电话（含国家代码）。
-\corres{Correspondence: TODO-bin.duo@cdut.edu.cn; Tel.: TODO-+86-xxx-xxxx-xxxx}
+% 通讯作者：刘同 Tong Liu。电话为可选项，按模板要求留空。
+\corres{Correspondence: liutong1982@cdut.edu.cn}
 
 % Abstract (Do not insert blank lines, i.e. \\)
 \abstract{Unmanned aerial vehicle (UAV) remote-sensing systems support large-area Earth observation, including disaster assessment and environmental monitoring. During cruise missions, UAVs frequently cross fifth-generation (5G), Long-Term Evolution (LTE), and Wi-Fi coverage boundaries, creating vertical-handover (VHO) challenges involving decision latency, ping-pong handovers, and fixed attribute weights that cannot adapt to changing flight phases. This study proposes the long short-term memory (LSTM)-attention-based adaptive vertical handover algorithm (LAAVHA) and further develops the attention-LSTM enhanced risk-aware vertical handoff algorithm (ALERA) using adaptive dynamic hysteresis (ADH) and a risk-sensitive technique for order preference by similarity to the ideal solution (RS-TOPSIS). LAAVHA integrates stacked-LSTM state prediction, attention-based dynamic weighting, improved TOPSIS ranking, and dual-hysteresis decision-making. The stacked LSTM predicts short-term candidate-network states, while attention generates dynamic attribute weights from current network states and mobility features. Current and predicted states are then fused for TOPSIS ranking, followed by dual hysteresis based on a closeness-score advantage threshold and a consecutive-confirmation window to suppress unnecessary handovers. ADH adapts these hysteresis parameters to flight speed and serving-network channel fluctuations, while RS-TOPSIS penalizes volatile closeness scores to improve candidate ranking. Both enhancements operate after the base scores are generated and before the final handover decision, improving adaptation to channel fluctuations and decision robustness without modifying the LSTM-attention architecture or training process. Simulation results demonstrate reduced unnecessary handovers, improved decision efficiency, sustained remote-sensing data continuity, and greater robustness to abrupt channel~variations.}

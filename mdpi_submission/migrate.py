@@ -99,8 +99,8 @@ CAP_OLD = (r"\caption{Sensitivity analysis of the fusion coefficient, "
            r"dual-hysteresis parameters, and enhancement parameters.}")
 CAP_NEW = (r"\caption{Sensitivity analysis of the fusion coefficient, "
            r"dual-hysteresis parameters, and enhancement parameters. "
-           r"For (\textbf{b}) and (\textbf{c}), upper entries denote mean "
-           r"false-handover counts and lower entries denote mean detection~delays.}")
+           r"(For (\textbf{b}) and (\textbf{c}), upper entries denote mean "
+           r"false-handover counts and lower entries denote mean detection~delays.)}")
 if NOTE not in body or CAP_OLD not in body:
     raise SystemExit("figure-note fold: anchor not found")
 body = body.replace(CAP_OLD, CAP_NEW, 1)
