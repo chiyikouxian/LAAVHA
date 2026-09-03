@@ -20,6 +20,8 @@ new_body = body_of(new, r"\section{Introduction}", r"\vspace{6pt}")
 
 
 def normalise(t):
+    # Migration scaffolding comments are not manuscript content.
+    t = re.sub(r"^%={5,}\s*$", "", t, flags=re.MULTILINE)
     # citation commands -> a single neutral token
     t = re.sub(r"\\upcite\{[0-9-]+\}", "@CITE@", t)
     t = re.sub(r"\\cite[pt]\{[^}]*\}", "@CITE@", t)
@@ -31,6 +33,16 @@ def normalise(t):
     t = re.sub(r"\\textmd\{\\textit\{(.+?)\}\}", r"\1", t)
     # figure naming convention
     t = t.replace(r"Fig.~\ref", r"Figure~\ref")
+    # the Figure 3 note moved from a standalone paragraph into \caption{};
+    # reduce both forms to the same token so only the wording is compared
+    t = re.sub(r"\{\\small \((For \(b\) and \(c\).+?delays\.)\)\\par\}",
+               r"@NOTE@ \1", t)
+    t = re.sub(r"enhancement parameters\. (For \(\\textbf\{b\}\) and .+?delays)\.\}",
+               lambda m: "enhancement parameters.}\n@NOTE@ "
+                         + m.group(1).replace(r"\textbf{b}", "b")
+                                     .replace(r"\textbf{c}", "c")
+                                     .replace("~", " ") + ".",
+               t)
     # table environment swap
     t = t.replace("tabularx", "tabular")
     t = re.sub(r"\\begin\{tabular\}\{[^}]*(\}[^}]*)*?\}\n", "@TABSPEC@\n", t)

@@ -90,6 +90,23 @@ for num in sorted(SECREF, key=len, reverse=True):
 # ---- 5. "Fig.~\ref" -> "Figure~\ref" (MDPI spells figures out in full)
 body, n_fig = re.subn(r"\bFig\.~\\ref", r"Figure~\\ref", body)
 
+# ---- 5b. fold the standalone figure note into \caption{}.
+# The original put it as a separate paragraph after \label; under the MDPI
+# class's caption spacing that paragraph collides with the caption's last line.
+NOTE = (r"{\small (For (b) and (c), upper entries denote mean false-handover "
+        r"counts and lower entries denote mean detection delays.)\par}")
+CAP_OLD = (r"\caption{Sensitivity analysis of the fusion coefficient, "
+           r"dual-hysteresis parameters, and enhancement parameters.}")
+CAP_NEW = (r"\caption{Sensitivity analysis of the fusion coefficient, "
+           r"dual-hysteresis parameters, and enhancement parameters. "
+           r"For (\textbf{b}) and (\textbf{c}), upper entries denote mean "
+           r"false-handover counts and lower entries denote mean detection~delays.}")
+if NOTE not in body or CAP_OLD not in body:
+    raise SystemExit("figure-note fold: anchor not found")
+body = body.replace(CAP_OLD, CAP_NEW, 1)
+body = body.replace("\n" + NOTE, "", 1)
+n_note = 1
+
 # ---- 6. figures live in Figures/ now; MDPI \graphicspath already covers it
 body = body.replace(r"{plots_chapter3_v2_en.png}", r"{plots_chapter3_v2_en.png}")
 
@@ -139,5 +156,6 @@ print(f"citations converted : {n_cite}")
 print(f"headings de-decorated: {n_head}")
 print(f"section text refs   : {n_secref}")
 print(f"Fig. -> Figure      : {n_fig}")
+print(f"figure notes folded : {n_note}")
 print(f"tabularx tables     : {n_tab}")
 print(f"wrote {OUT} ({len(OUT.read_text(encoding='utf-8').splitlines())} lines)")

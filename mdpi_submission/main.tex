@@ -37,19 +37,23 @@
 %=================================================================
 \Title{Attention-LSTM Enhanced Risk-Aware Vertical Handoff Algorithm for UAV Remote Sensing Heterogeneous Networks}
 
-% TODO(author): add real ORCID iDs, or delete the unused \orcidauthor* lines
-% and the matching \orcidA{}/\orcidB{} markers in \Author below.
-\newcommand{\orcidauthorA}{0000-0000-0000-000X}
-
-\Author{Hanming Sun $^{1}$, Tong Liu $^{1}$, Wen Su $^{1}$, Jie Lin $^{1}$, Junsong Luo $^{1}$ and Bin Duo $^{1,}$*\orcidA{}}
+\Author{Hanming Sun $^{1}$, Tong Liu $^{1}$, Wen Su $^{1}$, Jie Lin $^{1}$, Junsong Luo $^{1}$ and Bin Duo $^{1,}$*}
 
 \AuthorNames{Hanming Sun, Tong Liu, Wen Su, Jie Lin, Junsong Luo and Bin Duo}
 
+% 单位按中文原稿保留（"成都理工大学，成都 610000"），未补学院名。
+% TODO(author): 投稿前把六位作者邮箱占位替换为真实地址。MDPI 要求逐位列出。
 \address{%
-$^{1}$ \quad College of Information Science and Technology, Chengdu University of Technology, Chengdu 610059, China; TODO-email@cdut.edu.cn}
+$^{1}$ \quad Chengdu University of Technology, Chengdu 610000, China;
+TODO-hanming.sun@cdut.edu.cn (H.S.);
+TODO-tong.liu@cdut.edu.cn (T.L.);
+TODO-wen.su@cdut.edu.cn (W.S.);
+TODO-jie.lin@cdut.edu.cn (J.L.);
+TODO-junsong.luo@cdut.edu.cn (J.S.L.)}
 
-% TODO(author): confirm corresponding author, e-mail and telephone.
-\corres{Correspondence: TODO-corresponding@cdut.edu.cn}
+% 通讯作者：多滨 Bin Duo。
+% TODO(author): 投稿前替换为真实邮箱与电话（含国家代码）。
+\corres{Correspondence: TODO-bin.duo@cdut.edu.cn; Tel.: TODO-+86-xxx-xxxx-xxxx}
 
 % Abstract (Do not insert blank lines, i.e. \\)
 \abstract{Unmanned aerial vehicle (UAV) remote-sensing systems support large-area Earth observation, including disaster assessment and environmental monitoring. During cruise missions, UAVs frequently cross fifth-generation (5G), Long-Term Evolution (LTE), and Wi-Fi coverage boundaries, creating vertical-handover (VHO) challenges involving decision latency, ping-pong handovers, and fixed attribute weights that cannot adapt to changing flight phases. This study proposes the long short-term memory (LSTM)-attention-based adaptive vertical handover algorithm (LAAVHA) and further develops the attention-LSTM enhanced risk-aware vertical handoff algorithm (ALERA) using adaptive dynamic hysteresis (ADH) and a risk-sensitive technique for order preference by similarity to the ideal solution (RS-TOPSIS). LAAVHA integrates stacked-LSTM state prediction, attention-based dynamic weighting, improved TOPSIS ranking, and dual-hysteresis decision-making. The stacked LSTM predicts short-term candidate-network states, while attention generates dynamic attribute weights from current network states and mobility features. Current and predicted states are then fused for TOPSIS ranking, followed by dual hysteresis based on a closeness-score advantage threshold and a consecutive-confirmation window to suppress unnecessary handovers. ADH adapts these hysteresis parameters to flight speed and serving-network channel fluctuations, while RS-TOPSIS penalizes volatile closeness scores to improve candidate ranking. Both enhancements operate after the base scores are generated and before the final handover decision, improving adaptation to channel fluctuations and decision robustness without modifying the LSTM-attention architecture or training process. Simulation results demonstrate reduced unnecessary handovers, improved decision efficiency, sustained remote-sensing data continuity, and greater robustness to abrupt channel~variations.}
@@ -58,7 +62,6 @@ $^{1}$ \quad College of Information Science and Technology, Chengdu University o
 
 %=================================================================
 \begin{document}
-
 
 \section{Introduction}\label{sec:intro}
 
@@ -319,9 +322,8 @@ The enhancement parameters $K_c\in\{3,5,7\}$ and $\lambda\in\{0.2,0.5,0.8\}$ wer
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{fig_parameter_sensitivity_en.png}
-\caption{Sensitivity analysis of the fusion coefficient, dual-hysteresis parameters, and enhancement parameters.}
+\caption{Sensitivity analysis of the fusion coefficient, dual-hysteresis parameters, and enhancement parameters. For (\textbf{b}) and (\textbf{c}), upper entries denote mean false-handover counts and lower entries denote mean detection~delays.}
 \label{fig:param_sensitivity}
-{\small (For (b) and (c), upper entries denote mean false-handover counts and lower entries denote mean detection delays.)\par}
 \end{figure}
 
 Based on these parameter-selection experiments, Table~\ref{tab:params} summarizes the platform, network scenario, model architecture, and training/inference parameters. All comparison algorithms use the same simulation configuration, indicator sources, and analysis setting to avoid confounding algorithmic and environmental effects.
@@ -454,13 +456,14 @@ For VHO challenges arising from wide-area flight, heterogeneous coverage, and ra
 % TODO(author): confirm every statement below before submission.
 \authorcontributions{Conceptualization, H.S. and B.D.; methodology, H.S.; software, H.S.; validation, H.S., T.L. and W.S.; formal analysis, H.S.; investigation, T.L. and J.L. (Jie Lin); resources, B.D.; data curation, W.S.; writing---original draft preparation, H.S.; writing---review and editing, B.D. and J.L. (Junsong Luo); visualization, H.S.; supervision, B.D.; project administration, B.D.; funding acquisition, B.D. All authors have read and agreed to the published version of the~manuscript.}
 
-\funding{TODO(author): replace with the real statement, e.g. ``This research was funded by NAME OF FUNDER grant number XXX'', or state ``This research received no external funding''.}
+\funding{This research received no external~funding.}
 
 \institutionalreview{Not applicable.}
 
 \informedconsent{Not applicable.}
 
-\dataavailability{TODO(author): confirm. Suggested wording: ``The simulation code and the data generated in this study are available from the corresponding author upon reasonable request.''}
+% TODO(author): 采用的是建议措辞，投稿前请确认是否符合实际数据开放情况。
+\dataavailability{The simulation code and the data generated in this study are available from the corresponding author upon reasonable~request.}
 
 \conflictsofinterest{The authors declare no conflicts of~interest.}
 
