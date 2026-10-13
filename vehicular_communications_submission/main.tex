@@ -156,6 +156,12 @@ h_{2,k} &= \mathrm{LSTM}_2(h_{1,k};\theta_2), && h_{2,k}\in\mathbf{R}^{10\times6
 \end{align}
 where $\theta_1$ and $\theta_2$ denote the trainable parameters of the two LSTM layers, including the weights and biases of the input, forget, and output gates and cell states, while $W_{\mathrm{pred}}\in\mathbf{R}^{5\times64}$ and $b_{\mathrm{pred}}\in\mathbf{R}^5$ represent the fully connected prediction-head weight and bias, respectively, and $h_{2,k}[-1]$ indicates the final output of $\mathrm{LSTM}_2$. Equations~\eqref{eq:lstm1}--\eqref{eq:lstm3} define the prediction pipeline: 10 steps $\times$ 5 indicators $\rightarrow\mathrm{LSTM}_1(5\rightarrow128)\rightarrow\mathrm{LSTM}_2(128\rightarrow64)\rightarrow$fc\_pred($64\rightarrow5$). The three candidate networks share $\theta_1$, $\theta_2$, $W_{\mathrm{pred}}$, and $b_{\mathrm{pred}}$, while using their respective historical sequences $X_k$. The resulting predictions are stacked into $S_{\mathrm{pred}}\in\mathbf{R}^{3\times5}$, representing the next-period values of the five indicators for each network.
 
+The prediction branch is trained using supervised learning with mean squared error (MSE) loss. Given training samples indexed by $n=1,\ldots,N$, where each sample comprises a historical sequence $X_k^{(n)}$ and the corresponding ground-truth next-period state $S_{\mathrm{target}}^{(n)}$, the loss function is:
+\begin{equation}
+\mathcal{L}_{\mathrm{pred}} = \frac{1}{N}\sum_{n=1}^{N}\left\|S_{\mathrm{pred}}^{(n)} - S_{\mathrm{target}}^{(n)}\right\|_2^2. \label{eq:loss_pred}
+\end{equation}
+The parameters $\theta_1$, $\theta_2$, $W_{\mathrm{pred}}$, and $b_{\mathrm{pred}}$ are updated via backpropagation using the Adam optimizer. Training uses an 80\%/20\% train/validation split with early stopping when validation loss does not decrease for 10 consecutive epochs. This supervised objective trains the LSTM branch to accurately forecast short-term network-state evolution, which subsequently feeds the TOPSIS decision module.
+
 $S_{\mathrm{pred}}$ is not a direct handover score but a comparable prediction of each candidate's next-period state derived from its historical sequence $X_k$. In Section~\ref{sec:topsis}, Equation~\eqref{eq:fuse}, it is fused with the current state $S_{\mathrm{cur}}$, enabling TOPSIS to incorporate both current measurements and short-term predictions. Without $S_{\mathrm{pred}}$, handover decisions would rely solely on passive ranking of $S_{\mathrm{cur}}$, as evaluated by the LAAVHA-L ablation variant.
 
 \subsection{Dynamic Weight Generation for Flight Phases}\label{sec:weight}
@@ -173,6 +179,8 @@ w &= \mathrm{softmax}\!\left(W_{\mathrm{weight}}[c\parallel m]\right),\quad W_{\
 Equations~\eqref{eq:attn1}--\eqref{eq:attn5} define the dynamic-weight procedure: $S_{\mathrm{cur}}\in\mathbf{R}^{3\times5}$ enters self-attention, producing the $3\times5$ matrix $A$; cross-network mean pooling yields the five-dimensional attribute context $c$; $W_{\mathrm{mob}}:2\rightarrow16$ maps speed and altitude to the 16-dimensional mobility feature $m$; and their 21-dimensional concatenation is projected by $W_{\mathrm{weight}}$ and softmax-normalized to obtain the five-dimensional dynamic weight $w$.
 
 The output $w$ is not an independent assessment of a network quality measure but an input to the TOPSIS weighting step in Section~\ref{sec:topsis}. In Equation~\eqref{eq:topsis2}, $v_{ij}=w_jr_{ij}$ applies $w_j$ to the $j$th attribute of the fused matrix $D$, allowing the importance of SINR, RSRP, delay, throughput, and packet loss ratio to adapt to the current network and flight state. Therefore, the LSTM branch predicts future state changes, while the attention branch determines current attribute importance; both contribute to the final TOPSIS closeness score $C_i$.
+
+Unlike the LSTM prediction branch, the attention-based weight-generation module is not trained via gradient descent. Instead, its parameters (attention mechanism weights, $W_{\mathrm{mob}}$, and $W_{\mathrm{weight}}$) are initialized using standard PyTorch initialization schemes (Xavier uniform for linear layers) and remain fixed during training. The module functions as a deterministic feature extractor that transforms the current network state $S_{\mathrm{cur}}$ and mobility features $[v,h]$ into dynamic attribute weights $w$ through forward-pass computation only. This design choice has two motivations. First, there is no ground-truth target for what the optimal attribute weights should be at each decision period; constructing such supervision would require domain expertise or iterative reward-based tuning, which lies outside the scope of supervised state prediction. Second, the attention mechanism captures the relative importance of attributes through its query-key interaction structure (Equation~\eqref{eq:attn2}), while the mobility-aware projection (Equations~\eqref{eq:attn4}--\eqref{eq:attn5}) adapts these importances to flight phase. Experimental results in Section~\ref{sec:hcomp} demonstrate that this initialization-based weight generation, combined with trained LSTM prediction, achieves substantial handover reduction compared to fixed-weight baselines, validating the effectiveness of the attention module's structural design even without end-to-end training.
 
 \subsection{Improved TOPSIS Decision Making with Fused Predicted States}\label{sec:topsis}
 
@@ -380,9 +388,15 @@ Attention heads (num\_heads) & 1 (embed\_dim=5; single-head attention) \\
 Fusion coefficient $\alpha$ & 0.6 \\
 Dual-hysteresis parameters & $\Delta_{\mathrm{th}}=0.05$, confirmation window $T_h=3$ \\
 Enhancement parameters & RS-TOPSIS closeness-history length $K_c=5$, RS-TOPSIS risk coefficient $\lambda=0.5$ \\
+Training dataset & 10{,}000 samples (historical states and next-period targets) \\
 Dataset split & training/validation = 80\%/20\% \\
-Optimizer & Adam \\
+Loss function & MSE (mean squared error) for LSTM prediction only \\
+Optimizer & Adam (learning rate = 0.001) \\
+Batch size & 64 \\
+Training epochs & 50 (maximum) \\
 Early stopping & validation loss does not decrease for 10 consecutive epochs \\
+Trainable parameters & LSTM layers ($\theta_1$, $\theta_2$) and prediction head ($W_{\mathrm{pred}}$, $b_{\mathrm{pred}}$) \\
+Fixed parameters & Attention mechanism, $W_{\mathrm{mob}}$, and $W_{\mathrm{weight}}$ (Xavier uniform initialization) \\
 \bottomrule
 \end{tabularx}
 \label{tab:params}
