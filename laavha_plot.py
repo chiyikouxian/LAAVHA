@@ -97,6 +97,8 @@ def plot_batch_summary(by_algo, output_dir, style="diagnostic", dpi=100):
         import matplotlib
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
+        import numpy as np
+        from matplotlib.patches import Patch
     except ImportError:
         print("[plot] matplotlib not available, skipping PNG generation")
         return False
@@ -105,19 +107,69 @@ def plot_batch_summary(by_algo, output_dir, style="diagnostic", dpi=100):
     os.makedirs(output_dir, exist_ok=True)
     prefix = "fig_" if style == "publication" else ""
 
-    algos = sorted(by_algo.keys())
-    avg_ho = []
-    for algo in algos:
-        valid = [r for r in by_algo[algo] if r.get("handover_count")]
-        counts = [int(r["handover_count"]) for r in valid]
-        avg_ho.append(sum(counts) / len(counts) if counts else 0)
+    # Use the reproduce_handover_count_chart.py algorithm order and colors
+    ALGORITHM_ORDER = [
+        "laavha", "laavha-l", "strongest-signal", "saw", "laavha-a",
+        "topsis-q", "fuzzy-vho", "vikor", "gra", "spotis", "copras"
+    ]
+    ALGORITHM_LABELS = [
+        "LAAVHA", "LAAVHA-L", "Strongest-\nSignal", "SAW", "LAAVHA-A",
+        "TOPSIS-Q", "Fuzzy-VHO", "VIKOR", "GRA", "SPOTIS", "COPRAS"
+    ]
+    ALGORITHM_COLORS = [
+        "#2196F3", "#64B5F6", "#9E9E9E", "#9E9E9E", "#64B5F6",
+        "#FF9800", "#9C27B0", "#F44336", "#795548", "#607D8B", "#E91E63"
+    ]
 
-    fig, ax = plt.subplots()
-    ax.bar(algos, avg_ho, color=["#2196F3", "#4CAF50", "#FF9800"][:len(algos)])
-    ax.set_xlabel("Algorithm")
-    ax.set_ylabel("Average Handover Count")
-    ax.set_title("LAAVHA: Handover Count by Algorithm")
+    # Calculate mean and std for each algorithm
+    summaries = []
+    for algo in ALGORITHM_ORDER:
+        if algo in by_algo:
+            valid = [r for r in by_algo[algo] if r.get("handover_count")]
+            counts = [float(r["handover_count"]) for r in valid]
+            if counts:
+                mean = sum(counts) / len(counts)
+                variance = sum((c - mean) ** 2 for c in counts) / len(counts)
+                std = variance ** 0.5
+                summaries.append((mean, std))
+            else:
+                summaries.append((0, 0))
+        else:
+            summaries.append((0, 0))
+
+    means = [s[0] for s in summaries]
+    stds = [s[1] for s in summaries]
+
+    # Create the bar chart with error bars and value labels
+    fig, ax = plt.subplots(figsize=(14, 6))
+    x = np.arange(len(ALGORITHM_ORDER))
+    ax.bar(x, means, color=ALGORITHM_COLORS, edgecolor="white", linewidth=0.5)
+    ax.errorbar(x, means, yerr=stds, fmt="none", ecolor="black", capsize=4, linewidth=0.8)
+
+    # Add value labels with 2 decimal places
+    for index, (mean, std) in enumerate(summaries):
+        ax.text(index, mean + std + 0.5, f"{mean:.2f}",
+                ha="center", va="bottom", fontsize=9, fontweight="bold")
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(ALGORITHM_LABELS, fontsize=8, rotation=30, ha="right")
+    ax.set_ylabel("Average Handover Count", fontsize=12)
+    ax.set_title("Handover Count Comparison (11 Algorithms, n=50)", fontsize=14, fontweight="bold")
+    ax.set_ylim(0, max(means) + max(stds) + 5)
+    ax.grid(axis="y", alpha=0.3)
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+
+    # Add legend
+    legend_elements = [
+        Patch(facecolor="#2196F3", label="LAAVHA family"),
+        Patch(facecolor="#FF9800", label="MADM methods"),
+        Patch(facecolor="#9E9E9E", label="Simple baselines"),
+    ]
+    ax.legend(handles=legend_elements, loc="upper left", fontsize=9)
+
     path = os.path.join(output_dir, f"{prefix}handover_count_by_algorithm.png")
+    plt.tight_layout()
     fig.savefig(path, dpi=dpi, bbox_inches="tight")
     plt.close(fig)
     print(f"[plot] Saved: {path}")
