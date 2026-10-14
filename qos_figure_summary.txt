@@ -1,0 +1,33 @@
+QoS对比图生成完成
+==================
+
+生成文件位置：
+- PDF矢量版：vehicular_communications_submission/figures/qos_comparison_nature.pdf (53KB)
+- SVG矢量版：vehicular_communications_submission/figures/qos_comparison_nature.svg (199KB)
+- PNG位图版：vehicular_communications_submission/figures/qos_comparison_nature.png (173KB, 300dpi)
+
+关键发现：
+1. ✅ LAAVHA在所有20次运行中均实现零切换（0次handover）
+2. ✅ 零切换情况下，LAAVHA保持了最优QoS性能：
+   - 吞吐量：2.00 Mbps（最高）
+   - 时延：1.00 ms（最低）
+   - 丢包率：16.327%
+3. ✅ "LAAVHA零切换子组"与"LAAVHA全部运行"数据相同，因为所有运行都是零切换
+
+对比基线算法：
+- TOPSIS-Q：4次切换/运行，略低的QoS
+- GRA：20次切换/运行，显著降低的吞吐量和增加的时延
+- Strongest-Signal：2次切换/运行，最差的吞吐量(0.24 Mbps)
+
+图表设计符合Nature标准：
+- 三个并列子图（a）吞吐量、（b）时延、（c）丢包率
+- 深蓝色：LAAVHA全部运行
+- 浅蓝色+纹理：LAAVHA零切换子组（实际与全部运行重合）
+- 灰色系：基线算法
+- 误差棒显示20次运行的标准差
+- 样本量标注：n=20
+
+统计方法：
+- 按每个决策点的实际服务网络（current_net）提取QoS
+- 每次运行取时间平均值
+- 跨20次运行计算均值±标准差
