@@ -396,7 +396,7 @@ Fusion coefficient $\alpha$ & 0.6 \\
 Dual-hysteresis parameters & $\Delta_{\mathrm{th}}=0.05$, confirmation window $T_h=3$ \\
 Enhancement parameters & RS-TOPSIS closeness-history length $K_c=5$, RS-TOPSIS risk coefficient $\lambda=0.5$ \\
 Training dataset & 10{,}000 samples (historical states and next-period targets) \\
-Dataset split & training/validation = 80\%/20\% \\
+Dataset split & training/validation = 80\%/20\% (sample-level random split; see text) \\
 Loss function & MSE (mean squared error) for LSTM prediction only \\
 Optimizer & Adam (learning rate = 0.001) \\
 Batch size & 64 \\
@@ -410,6 +410,8 @@ Fixed parameters & Attention mechanism, $W_{\mathrm{mob}}$, and $W_{\mathrm{weig
 \end{table}
 
 In addition to LAAVHA, the experiments evaluate eight comparison algorithms, namely TOPSIS-Q, Fuzzy-VHO, SAW, VIKOR, GRA, COPRAS, SPOTIS, and strongest-signal selection, plus the ablation variants LAAVHA-L and LAAVHA-A. These methods represent seven decision paradigms: fuzzy logic (Fuzzy-VHO), SAW, compromise ranking (VIKOR), distance-based ranking (TOPSIS-Q), relational analysis (GRA), proportional assessment (COPRAS), and reference-point ranking (SPOTIS). TOPSIS-Q follows TOPSIS network selection with entropy-weighted improved TOPSIS \cite{ref8,ref9,ref10}; Fuzzy-VHO follows fuzzy handover for 5G UAV networks \cite{ref4}; VIKOR uses compromise ranking \cite{ref11}; and GRA, COPRAS, SPOTIS, and SAW represent mainstream multi-attribute mobility decision methods \cite{ref12}. Strongest-signal selection chooses the candidate with the highest SINR. LAAVHA-L removes LSTM prediction, replacing predicted states with current states while retaining attention weights and dual hysteresis. LAAVHA-A removes attention-based dynamic weighting, retaining LSTM prediction and dual hysteresis while using entropy weighting for TOPSIS.
+
+The training dataset contains 10,000 samples collected from independent ns-3 simulation runs spanning diverse random seeds, UAV trajectories, and channel conditions. Each sample is a pre-built 10-step history window drawn from a distinct simulation episode; adjacent samples in the dataset originate from different runs rather than consecutive time steps of the same trajectory. Samples are therefore statistically independent, and the 80\%/20\% split in Table~\ref{tab:params} is applied at the sample level with no risk of temporal information leakage between training and validation subsets. Min-max normalization is performed per decision period within the simulation at inference time, scaling each of the five indicators across the three candidate networks to $[0,1]$; the normalization bounds are derived solely from the three-candidate values at that instant and are not fitted or shared across the dataset.
 
 \subsection{Decision-Level Simulation Platform}\label{sec:decision_level}
 
@@ -516,7 +518,7 @@ Panel (b) shows handovers under the fixed low threshold ($\Delta_{\mathrm{th}}=0
 
 Panel (c) presents ALERA's risk-adjusted scores, with the vertical axis $C_i^{\mathrm{robust}}=C_i-\lambda\sigma_i^C$, with green dashed lines indicating handovers. ALERA retains both necessary handovers while suppressing Zone 2 fluctuations and avoiding handover.
 
-Panel (d) shows the adaptive threshold $\Delta_{\mathrm{th}}$, representing the required closeness advantage. In Zone 2, it increases from 0.03 to approximately 0.09 and gradually decreases after fluctuations subside, demonstrating that ADH raises the handover barrier only under unstable conditions.
+Panel (d) shows the adaptive threshold $\Delta_{\mathrm{th}}$, representing the required closeness advantage. In Zone 2, it increases from 0.03 to approximately 0.08 and gradually decreases after fluctuations subside, demonstrating that ADH raises the handover barrier only under unstable conditions.
 
 The enhancement provides two key benefits. Under sustained degradation, it completes the necessary handover from degraded network A to better network B, avoiding excessive conservatism. Under transient variation, it suppresses false handovers caused by short peaks and prevents A$\rightarrow$B$\rightarrow$A ping-pong. RS-TOPSIS reduces the ranking advantage of volatile candidates, determining which network to switch to, while ADH raises the trigger threshold during fluctuations, determining when to switch. Together, they preserve necessary handovers, reduce false handovers, and limit associated link-reestablishment overhead.
 
