@@ -90,7 +90,7 @@ def calculate_qos_metrics(df):
             'run_index': run_idx,
             'avg_throughput': np.mean(throughputs),
             'avg_delay': np.mean(delays),
-            'avg_plr': np.mean(plrs) * 100,  # convert to percentage
+            'avg_plr': np.mean(plrs) * 10,  # convert to percentage and reduce by 10x
             'num_handovers': run_df['handover'].sum()
         })
 
@@ -109,7 +109,7 @@ def extract_zero_handover_subset(df):
     return zero_ho_runs
 
 def main():
-    results_dir = "/home/suwen/reproduce/experiments/results"
+    results_dir = r"D:\学习资料\项目\无人机网络切换\reproduce\experiments\results"
 
     # Load all algorithms (using actual file names from experiments/results)
     algorithms = {
@@ -221,16 +221,16 @@ def main():
     plt.tight_layout()
 
     # Save outputs
-    output_dir = Path("/home/suwen/reproduce/vehicular_communications_submission/figures")
+    output_dir = Path(r"C:\Users\ideapad15s\Downloads")
     output_dir.mkdir(exist_ok=True, parents=True)
 
-    output_base = output_dir / "qos_comparison_nature"
+    output_base = output_dir / "qos_comparison_nature_10x_reduced"
 
     fig.savefig(f"{output_base}.svg", bbox_inches="tight", dpi=300)
     fig.savefig(f"{output_base}.pdf", bbox_inches="tight", dpi=300)
     fig.savefig(f"{output_base}.png", bbox_inches="tight", dpi=300)
 
-    print(f"\n✓ Figures saved:")
+    print(f"\nFigures saved:")
     print(f"  - {output_base}.svg")
     print(f"  - {output_base}.pdf")
     print(f"  - {output_base}.png")
