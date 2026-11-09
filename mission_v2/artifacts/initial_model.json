@@ -1,0 +1,191 @@
+{
+  "fidelity": "service-abstraction training; physical-domain validation required",
+  "train_seeds": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23
+  ],
+  "validation_seeds": [
+    100,
+    101,
+    102,
+    103,
+    104,
+    105,
+    106,
+    107
+  ],
+  "horizons_s": [
+    0.1,
+    0.3,
+    0.5
+  ],
+  "loss_history": [
+    {
+      "epoch": 1,
+      "loss": 1.148834307556567,
+      "validation_normalized_mse": 0.180711567401886,
+      "weight_gradient_norm_sum": 5.760690685361624
+    },
+    {
+      "epoch": 2,
+      "loss": 0.5927666134160497,
+      "validation_normalized_mse": 0.06527410447597504,
+      "weight_gradient_norm_sum": 3.1177559569478035
+    },
+    {
+      "epoch": 3,
+      "loss": 0.5113507716552071,
+      "validation_normalized_mse": 0.05192409083247185,
+      "weight_gradient_norm_sum": 1.9311730209738016
+    },
+    {
+      "epoch": 4,
+      "loss": 0.4941459194473598,
+      "validation_normalized_mse": 0.04574102535843849,
+      "weight_gradient_norm_sum": 1.3350051259621978
+    },
+    {
+      "epoch": 5,
+      "loss": 0.4865746673034585,
+      "validation_normalized_mse": 0.04198426753282547,
+      "weight_gradient_norm_sum": 1.1403898759745061
+    },
+    {
+      "epoch": 6,
+      "loss": 0.47930011995460675,
+      "validation_normalized_mse": 0.040053173899650574,
+      "weight_gradient_norm_sum": 1.0250555234961212
+    },
+    {
+      "epoch": 7,
+      "loss": 0.47745654310869134,
+      "validation_normalized_mse": 0.039457034319639206,
+      "weight_gradient_norm_sum": 0.6116166480351239
+    },
+    {
+      "epoch": 8,
+      "loss": 0.4765072905499002,
+      "validation_normalized_mse": 0.038010284304618835,
+      "weight_gradient_norm_sum": 0.604404624318704
+    },
+    {
+      "epoch": 9,
+      "loss": 0.475428339579831,
+      "validation_normalized_mse": 0.03780391067266464,
+      "weight_gradient_norm_sum": 1.063145247520879
+    },
+    {
+      "epoch": 10,
+      "loss": 0.47412633701511053,
+      "validation_normalized_mse": 0.0371934249997139,
+      "weight_gradient_norm_sum": 0.6342050954699516
+    },
+    {
+      "epoch": 11,
+      "loss": 0.4718230541633523,
+      "validation_normalized_mse": 0.03743748739361763,
+      "weight_gradient_norm_sum": 0.5325752473436296
+    },
+    {
+      "epoch": 12,
+      "loss": 0.4739240641179292,
+      "validation_normalized_mse": 0.036966048181056976,
+      "weight_gradient_norm_sum": 0.5605725785717368
+    },
+    {
+      "epoch": 13,
+      "loss": 0.4716578307359115,
+      "validation_normalized_mse": 0.037631966173648834,
+      "weight_gradient_norm_sum": 0.44596343801822513
+    },
+    {
+      "epoch": 14,
+      "loss": 0.47196399388105975,
+      "validation_normalized_mse": 0.036543089896440506,
+      "weight_gradient_norm_sum": 0.6653306065127254
+    },
+    {
+      "epoch": 15,
+      "loss": 0.4718205494725186,
+      "validation_normalized_mse": 0.03642401844263077,
+      "weight_gradient_norm_sum": 0.5051580988802016
+    },
+    {
+      "epoch": 16,
+      "loss": 0.4714814463387365,
+      "validation_normalized_mse": 0.03667204827070236,
+      "weight_gradient_norm_sum": 0.39296821178868413
+    },
+    {
+      "epoch": 17,
+      "loss": 0.4703540970449862,
+      "validation_normalized_mse": 0.0362403579056263,
+      "weight_gradient_norm_sum": 0.3841237287269905
+    },
+    {
+      "epoch": 18,
+      "loss": 0.47095683281836304,
+      "validation_normalized_mse": 0.036029327660799026,
+      "weight_gradient_norm_sum": 0.4349654879188165
+    },
+    {
+      "epoch": 19,
+      "loss": 0.47153696288233216,
+      "validation_normalized_mse": 0.03569909185171127,
+      "weight_gradient_norm_sum": 0.4544586801202968
+    },
+    {
+      "epoch": 20,
+      "loss": 0.4708498709875604,
+      "validation_normalized_mse": 0.03615571931004524,
+      "weight_gradient_norm_sum": 0.5137627602089196
+    }
+  ],
+  "validation_mse": {
+    "lstm": [
+      0.023087169975042343,
+      0.03797151520848274,
+      0.04603860154747963
+    ],
+    "persistence": [
+      0.024322813376784325,
+      0.04548303410410881,
+      0.05448267236351967
+    ],
+    "linear": [
+      0.037467893213033676,
+      0.15117456018924713,
+      0.29455164074897766
+    ]
+  },
+  "mean_weights": [
+    0.1320933699607849,
+    0.11987695842981339,
+    0.09709609299898148,
+    0.17620286345481873,
+    0.4747307598590851
+  ],
+  "max_weight": 0.8380084037780762
+}

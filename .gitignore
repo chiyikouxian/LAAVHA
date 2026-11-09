@@ -42,3 +42,14 @@ Thumbs.db
 /tmp/
 *.tmp
 *.swp
+
+# 实验数据（体积大，不纳入版本控制）
+time_series_50s/
+results_exp2/
+logs_exp2/
+mission_v2/outputs/
+mission_v2/__pycache__/
+实验数据/
+plots_50s/
+plots_chapter3/
+plots_chapter3_v2/

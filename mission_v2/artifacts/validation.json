@@ -1,0 +1,42 @@
+{
+  "unit_tests_passed": 10,
+  "physical_pilot_runs_verified": 24,
+  "training_runs_verified": 10,
+  "independent_calibration_runs_verified": 3,
+  "offline_reference_packet_replays_verified": 2,
+  "original_sources_model_unchanged": 12,
+  "laavha_raw_counts": {
+    "100": 2,
+    "108": 2,
+    "119": 2
+  },
+  "publication_test_campaign_completed": false,
+  "manuscript_pdf_sha256": "5753e831e13237a3f4fcc6f5c975ed08a18b5f4a1d2a935306adadc1e4bb64cf",
+  "summary_sha256": {
+    "outputs/physical_pilot/ns3_alera_seed100.summary.json": "b31b21cff2b28947cd71fda813624544d4cb416f4717841d122795c0e546df28",
+    "outputs/physical_pilot/ns3_alera_seed108.summary.json": "b4549ae75b0da22654410caf1d270b326559ea290207b917c627b91930c295c1",
+    "outputs/physical_pilot/ns3_alera_seed119.summary.json": "fac9ee0a649ca72ef562bac5dc822adb4c5846b0de56fc0fb956ddbf24991955",
+    "outputs/physical_pilot/ns3_ewma_seed100.summary.json": "b04dc6a3b15007bd16378570862b0dbbf46d1af1be30c8c4a6001000bc19d254",
+    "outputs/physical_pilot/ns3_ewma_seed108.summary.json": "c1c5d2bef44ee39cf7d72499e32b309e74abbc6a41af771bb853c2691075b71e",
+    "outputs/physical_pilot/ns3_ewma_seed119.summary.json": "84601198a67f2972ba877b2472eb4feed02885ac47d9447b68d150e71c19353e",
+    "outputs/physical_pilot/ns3_laavha_seed100.summary.json": "2ccfd635debef37140a10d343b10b12176df26390f436ca7769fb3c7aa85cb4b",
+    "outputs/physical_pilot/ns3_laavha_seed108.summary.json": "8d0c20fc0a351a625c6985369d2c97e8f04b07ee0b1433e69ef609efdcee6878",
+    "outputs/physical_pilot/ns3_laavha_seed119.summary.json": "bcfd58d156c361b5ad6e994a4dadcc81d3078b03fe5755fac3b2c588b79072e2",
+    "outputs/physical_pilot/ns3_no-attention_seed100.summary.json": "893ca82352884e0b6ec7b5d6d68eebd79fc93cd3b0dee48af9f3d99340fd6423",
+    "outputs/physical_pilot/ns3_no-attention_seed108.summary.json": "608c40c22845bacda0b063f5d357f66d9f6b933bd38be8694ccf5e702df75a19",
+    "outputs/physical_pilot/ns3_no-attention_seed119.summary.json": "9dd2d8e437bb84bf7105e034b12b8505ceda65f4e46985f8efd019f3d681de7e",
+    "outputs/physical_pilot/ns3_no-pred_seed100.summary.json": "19a8de6cc4f6fd472f654c5fc2ee6531949b6b8cf41051b348ed5e3b8793a1aa",
+    "outputs/physical_pilot/ns3_no-pred_seed108.summary.json": "c214d49ce25a228f8a3e26ffef514bb158a2fed7fe2c4a9de94d0f1aef8a2187",
+    "outputs/physical_pilot/ns3_no-pred_seed119.summary.json": "112fde7ac578a78260e32d27cf441df337539068478e257f40fbeda4a23d4f76",
+    "outputs/physical_pilot/ns3_strongest-signal_seed100.summary.json": "6e05a5f3b3f875e6efb74950c4843402830256baedb0681866362c26bd0eaa3e",
+    "outputs/physical_pilot/ns3_strongest-signal_seed108.summary.json": "2d04398f54c7cb85fb1fa04504889dc5c4e7c1ec603aa3aad5691c43e0b1d3f0",
+    "outputs/physical_pilot/ns3_strongest-signal_seed119.summary.json": "a1c46132aef35709789aba1ffa738c4deb0e5d7bcfe7b7fbc4ee27af09c8823c",
+    "outputs/physical_pilot/ns3_topsis_seed100.summary.json": "54a5f647c002251b707fe52a1b29acb7cfc95395bdf7d9996921a72959e0ff10",
+    "outputs/physical_pilot/ns3_topsis_seed108.summary.json": "8d48abb2acdf4818fdc2459d066bad13ce0c6193e4ad9f7e1019f40fc75c2612",
+    "outputs/physical_pilot/ns3_topsis_seed119.summary.json": "ba4e0ee84fe3bf68c79ad36ae9ba78253b43f5e77069355f3accc4cb770dbbbd",
+    "outputs/physical_pilot/ns3_trend_seed100.summary.json": "7bff5df9c8cbe031eb322ad9927957dee537d11c2e3c82b54c3675db924d66a4",
+    "outputs/physical_pilot/ns3_trend_seed108.summary.json": "ba33386c4963648f4019c2aac9d96e1e52d3be120cf59d359b725e5e824f3e07",
+    "outputs/physical_pilot/ns3_trend_seed119.summary.json": "2b40e5ebad65618f99638def38468bd0429c000a8fa81ead748f60c943757b3d"
+  },
+  "note": "Unit tests, packet integrity, source/model hashes and manuscript compilation checked in this session. Three development seeds; no held-out generalization claim."
+}

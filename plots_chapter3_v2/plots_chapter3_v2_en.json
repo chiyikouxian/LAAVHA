@@ -1,0 +1,54 @@
+{
+  "config": "/home/suwen/reproduce/mission_v2/config.json",
+  "config_sha256": "fd1b3d71665b6cf973889cdfa6f9ae00f6f85ad60cc240779841c6d61c30acca",
+  "route_source": "/home/suwen/reproduce/mission_v2/mission.py",
+  "route_source_sha256": "3b1eb1f3e520415f9318693fe629a1ba09baead68cc55e2319733f23ea014234",
+  "sites_m": [
+    [
+      1500.0,
+      1000.0,
+      30.0
+    ],
+    [
+      700.0,
+      1000.0,
+      30.0
+    ],
+    [
+      1000.0,
+      1000.0,
+      10.0
+    ]
+  ],
+  "nominal_radii_m": [
+    500.0,
+    1200.0,
+    200.0
+  ],
+  "nominal_route_start_m": [
+    1600.0,
+    1000.0
+  ],
+  "nominal_route_end_m": [
+    450.0,
+    1000.0
+  ],
+  "imaging_x_bounds_m": [
+    950.1,
+    999.8800000000001
+  ],
+  "building_bounds_m": [
+    [
+      1100.0,
+      1150.0
+    ],
+    [
+      900.0,
+      1100.0
+    ],
+    [
+      0.0,
+      75.0
+    ]
+  ]
+}

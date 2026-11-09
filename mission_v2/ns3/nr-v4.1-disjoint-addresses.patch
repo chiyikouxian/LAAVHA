@@ -1,0 +1,64 @@
+diff --git a/helper/nr-no-backhaul-epc-helper.cc b/helper/nr-no-backhaul-epc-helper.cc
+index d116d6d..9a2af33 100644
+--- a/helper/nr-no-backhaul-epc-helper.cc
++++ b/helper/nr-no-backhaul-epc-helper.cc
+@@ -51,15 +51,15 @@ NrNoBackhaulEpcHelper::NrNoBackhaulEpcHelper()
+     // since we use point-to-point links for links between the core network nodes,
+     // we use a /30 subnet which can hold exactly two addresses
+     // (remember that net broadcast and null address are not valid)
+-    m_x2Ipv4AddressHelper.SetBase("12.0.0.0", "255.255.255.252");
+-    m_s11Ipv4AddressHelper.SetBase("13.0.0.0", "255.255.255.252");
+-    m_s5Ipv4AddressHelper.SetBase("14.0.0.0", "255.255.255.252");
++    m_x2Ipv4AddressHelper.SetBase("22.0.0.0", "255.255.255.252");
++    m_s11Ipv4AddressHelper.SetBase("23.0.0.0", "255.255.255.252");
++    m_s5Ipv4AddressHelper.SetBase("24.0.0.0", "255.255.255.252");
+ 
+     // we use a /8 net for all UEs
+-    m_uePgwAddressHelper.SetBase("7.0.0.0", "255.0.0.0");
++    m_uePgwAddressHelper.SetBase("17.0.0.0", "255.0.0.0");
+ 
+     // we use a /64 IPv6 net all UEs
+-    m_uePgwAddressHelper6.SetBase("7777:f00d::", Ipv6Prefix(64));
++    m_uePgwAddressHelper6.SetBase("7778:f00d::", Ipv6Prefix(64));
+ 
+     // Create PGW, SGW and MME nodes
+     m_pgw = CreateObject<Node>();
+@@ -77,7 +77,7 @@ NrNoBackhaulEpcHelper::NrNoBackhaulEpcHelper()
+     Ipv6StaticRoutingHelper ipv6RoutingHelper;
+     Ptr<Ipv6StaticRouting> pgwStaticRouting =
+         ipv6RoutingHelper.GetStaticRouting(m_pgw->GetObject<Ipv6>());
+-    pgwStaticRouting->AddNetworkRouteTo("7777:f00d::", Ipv6Prefix(64), Ipv6Address("::"), 1, 0);
++    pgwStaticRouting->AddNetworkRouteTo("7778:f00d::", Ipv6Prefix(64), Ipv6Address("::"), 1, 0);
+ 
+     // create TUN device implementing tunneling of user data over GTP-U/UDP/IP in the PGW
+     m_tunDevice = CreateObject<VirtualNetDevice>();
+diff --git a/helper/nr-point-to-point-epc-helper-base.cc b/helper/nr-point-to-point-epc-helper-base.cc
+index 91ed43e..3f8430b 100644
+--- a/helper/nr-point-to-point-epc-helper-base.cc
++++ b/helper/nr-point-to-point-epc-helper-base.cc
+@@ -32,8 +32,8 @@ NrPointToPointEpcHelperBase::NrPointToPointEpcHelperBase()
+     // since we use point-to-point links for the backhaul links,
+     // we use a /30 subnet which can hold exactly two addresses
+     // (remember that net broadcast and null address are not valid)
+-    m_s1uIpv4AddressHelper.SetBase("10.0.0.0", "255.255.255.252");
+-    m_s1apIpv4AddressHelper.SetBase("11.0.0.0", "255.255.255.252");
++    m_s1uIpv4AddressHelper.SetBase("20.0.0.0", "255.255.255.252");
++    m_s1apIpv4AddressHelper.SetBase("21.0.0.0", "255.255.255.252");
+ }
+ 
+ NrPointToPointEpcHelperBase::~NrPointToPointEpcHelperBase()
+diff --git a/helper/nr-point-to-point-epc-helper.cc b/helper/nr-point-to-point-epc-helper.cc
+index 901832b..3cc3be2 100644
+--- a/helper/nr-point-to-point-epc-helper.cc
++++ b/helper/nr-point-to-point-epc-helper.cc
+@@ -32,8 +32,8 @@ NrPointToPointEpcHelper::NrPointToPointEpcHelper()
+     // since we use point-to-point links for the backhaul links,
+     // we use a /30 subnet which can hold exactly two addresses
+     // (remember that net broadcast and null address are not valid)
+-    m_s1uIpv4AddressHelper.SetBase("10.0.0.0", "255.255.255.252");
+-    m_s1apIpv4AddressHelper.SetBase("11.0.0.0", "255.255.255.252");
++    m_s1uIpv4AddressHelper.SetBase("20.0.0.0", "255.255.255.252");
++    m_s1apIpv4AddressHelper.SetBase("21.0.0.0", "255.255.255.252");
+ }
+ 
+ NrPointToPointEpcHelper::~NrPointToPointEpcHelper()

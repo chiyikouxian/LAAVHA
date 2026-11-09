@@ -1,0 +1,30 @@
+{
+  "scope": "75m primary-scene development implementation; held-out 200-449 not launched",
+  "files_sha256": {
+    "config.json": "fd1b3d71665b6cf973889cdfa6f9ae00f6f85ad60cc240779841c6d61c30acca",
+    "benchmark.py": "df6bdb446ea7b6e50e339b8c739fbe7e9112438d114fef1ecd4c504a5f31d0a0",
+    "build.py": "050de08cd907a52d0e0ba80a1065ccdd66a99efa29c65ea7d19249f1157396ba",
+    "evidence_report.py": "5752c65fbac84d1a146355ca5ce2f2c5c98ae6986d6e2ab61d234ae9bca4e69b",
+    "figures.py": "dd0b142018f332fc13c58ef5f9b93738a843bf9ce274fa8a5a6b4437e2f6059d",
+    "mission.py": "3b1eb1f3e520415f9318693fe629a1ba09baead68cc55e2319733f23ea014234",
+    "model.py": "8d561de0b8396717b094da66acdf5938f27439109fec0d54923a93852d91b012",
+    "physical_figures.py": "92e0f609348380a494845b22701050acb3aa8a9451b33853ad7bd4da418ad276",
+    "pilot.py": "c7815c7b62d462f2957b4c9c7ddb5382887c543e8fce8ce080584700c1ec7021",
+    "policy.py": "a7b9b81ae7750463b0f5e9390c69188d5f9cc77a53158aedc2f166848112ac5a",
+    "reference.py": "b5b54f6e1bd5e8c7bc71262fa9dfcc4e4a668e708e2c508ed11a619907a33fc8",
+    "replay.py": "b493f425e81ad68bf52f2f4a8f5b231dd9ac0189cc8dd17349deb898405bec18",
+    "run.py": "2a1b843545b3762d90329f02db0ea8486b13558d921b180ced8d20117899aaa0",
+    "train.py": "e2abe9d2138ce89d069085af47e099ad63900789dd09d92f75b0cbe10f6d2ad1",
+    "verify.py": "09b7ecc66d64c65303968b3250a2f954af1aaf3b9a96f127ee821f6a7a42b5ea",
+    "write_revision.py": "b3d625eda5626539e5c7d26fabb31dc9cf00ec3245c4b019e9c6455961b0bb80",
+    "ns3/laavha-mission.cc": "70ff7e084317ffbb33eeb1d4855f530763623d0f3fc944ce7041a8ad0c3752a2",
+    "ns3/mission-config.h": "5c6ebbb33eb838c4b6fd0366b9f9898dd4d5c1630ade56521bb5004b4ec19335",
+    "ns3/nr-v4.1-disjoint-addresses.patch": "6d34c03384e9420453c16a3c0e8d99396523ee0767a70a01ec13b474def6cea6",
+    "tests/test_model.py": "d9e012e99b804928d5072a087c0f8c4328e227c9b297555abe099d445bb3cd3d",
+    "tests/test_policy.py": "6f7b54693e7caad58d08119dae085343cf18b81499bec5988598c4efab01cc41",
+    "tests/test_reference.py": "34a1a9e01e07283e8a88bbde43dd3872be88105c56b252979724227dcf10e1de",
+    "artifacts/physical_model.pt": "8f751d1337b80920789778e5898447f138c2b6d0139bed0004b98bd7bf4d16f1",
+    "artifacts/physical_model.json": "a3d4ac39f96356a3e8e73b46522fb6312902718902d3c446e2fb7dcc661ea3d1",
+    "artifacts/platform.json": "ab0809b078c6f395d45636185e302aaf43508a40e0d6fb465d76962f66243b45"
+  }
+}

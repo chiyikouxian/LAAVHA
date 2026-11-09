@@ -131,11 +131,13 @@ fig, axes = plt.subplots(
     sharex=True,
     gridspec_kw={"height_ratios": [1.15, 1.15, 1.15, 0.85]},
 )
-fig.subplots_adjust(left=0.10, right=0.97, top=0.96, bottom=0.07, hspace=0.32)
+# 左边留出更多空间，避免 A/D 标签遮住纵坐标
+fig.subplots_adjust(left=0.13, right=0.97, top=0.96, bottom=0.07, hspace=0.32)
 
 PANEL_LABELS = ["A", "B", "C", "D"]
 for ax, label in zip(axes, PANEL_LABELS):
-    ax.text(-0.065, 0.5, label, transform=ax.transAxes,
+    # 把标签放在 axes 左侧外部，不占用绘图区域
+    ax.text(-0.10, 0.5, label, transform=ax.transAxes,
             fontsize=13, fontweight="bold", va="center", ha="center",
             bbox=dict(boxstyle="square,pad=0.25", fc="white",
                       ec="black", lw=1.3))
@@ -185,6 +187,7 @@ switch_labels = {
 zone1_done     = False
 recovery_done  = False
 zone2_count    = 0
+false_annotated = False
 for idx in fixed_switches:
     kind = classify_switch(idx)
     tx   = t[idx]
@@ -203,14 +206,15 @@ for idx in fixed_switches:
         recovery_done = True
     elif kind == "zone2":
         zone2_count += 1
-        lbl = "A→B\nfalse" if zone2_count == 1 else "B→A\nping-pong"
-        ax.annotate(lbl, xy=(tx, 0.635),
-                    fontsize=7, color=COL_FIXED, ha="center",
-                    bbox=dict(boxstyle="round,pad=0.2", fc="white",
-                              ec=COL_FIXED, lw=0.8))
-        if zone2_count == 1:
-            ax.annotate("FALSE!", xy=(tx + 0.3, 0.655),
-                        fontsize=8.5, color=COL_FIXED, fontweight="bold")
+
+# Zone2 所有错误切换合并为一个 FALSE! 标注，放在 Zone2 右侧空白处
+if zone2_count > 0:
+    ax.annotate(f"FALSE!\n({zone2_count} switches)",
+                xy=(15.3, 0.655),
+                fontsize=8.5, color=COL_FIXED, fontweight="bold",
+                ha="left", va="center",
+                bbox=dict(boxstyle="round,pad=0.2", fc="#fff0f0",
+                          ec=COL_FIXED, lw=1.0))
 
 ax.set_ylabel("Closeness", fontsize=9)
 ax.set_ylim(0.38, 0.68)
@@ -233,7 +237,6 @@ ax.plot(t, adj_a, color=COL_A, lw=1.2, label="Network A (LCB-adjusted)")
 ax.plot(t, adj_b, color=COL_B, lw=1.2, label="Network B (LCB-penalized)")
 
 zone1_done    = False
-recovery_done = False
 for idx in alera_switches:
     kind = classify_switch(idx)
     tx   = t[idx]
@@ -244,12 +247,12 @@ for idx in alera_switches:
                     bbox=dict(boxstyle="round,pad=0.2", fc="white",
                               ec=COL_ALERA, lw=0.8))
         zone1_done = True
-    elif kind == "recovery" and not recovery_done:
+    else:
+        # recovery 或落在 Zone2 边界的正确恢复切换，一律标注 B→A correct
         ax.annotate("B→A\ncorrect", xy=(tx, 0.635),
                     fontsize=7, color=COL_ALERA, ha="center",
                     bbox=dict(boxstyle="round,pad=0.2", fc="white",
                               ec=COL_ALERA, lw=0.8))
-        recovery_done = True
 
 # 如果 Zone 2 无切换，标注文字
 zone2_switches_alera = [i for i in alera_switches if 120 <= i < 150]
@@ -264,7 +267,7 @@ ax.set_ylabel("LCB-adjusted Score", fontsize=9)
 ax.set_ylim(0.38, 0.68)
 total_alera = len(alera_switches)
 ax.set_title(
-    f"LAAVHA-enhanced: {total_alera} handovers — "
+    f"ALERA: {total_alera} handovers — "
     f"Zone 2 volatility successfully suppressed",
     fontsize=9.5, fontweight="bold", pad=4,
 )
@@ -297,9 +300,53 @@ fig.savefig(out_path, dpi=300, bbox_inches="tight")
 plt.close()
 print(f"Saved: {out_path}")
 
+# ── 导出数值数据 CSV ──────────────────────────────────────────────────────────
+import csv, shutil
+
+data_dir = Path("/home/suwen/reproduce/实验数据/实验5_ALERA验证")
+data_dir.mkdir(parents=True, exist_ok=True)
+
+# fixed 策略逐步数据
+with open(data_dir / "fixed_threshold_steps.csv", "w", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerow(["step", "time_s", "raw_a", "raw_b", "dth", "serving", "switched", "zone"])
+    for i, s in enumerate(fixed_steps):
+        zone = "zone1" if 50 <= i < 80 else "zone2" if 120 <= i < 150 else "recovery" if 80 <= i < 120 else "stable"
+        writer.writerow([i, round(i * 0.1, 1), round(s["raw_a"], 6), round(s["raw_b"], 6),
+                         round(s["dth"], 4), s["serving"], int(s["switched"]), zone])
+print(f"Saved: {data_dir / 'fixed_threshold_steps.csv'}")
+
+# ALERA 策略逐步数据
+with open(data_dir / "alera_steps.csv", "w", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerow(["step", "time_s", "raw_a", "raw_b", "adj_a", "adj_b", "dth", "serving", "switched", "zone"])
+    for i, s in enumerate(alera_steps):
+        zone = "zone1" if 50 <= i < 80 else "zone2" if 120 <= i < 150 else "recovery" if 80 <= i < 120 else "stable"
+        writer.writerow([i, round(i * 0.1, 1), round(s["raw_a"], 6), round(s["raw_b"], 6),
+                         round(s["adj_a"], 6), round(s["adj_b"], 6),
+                         round(s["dth"], 4), s["serving"], int(s["switched"]), zone])
+print(f"Saved: {data_dir / 'alera_steps.csv'}")
+
+# 切换事件汇总
+with open(data_dir / "switch_events.csv", "w", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerow(["strategy", "step", "time_s", "from_net", "to_net", "zone"])
+    serving = 0
+    for i, s in enumerate(fixed_steps):
+        if s["switched"]:
+            zone = "zone1" if 50 <= i < 80 else "zone2" if 120 <= i < 150 else "recovery" if 80 <= i < 120 else "stable"
+            writer.writerow(["fixed", i, round(i * 0.1, 1), serving, s["serving"], zone])
+        serving = s["serving"]
+    serving = 0
+    for i, s in enumerate(alera_steps):
+        if s["switched"]:
+            zone = "zone1" if 50 <= i < 80 else "zone2" if 120 <= i < 150 else "recovery" if 80 <= i < 120 else "stable"
+            writer.writerow(["alera", i, round(i * 0.1, 1), serving, s["serving"], zone])
+        serving = s["serving"]
+print(f"Saved: {data_dir / 'switch_events.csv'}")
+
 # 同步到投稿目录
 submission_path = (Path("/home/suwen/reproduce/vehicular_communications_submission")
                    / "Figures" / "fig_adaptive_hysteresis_proof.png")
-import shutil
 shutil.copy(out_path, submission_path)
 print(f"Copied to: {submission_path}")

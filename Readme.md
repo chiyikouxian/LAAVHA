@@ -1,5 +1,7 @@
 # LAAVHA 无人异构网络垂直切换仿真集成
 
+新场景与算法实施版本见 [mission_v2/README.md](mission_v2/README.md)：三阶段遥感任务、真实 5G-LENA NR/LTE/Wi-Fi、统一上行业务、按包截止时间测量、重新训练的 LAAVHA 和独立参考评价。新结果及论文修订稿位于该目录；本文件下文描述旧版集成入口。
+
 ## 一、项目简介
 
 实现 **AI 算法 + 网络物理仿真** 结合的 LAAVHA（LSTM-Attention Vertical Handover

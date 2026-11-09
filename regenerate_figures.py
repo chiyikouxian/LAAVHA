@@ -12,9 +12,9 @@ import os, glob
 plt.rcParams['font.sans-serif'] = ['SimHei', 'DejaVu Sans']
 plt.rcParams['axes.unicode_minus'] = False
 
-TS_DIR = '/home/suwen/ns-3.45/contrib/ai/examples/laavha-handover/time_series_chapter3_v2'
-OUT_DIR = '/home/suwen/reproduce/plots_chapter3_v2'
-CSV_FILE = '/home/suwen/ns-3.45/contrib/ai/examples/laavha-handover/batch_chapter3_v2.csv'
+TS_DIR = '/home/suwen/reproduce/time_series_chapter3_v3'
+OUT_DIR = '/home/suwen/reproduce/vehicular_communications_submission/Figures'
+CSV_FILE = '/home/suwen/reproduce/batch_50s_merged.csv'
 os.makedirs(OUT_DIR, exist_ok=True)
 
 # Colors
@@ -81,7 +81,7 @@ print("  Done")
 print("Figure 2: 3-algorithm scoring timeline...")
 
 # Use first run of each algorithm (different seeds due to batch runner design)
-seeds = {'laavha': 200, 'topsis-q': 250, 'fuzzy-vho': 300}
+seeds = {'laavha': 7533, 'topsis-q': 10650, 'fuzzy-vho': 6382}
 ts_files = {}
 for algo, seed in seeds.items():
     pattern = f'{TS_DIR}/ts_run*_{algo}_seed{seed}.csv'
@@ -158,7 +158,7 @@ sinr_lte_arr = np.array(all_sinr_lte)
 sinr_wifi_arr = np.array(all_sinr_wifi)
 targets_arr = np.array(all_targets)
 
-t = np.arange(100) * 0.1
+t = np.arange(500) * 0.1
 
 fig, axes = plt.subplots(1, 3, figsize=(18, 5.5))
 
@@ -179,9 +179,9 @@ ax.grid(True, alpha=0.3)
 
 # Subplot 2: Network selection distribution over time (heatmap-style)
 ax = axes[1]
-net_counts = np.zeros((3, 100))
+net_counts = np.zeros((3, 500))
 for i in range(50):
-    for j in range(100):
+    for j in range(500):
         net = int(targets_arr[i, j])
         net_counts[net, j] += 1
 
