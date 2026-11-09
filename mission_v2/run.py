@@ -8,6 +8,8 @@ from mission import ROOT,CONFIG,abstract_trace,save_trace,load_trace
 from model import load_model
 from policy import Policy
 from reference import evaluate,solve
+from provenance import (VERSION, ALGORITHMS, LEARNED, source_hashes as implementation_hashes,
+                        scenario_parameters)
 
 
 def packet_summary(path,duration):
@@ -31,30 +33,44 @@ def packet_summary(path,duration):
 def main():
     ap=argparse.ArgumentParser()
     ap.add_argument('--backend',choices=['abstract','ns3'],default='abstract')
-    ap.add_argument('--algorithm',default='laavha',choices=['laavha','alera','no-pred','no-attention','topsis','trend','ewma','task-greedy','strongest-signal','saw','topsis-q','gra','vikor','copras','spotis','fuzzy-vho','fixed-nr','fixed-lte','fixed-wifi','offline-reference'])
+    ap.add_argument('--algorithm',default='laavha',choices=ALGORITHMS)
     ap.add_argument('--reference-trace',type=Path,help='Prior fixed-policy calibration observations; offline access to future states')
     ap.add_argument('--max-reference-switches',type=int,default=None)
     ap.add_argument('--seed',type=int,default=100);ap.add_argument('--stress',type=float,default=0.)
-    ap.add_argument('--model',type=Path,default=ROOT/'artifacts/model.pt')
+    ap.add_argument('--model',type=Path,default=ROOT/'artifacts/physical_model.pt')
     ap.add_argument('--output-dir',type=Path,default=ROOT/'outputs/pilot')
     ap.add_argument('--duration',type=float,default=50.)
     ap.add_argument('--threshold',type=float,default=.03);ap.add_argument('--window',type=int,default=3)
     ap.add_argument('--alpha',type=float,default=.6);ap.add_argument('--interruption',type=float,default=.1)
     ap.add_argument('--obstruction-db',type=float,default=18.)
-    ap.add_argument('--shadow-db',type=float,default=0.)
+    ap.add_argument('--profile',choices=['baseline','link-shadow'],default='baseline')
+    ap.add_argument('--shadow-db',type=float,default=None)
+    ap.add_argument('--shadow-length-m',type=float,default=None)
+    ap.add_argument('--shadow-correlation',type=float,default=None)
+    ap.add_argument('--alera-statistic',choices=['level','increments'],default='level')
+    ap.add_argument('--risk-lambda',type=float,default=.5)
     ap.add_argument('--building-height',type=float,default=CONFIG['building_bounds_m'][2][1])
     ap.add_argument('--ns3-root',type=Path,default=Path('/home/suwen/ns-3.45'))
     ap.add_argument('--reference-sensitivity',action='store_true',help='Evaluate offline reference interruption/cost sensitivity')
     ap.add_argument('--timeout',type=float,default=900.,help='Wall-clock limit for a physical mission')
     args=ap.parse_args();torch.set_num_threads(1)
+    if args.backend=='ns3' and args.stress!=0:
+        ap.error('--stress applies to the abstract backend; use --profile or --shadow-db for ns-3')
+    if args.backend=='abstract' and args.profile!='baseline':
+        ap.error('Physical scenario profiles require --backend ns3')
+    for key,value in scenario_parameters(args.profile,args.shadow_db,args.shadow_length_m,args.shadow_correlation).items():
+        setattr(args,key,value)
     args.output_dir=args.output_dir.resolve()
     args.output_dir.mkdir(parents=True,exist_ok=True)
     prefix=args.output_dir/f'{args.backend}_{args.algorithm}_seed{args.seed}'
+    if prefix.with_suffix('.summary.json').exists():
+        raise FileExistsError('Completed output already exists; use pilot.py for validated reuse or choose a new directory')
     model=None
-    if args.algorithm in ('laavha','alera','no-pred','no-attention'):model,_=load_model(args.model)
-    policy=Policy(args.algorithm,model,args.threshold,args.window,args.alpha)
+    if args.algorithm in LEARNED:model,_=load_model(args.model)
+    policy=Policy(args.algorithm,model,args.threshold,args.window,args.alpha,
+                  alera_statistic=args.alera_statistic,risk_lambda=args.risk_lambda)
     decisions=[];start=time.monotonic()
-    source_hashes={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [ROOT/'config.json',ROOT/'mission.py',ROOT/'policy.py',ROOT/'model.py',ROOT/'reference.py',ROOT/'run.py',ROOT/'ns3/laavha-mission.cc',ROOT/'ns3/mission-config.h']}
+    source_hashes=implementation_hashes()
     run_metadata={k:str(v) if isinstance(v,Path) else v for k,v in vars(args).items()}
     if model is not None:run_metadata['checkpoint_sha256']=hashlib.sha256(args.model.read_bytes()).hexdigest()
     offline_path=None
@@ -82,7 +98,7 @@ def main():
         binary=args.ns3_root/'build/scratch/ns3.45-laavha-mission-debug'
         run_metadata['binary_sha256']=hashlib.sha256(binary.read_bytes()).hexdigest()
         run_metadata['nr_dependency_patch_sha256']=hashlib.sha256((ROOT/'ns3/nr-v4.1-disjoint-addresses.patch').read_bytes()).hexdigest()
-        cmd=[str(binary),f'--seed={args.seed}',f'--duration={args.duration}',f'--interruption={args.interruption}',f'--obstructionDb={args.obstruction_db}',f'--shadowDb={args.shadow_db}',f'--buildingHeight={args.building_height}',f'--output={packets}']
+        cmd=[str(binary),f'--seed={args.seed}',f'--duration={args.duration}',f'--interruption={args.interruption}',f'--obstructionDb={args.obstruction_db}',f'--shadowDb={args.shadow_db}',f'--shadowLengthM={args.shadow_length_m}',f'--shadowCorrelation={args.shadow_correlation}',f'--buildingHeight={args.building_height}',f'--output={packets}']
         rows=[];cpp_summary=None
         print('Launching',args.algorithm,'seed',args.seed,flush=True)
         with prefix.with_suffix('.stderr.log').open('w') as err:
@@ -97,7 +113,7 @@ def main():
                             if row['demand']!=reference_trace['demand'][len(rows)]:raise ValueError('Replay task differs from calibration')
                             target=int(offline_path[len(rows)]);score=np.zeros(3)
                         elif args.algorithm.startswith('fixed-'):target={'fixed-nr':0,'fixed-lte':1,'fixed-wifi':2}[args.algorithm];score=np.zeros(3)
-                        else:target,score=policy.decide(metrics,serving,row['speed'],row['altitude'],row['demand'],args.interruption)
+                        else:target,score=policy.decide(metrics,serving,row['speed'],row['altitude'],row['demand'],args.interruption,signal_age_s=row['signal_age_s'])
                         proc.stdin.write(str(target)+'\n');proc.stdin.flush()
                         rows.append(row);decisions.append({'time':row['time'],'current_net':serving,'target_net':target,'handover':int(target!=serving),'scores':score.tolist(),**policy.diagnostics})
                     elif line.startswith('SUMMARY '):cpp_summary=json.loads(line[8:])
@@ -107,7 +123,7 @@ def main():
             finally:
                 timer.cancel()
                 if proc.poll() is None:proc.kill();proc.wait()
-        tr={k:np.array([r[k] for r in rows]) for k in ['time','position','speed','demand','metrics']}
+        tr={k:np.array([r[k] for r in rows]) for k in ['time','position','speed','demand','metrics','signal_age_s','shadow_loss_db']}
         tr.update(seed=args.seed,backend='ns3-physical-nr-lte-wifi')
         summary={**cpp_summary,**packet_summary(packets,args.duration),'fidelity':'real ns-3 NR/LTE/Wi-Fi with modeled application migration'}
     save_trace(prefix.with_suffix('.trace.npz'),tr)
@@ -125,7 +141,7 @@ def main():
                 r=solve(tr['metrics'],tr['demand'],interruption=interruption,cost=cost)
                 sensitivity.append({'interruption_s':interruption,'cost':cost,'switches':r['switches'],'objective':r['objective']})
         summary['reference_sensitivity']=sensitivity
-    summary.update(algorithm=args.algorithm,seed=args.seed,backend=args.backend,elapsed_s=time.monotonic()-start,
+    summary.update(implementation_version=VERSION,algorithm=args.algorithm,seed=args.seed,backend=args.backend,elapsed_s=time.monotonic()-start,
                    raw_handover_count=sum(d['handover'] for d in decisions),reference_model=refs,
                    reference_scope='fresh-cohort capacity-estimate reference; not closed-loop packet optimum',
                    source_hashes=source_hashes,run_metadata=run_metadata,scene_config=CONFIG)

@@ -33,4 +33,43 @@ class PolicyTests(unittest.TestCase):
         for _ in range(8):self.assertEqual(p.decide(m,2,20,100,2)[0],2)
 
 
-if __name__=='__main__':unittest.main()
+
+class AuditedPolicyTests(unittest.TestCase):
+    def test_paper_alera_changes_window_with_speed(self):
+        from policy import adaptive_hysteresis
+        stable = [10., 10., 10., 10., 10.]
+        low, slow = adaptive_hysteresis(stable, 0)
+        _, fast = adaptive_hysteresis(stable, 30)
+        noisy, _ = adaptive_hysteresis([0., 20., 0., 20., 0.], 30)
+        self.assertEqual((slow, fast), (4, 2))
+        self.assertGreater(noisy, low)
+        missing, _ = adaptive_hysteresis([], 30)
+        self.assertEqual(missing, .08)
+
+    def test_stale_high_signal_cannot_be_selected(self):
+        p = Policy('strongest-signal', threshold=0, window=1)
+        m = np.array([[0, -100, 10, 2, .1], [30, -50, 1, 100, 0], [-10, -120, 1000, 0, 1]], float)
+        target, _ = p.decide(m, 0, 20, 100, 2, signal_age_s=[.01, 1, 1])
+        self.assertEqual(target, 0)
+        self.assertEqual(p.diagnostics['usable'], [True, False, False])
+        self.assertEqual(p.diagnostics['raw_candidate'], 1)
+
+    def test_explicit_prediction_ablations(self):
+        import torch
+        class Checkpoint(torch.nn.Module):
+            def forward(self, h, context):
+                cur = h[:, :, -1, :]
+                return cur[:, :, None, :].repeat(1, 1, 3, 1), torch.full((1, 5), .2)
+        model = Checkpoint()
+        m = np.array([[10, -70, 5, 10, 0], [0, -100, 20, 5, .1], [-10, -120, 1000, 0, 1]], float)
+        for name in ['no-fusion', 'no-pred', 'no-persistence', 'no-attention-entropy', 'no-attention-uniform']:
+            p = Policy(name, model)
+            for _ in range(2):
+                p.decide(m, 0, 20, 100, 2)
+            expected = 0 if name in ('no-fusion', 'no-pred') else .4
+            self.assertAlmostEqual(p.diagnostics['forecast_feature_fraction'], expected, places=6)
+            self.assertAlmostEqual(sum(p.diagnostics['weights']), 1., places=6)
+
+
+if __name__ == '__main__':
+    unittest.main()

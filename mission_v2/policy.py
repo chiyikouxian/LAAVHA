@@ -1,120 +1,185 @@
-"""Network-agnostic causal policies with common service eligibility/confirmation."""
+"""Causal ranking, explicit ablations and a shared service/confirmation layer."""
 from collections import deque
 import numpy as np
 import torch
-from mission import sanitize,features,task_value
+from mission import sanitize, features, task_value
 from model import context_tensor
-
-
-def topsis(f,w):
-    v=f/np.maximum(np.linalg.norm(f,axis=0),1e-9)*w
-    plus=np.linalg.norm(v-v.max(0),axis=1)
-    minus=np.linalg.norm(v-v.min(0),axis=1)
-    return minus/np.maximum(plus+minus,1e-9)
+from provenance import ALGORITHMS, LEARNED
+from scoring import topsis, entropy_weights, madm_scores
 
 
 def task_weights(demand):
-    # Transparent task-aware control, available to all comparisons.
-    return np.array([.10,.05,.25,.30,.30]) if demand<=2 else np.array([.05,.05,.15,.45,.30])
+    return np.array([.10, .05, .25, .30, .30]) if demand <= 2 else np.array([.05, .05, .15, .45, .30])
+
+
+def adaptive_hysteresis(sinr_values, speed, base=.03, statistic='level'):
+    """Paper ALERA by default; increments is an explicitly named alternative."""
+    values = np.asarray(sinr_values, dtype=float)
+    if statistic == 'increments':
+        values = np.diff(values)
+    elif statistic != 'level':
+        raise ValueError('Unknown ALERA statistic')
+    # Missing observations are not evidence of a stable channel.
+    sigma = float(np.std(values)) if len(values) >= 2 else 10.
+    threshold = base + .05 * np.clip(sigma / 10, 0, 1)
+    window = max(2, int(np.floor(4 - 2 * np.clip(speed / 30, 0, 1))))
+    return float(threshold), window
 
 
 class Policy:
-    def __init__(self,name='laavha',model=None,threshold=.03,window=3,alpha=.6,period=.1):
-        if not 0<=alpha<=1 or threshold<0 or window<1: raise ValueError('Invalid policy parameters')
-        if name in ('laavha','alera','no-pred','no-attention') and model is None:
+    def __init__(self, name='laavha', model=None, threshold=.03, window=3,
+                 alpha=.6, period=.1, alera_statistic='level', risk_lambda=.5):
+        if name not in ALGORITHMS:
+            raise ValueError(f'Unknown policy: {name}')
+        if not 0 <= alpha <= 1 or threshold < 0 or window < 1 or period <= 0 or risk_lambda < 0:
+            raise ValueError('Invalid policy parameters')
+        if alera_statistic not in ('level', 'increments'):
+            raise ValueError('Unknown ALERA statistic')
+        if name in LEARNED and model is None:
             raise ValueError('A trained checkpoint is required; random weights are not allowed')
-        self.name=name;self.model=model;self.threshold=threshold;self.window=window;self.alpha=alpha;self.period=period
-        self.history=deque(maxlen=10);self.scores=deque(maxlen=5);self.candidate=None;self.confirmations=0
-        self.locked=0.;self.steps=0;self.last_forecast=None;self.diagnostics={}
+        self.name, self.model = name, model
+        self.threshold, self.window, self.alpha, self.period = threshold, window, alpha, period
+        self.alera_statistic, self.risk_lambda = alera_statistic, risk_lambda
+        self.history = deque(maxlen=10)
+        self.fresh_history = deque(maxlen=10)
+        self.scores = deque(maxlen=5)
+        self.candidate, self.confirmations, self.locked = None, 0, 0.
+        self.last_forecast, self.diagnostics = None, {}
+        self.step = 0                  # Change B: decision step counter
+        self.cooldown_step = {}        # Change B: net_index → first step allowed again
 
-    def decide(self,metrics,serving,speed,altitude,demand,interruption=.1):
-        cur=sanitize(metrics);self.history.append(cur.copy());self.steps+=1
-        h=np.array([self.history[0]]*(10-len(self.history))+list(self.history))
-        w=task_weights(demand);pred=cur.copy();confidence=0.;forecasts=None
-        if self.model is not None and self.name in ('laavha','alera','no-pred','no-attention'):
+    def decide(self, metrics, serving, speed, altitude, demand, interruption=.1, signal_age_s=None):
+        cur = sanitize(metrics)
+        age = np.zeros(3) if signal_age_s is None else np.asarray(signal_age_s, dtype=float)
+        if age.shape != (3,) or not np.isfinite(age).all() or (age < 0).any():
+            raise ValueError('Signal ages must be three finite nonnegative values')
+        fresh = age <= .5
+        self.history.append(cur.copy())
+        self.fresh_history.append(fresh.copy())
+        h = np.array([self.history[0]] * (10 - len(self.history)) + list(self.history))
+        freshness = np.array([self.fresh_history[0]] * (10 - len(self.fresh_history)) + list(self.fresh_history))
+        w, pred, confidence, forecasts = task_weights(demand), cur.copy(), 0., None
+        if self.name in LEARNED:
             with torch.no_grad():
-                forecast,weights=self.model(torch.tensor(h.transpose(1,0,2)[None],dtype=torch.float32),
-                                             context_tensor(speed,altitude,demand)[None])
-            forecasts=sanitize(forecast.numpy()[0]);w=weights.numpy()[0]
-            if self.name=='no-attention':w=task_weights(demand)
-            # Error against the forecast made one step ago; no future truth.
-            if self.last_forecast is not None:
-                error=np.mean(np.abs(features(self.last_forecast,demand)-features(cur,demand)))
-                confidence=float(np.exp(-error/.15))
-            self.last_forecast=forecasts[:,0].copy()
-            pred=forecasts[:,1]  # 0.3 s horizon covers normal confirmation
-            if self.name=='no-pred':confidence=0.
-        elif self.name in ('trend','ewma'):
-            confidence=1.
-            if self.name=='trend' and len(self.history)>=3:
-                slope=(h[-1]-h[-3])/2
-                forecasts=sanitize(cur[:,None,:]+np.array([1,3,5])[None,:,None]*slope[:,None,:])
-                pred=forecasts[:,1]
+                forecast, weights = self.model(torch.tensor(h.transpose(1, 0, 2)[None], dtype=torch.float32),
+                                               context_tensor(speed, altitude, demand)[None])
+            forecasts, w = sanitize(forecast.numpy()[0]), weights.numpy()[0]
+            if self.name == 'no-attention':
+                w = task_weights(demand)
+            elif self.name == 'no-attention-entropy':
+                w = entropy_weights(features(cur, demand))
+            elif self.name == 'no-attention-uniform':
+                w = np.full(5, .2)
+            if self.last_forecast is not None and fresh.any():
+                error = np.mean(np.abs(features(self.last_forecast, demand)[fresh] - features(cur, demand)[fresh]))
+                confidence = float(np.exp(-error / .15))
+            self.last_forecast = forecasts[:, 0].copy()
+            forecasts[~fresh] = cur[~fresh, None, :]
+            pred = forecasts[:, 1]
+            if self.name == 'no-pred':
+                confidence = 0.
+        elif self.name in ('trend', 'ewma'):
+            confidence = 1.
+            if self.name == 'trend' and len(self.history) >= 3:
+                slope = (h[-1] - h[-3]) / 2
+                forecasts = sanitize(cur[:, None, :] + np.array([1, 3, 5])[None, :, None] * slope[:, None, :])
+                pred = forecasts[:, 1]
             else:
-                pred=np.mean(h[-5:],axis=0)
-                forecasts=np.repeat(pred[:,None,:],3,axis=1)
-        a=1-(1-self.alpha)*confidence
-        f=a*features(cur,demand)+(1-a)*features(pred,demand)
-        score=topsis(f,w)
-        if self.name=='strongest-signal':score=(cur[:,0]+50)/130
-        elif self.name=='task-greedy':score=task_value(np.mean(h[-3:],axis=0),demand)/5
-        elif self.name=='saw':score=f@w
-        elif self.name in ('topsis-q','gra','vikor','copras','spotis'):
-            # Fixed utility scales and common task context; entropy weighting is
-            # the explicitly different weighting rule of these MADM controls.
-            prop=(f+1e-9)/(f+1e-9).sum(0)
-            entropy=-(prop*np.log(prop)).sum(0)/np.log(len(f))
-            ew=(1-entropy)/max((1-entropy).sum(),1e-9)
-            if ew.sum()<1e-8:ew=np.full(5,.2)
-            if self.name=='topsis-q':score=topsis(f,ew)
-            elif self.name=='gra':
-                distance=1-f;score=((distance.min()+.5*distance.max())/(distance+.5*distance.max()+1e-9))@ew
-            elif self.name=='vikor':
-                regret=(1-f)*ew;group=regret.sum(1);individual=regret.max(1)
-                score=1-.5*(group-group.min())/max(np.ptp(group),1e-9)-.5*(individual-individual.min())/max(np.ptp(individual),1e-9)
-            elif self.name=='spotis':score=1-(1-f)@ew
-            else:score=(f+1e-9)@ew # benefit-only COPRAS after cost inversion
-        elif self.name=='fuzzy-vho':
-            from baseline_snapshot.fuzzy_vho import fuzzy_vho_decision
-            _,score=fuzzy_vho_decision(cur)
-        self.scores.append(score.copy())
-        threshold=self.threshold;window=self.window
-        if self.name=='alera' and len(self.scores)>=3:
-            s=np.array(self.scores);residual=s[1:]-s[:-1]
-            score=score-.5*np.std(residual,axis=0)
-            # Detrended residuals, not raw monotonic decline.
-            noise=np.std(np.diff(h[-5:,:,0],axis=0),axis=0)
-            threshold+=min(.05,.005*noise[serving])
-        # Shared physical service gates: a stale low delay cannot rescue zero capacity.
-        recent=np.mean(h[-3:],axis=0)
-        usable=(recent[:,3]>=.1)&(recent[:,2]<=200)&(recent[:,4]<.5)
+                pred = np.mean(h[-5:], axis=0)
+                forecasts = np.repeat(pred[:, None, :], 3, axis=1)
+        forecast_fraction = 0. if self.name == 'no-fusion' else (1 - self.alpha) * confidence
+        f = (1 - forecast_fraction) * features(cur, demand) + forecast_fraction * features(pred, demand)
+        score = topsis(f, w)
+        if self.name == 'strongest-signal':
+            score = (cur[:, 0] + 50) / 130
+        elif self.name == 'task-greedy':
+            score = task_value(np.mean(h[-3:], axis=0), demand) / 5
+        elif self.name in ('saw', 'topsis-q', 'gra', 'vikor', 'copras', 'spotis', 'fuzzy-vho'):
+            score = madm_scores(self.name, f, cur, w)
+        raw_score = score.copy()
+        self.scores.append(raw_score.copy())
+        threshold, window = self.threshold, self.window
+        risk = np.zeros(3)
+        if self.name in ('alera', 'alera-risk-only') and len(self.scores) >= 3:
+            samples = np.array(self.scores)
+            if self.alera_statistic == 'increments':
+                samples = np.diff(samples, axis=0)
+            risk = self.risk_lambda * np.std(samples, axis=0)
+            score = score - risk
+        if self.name in ('alera', 'alera-hysteresis-only'):
+            observed = h[-5:, serving, 0][freshness[-5:, serving]]
+            # If the latest signal is stale, do not interpret old repeats as stability.
+            if not fresh[serving]:
+                observed = np.array([])
+            threshold, window = adaptive_hysteresis(observed, speed, self.threshold, self.alera_statistic)
+        recent = np.mean(h[-3:], axis=0)
+        usable = (recent[:, 3] >= .1) & (recent[:, 2] <= 200) & (recent[:, 4] < .5) & fresh
+        # Change B: block links still within failure cooldown (prediction-capable only).
+        self.step += 1
+        if self.name in ('laavha', 'alera') and self.cooldown_step:
+            for _net, _allow in self.cooldown_step.items():
+                if self.step < _allow:
+                    usable[_net] = False
+        raw_candidate = int(np.argmax(score))
+        failed = bool(not usable[serving] and usable.any())
+        if failed:
+            if self.name in ('laavha', 'alera'):
+                threshold, window = 0., 20  # Change A: 20-step (~2 s) window
+            else:
+                threshold, window = 0., 2
+        self.locked = max(0., self.locked - self.period)
+        diag = dict(weights=w.tolist(), confidence=confidence,
+                    forecast_feature_fraction=float(forecast_fraction),
+                    raw_scores=raw_score.tolist(), risk_penalty=risk.tolist(),
+                    usable=usable.tolist(), signal_fresh=fresh.tolist(),
+                    signal_age_s=None if signal_age_s is None else age.tolist(),
+                    raw_candidate=raw_candidate, effective_threshold=threshold,
+                    effective_window=window, failure_recovery=failed,
+                    all_unavailable=bool(not usable.any()),
+                    deferred_transient_destination=False)
         if not usable.any():
-            self.candidate=None;self.confirmations=0
-            self.diagnostics={'weights':w.tolist(),'confidence':confidence,'failure_recovery':False,'all_unavailable':True}
-            return int(serving),score
-        if usable.any():score=np.where(usable,score,-1.)
-        candidate=int(np.argmax(score));target=int(serving)
-        failed=not usable[serving] and usable.any()
-        if failed:window=2;threshold=0.
-        # Avoid a short-lived intermediate destination: require agreement of the
-        # 0.3/0.5 s forecast winners for a normal learned predictive migration.
-        # The predicted winner must already be usable and better than serving;
-        # service failure always takes the immediate recovery path instead.
-        defer=False
-        if forecasts is not None and confidence>=.25 and self.name!='no-pred' and not failed:
-            future=[topsis(features(forecasts[:,j],demand),w) for j in [1,2]]
-            winners=[int(np.argmax(s)) for s in future]
-            if winners[0]==winners[1] and winners[0]!=candidate:
-                destination=winners[0]
-                if usable[destination] and score[destination]-score[serving]>threshold:
-                    candidate=destination
-                else:defer=True
-        self.locked=max(0.,self.locked-self.period)
-        if not defer and self.locked<=1e-8 and candidate!=serving and score[candidate]-score[serving]>threshold:
-            if candidate==self.candidate:self.confirmations+=1
-            else:self.candidate=candidate;self.confirmations=1
-            if self.confirmations>=window:
-                target=candidate;self.confirmations=0;self.candidate=None;self.locked=interruption
-        else:self.candidate=None;self.confirmations=0
-        self.diagnostics={'weights':w.tolist(),'confidence':confidence,'failure_recovery':bool(failed),'deferred_transient_destination':defer}
-        return target,score
+            self.candidate, self.confirmations = None, 0
+            self.diagnostics = {**diag, 'candidate': int(serving), 'score_gap': 0.,
+                                'confirmations': 0, 'decision_reason': 'all_unavailable'}
+            return int(serving), score
+        score = np.where(usable, score, -1.)
+        candidate = int(np.argmax(score))
+        if usable[serving] and np.isclose(score[serving], score[candidate], rtol=0, atol=1e-12):
+            candidate = int(serving)
+        defer = False
+        if (forecasts is not None and confidence >= .25 and
+                self.name not in ('no-pred', 'no-persistence') and not failed):
+            future = [topsis(features(forecasts[:, j], demand), w) for j in [1, 2]]
+            winners = [int(np.argmax(s)) for s in future]
+            if winners[0] == winners[1] and winners[0] != candidate:
+                destination = winners[0]
+                if usable[destination] and score[destination] - score[candidate] > threshold:
+                    # Predicted future winner must beat the *current* top scorer, not just serving.
+                    candidate = destination
+                elif usable[destination] and score[destination] - score[serving] > threshold:
+                    # Predicted target beats serving but not current best: defer without overriding.
+                    defer = True
+        target = int(serving)
+        gap = float(score[candidate] - score[serving])
+        reason = 'keep_current' if candidate == serving else 'below_margin'
+        if defer:
+            reason = 'deferred_destination'
+        elif self.locked > 1e-8:
+            reason = 'migration_lock'
+        if not defer and self.locked <= 1e-8 and candidate != serving and gap > threshold:
+            self.confirmations = self.confirmations + 1 if candidate == self.candidate else 1
+            self.candidate = candidate
+            reason = 'confirming'
+            if self.confirmations >= window:
+                target, self.confirmations, self.candidate, self.locked = candidate, 0, None, interruption
+                reason = 'failure_recovery' if failed else 'normal_migration'
+                # Change B: after failure recovery, block return to the just-abandoned
+                # failed link for 35 steps (~3.5 s) to prevent boomerang oscillation.
+                if reason == 'failure_recovery' and self.name in ('laavha', 'alera'):
+                    self.cooldown_step[serving] = self.step + 35
+        else:
+            self.candidate, self.confirmations = None, 0
+        self.diagnostics = {**diag, 'candidate': candidate, 'score_gap': gap,
+                            'confirmations': self.confirmations, 'decision_reason': reason,
+                            'deferred_transient_destination': defer}
+        return target, score

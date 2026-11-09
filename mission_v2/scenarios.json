@@ -1,0 +1,14 @@
+{
+  "baseline": {
+    "description": "Original 75 m mission; no added shadow field.",
+    "shadow_db": 0.0,
+    "shadow_length_m": 8.0,
+    "shadow_correlation": 0.35
+  },
+  "link-shadow": {
+    "description": "Same geometry with continuous, partially correlated, per-link spatial shadow fields. Engineering stress scenario, not a calibrated UAV fading model.",
+    "shadow_db": 2.0,
+    "shadow_length_m": 8.0,
+    "shadow_correlation": 0.35
+  }
+}

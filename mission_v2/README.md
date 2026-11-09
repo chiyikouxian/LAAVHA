@@ -1,5 +1,7 @@
 # LAAVHA Mission v2
 
+新会话接手请先阅读 [最新交接文档](HANDOVER_PROMPT.md)，其中包含最终目标、最新五种子结果和下一步优先级。
+
 本目录保存重新设计的三阶段遥感任务、真实 ns-3 接入、LAAVHA 训练与推理、独立参考、实验输出和论文修订稿。旧 `time_series_50s/`、旧模型和提交稿不作为新实验结果使用，也没有被覆盖。
 
 场景机理与两次参考的中文解释见 [SCENARIO.md](SCENARIO.md)，验证表格见 [RESULTS.md](RESULTS.md)，正文草稿见 [manuscript_revision/main.pdf](manuscript_revision/main.pdf)。
@@ -26,60 +28,42 @@
 | `ns3/laavha-mission.cc` | 真实 PHY/MAC/核心网、统一上行业务、探测、包测量和动作执行 |
 | `ns3/nr-v4.1-disjoint-addresses.patch` | NR/LTE 同时运行所需的 EPC 网段分离补丁 |
 | `model.py`、`train.py` | LSTM 多时域预测和实际参与训练的任务注意力权重 |
-| `policy.py` | LAAVHA、ALERA、消融、强简单控制及适配 MADM |
+| `policy.py`、`scoring.py` | 决策控制、明确消融和已核验评分公式 |
+| `provenance.py`、`scenarios.json` | 冻结指纹、缓存校验和独立场景参数 |
 | `reference.py` | 独立服务目标下的精确 DP，与闭环包网络的最优性严格区分 |
 | `run.py`、`pilot.py` | 单次运行、配对物理试验、原始状态/包/决策/哈希保存 |
 | `replay.py`、`benchmark.py` | 观测回放和抽象模型开发对比；不能替代真实 payload QoS |
 | `verify.py`、`tests/` | 包 cohort、动作、指标与 DP/策略/梯度等检查 |
 | `figures.py`、`write_revision.py` | 图 1、开发图和隔离的论文修订稿 |
 
-## 复现
+## 当前活动版本与复现
 
-本机 Python：`/home/suwen/miniconda3/envs/deeplearn/bin/python3`。下面命令在本目录执行。
+2026-11-10 的活动版本为 `mission-v2-audited-1`。 五种子测试已完成，结果见 [五种子开发测试](AUDITED_FIVE_SEED_RESULTS.md)。修复说明见 [IMPLEMENTATION_UPDATE.md](IMPLEMENTATION_UPDATE.md)。此前 `outputs/physical_*` 的结果属于旧实现，继续保留；旧稿和历史报告中的均值不代表修正后的结果。
+
+本机 Python：`/home/suwen/miniconda3/envs/deeplearn/bin/python3`。以下命令在本目录执行。用户要求开发测试约五个种子，因此 `pilot.py` 最多接受五个不同种子；不启动全量测试。
 
 ```bash
 python build.py --ns3-root /home/suwen/ns-3.45
 python -m unittest discover -s tests -v
 
-# 独立物理训练任务：0–7 训练，100/101 验证。
-python pilot.py --seeds 0,1,2,3,4,5,6,7,100,101 --algorithms fixed-nr \
-  --workers 4 --output-dir outputs/physical_training
-python train.py --physical-dir outputs/physical_training --missions 8 \
-  --validation-start 100 --validation-missions 2 --epochs 35 \
-  --output artifacts/physical_model.pt
+# 五个开发种子，八种方法，共 40 次；使用已有物理训练模型。
+python pilot.py --seeds 110,111,112,113,114 \
+  --algorithms laavha,alera,no-pred,no-attention,topsis,fuzzy-vho,copras,vikor \
+  --workers 6 --profile link-shadow --output-dir outputs/audited_link_shadow_5
+python verify.py outputs/audited_link_shadow_5
+python report_comparison.py outputs/audited_link_shadow_5
 
-# 仅是开发/集成 pilot；200–449 留出测试种子未用于训练或调参。
-python pilot.py --model artifacts/physical_model.pt --workers 8
-python verify.py outputs/physical_pilot
-
-# 独立校准与参考计划的真实包重放。
-python pilot.py --seeds 100,108,119 --algorithms fixed-nr --workers 3 \
-  --output-dir outputs/height75_calibration
-python run.py --backend ns3 --algorithm offline-reference --seed 100 \
-  --reference-trace outputs/height75_calibration/ns3_fixed-nr_seed100.trace.npz \
-  --max-reference-switches 1 --output-dir outputs/physical_reference_one
-python run.py --backend ns3 --algorithm offline-reference --seed 100 \
-  --reference-trace outputs/height75_calibration/ns3_fixed-nr_seed100.trace.npz \
-  --max-reference-switches 2 --output-dir outputs/physical_reference_two
-
-# 单次真实链路与两种场景敏感度例子。
-python run.py --backend ns3 --algorithm laavha --seed 108 \
-  --model artifacts/physical_model.pt --output-dir outputs/single_run \
-  --reference-sensitivity
-python run.py --backend ns3 --algorithm laavha --seed 108 \
-  --model artifacts/physical_model.pt --shadow-db 2 --obstruction-db 8 \
-  --output-dir outputs/stress_example
-
-python figures.py
-python physical_figures.py
-python evidence_report.py
-python write_revision.py
-
-# 查看每种方法两次的冻结对比，包含均值/样本方差、原始次数和包记录检查。
-python report_comparison.py outputs/physical_comparison_2
+# 基础场景只需显式选择 baseline，仍必须使用新的输出目录。
+# python pilot.py --profile baseline --output-dir outputs/audited_baseline_5
 ```
 
-必须使用新的输出目录区分不同配置/模型。`pilot.py` 检查已有结果的场景参数、配置哈希和学习策略 checkpoint；不匹配则拒绝复用。正式批跑前还应冻结全部配置、源码和二进制。每次 `run.py` 会在 summary 保存命令参数、模型/二进制/关键源码哈希。
+训练数据沿用旧版 `outputs/physical_training/`：0–7 训练，100/101 验证。本轮没有重新采集训练任务，也没有在压力场景重训练。旧版独立校准、参考重放及训练命令可在 git 历史查看；旧目录不能使用活动代码直接覆盖或补跑。
+
+`scenarios.json` 提供基础场景与逐链路空间阴影配置。后者使用 2 dB 场强参数、8 m 空间尺度和 0.35 公共分量混合比例；这三个值描述工程压力过程，不是经外部校准的 UAV 信道参数。每个站点使用不同的空间分量，场由位置、seed 和链路标识决定，与算法动作无关。
+
+`pilot.py` 在开始前检查所有已有结果的实现版本、源码指纹、二进制、模型和完整运行参数；任意不匹配即拒绝复用。活动源码、配置和 checkpoint 复制到实验目录的 `frozen_inputs/`，manifest 保存全部指纹。`run.py` 拒绝覆盖已完成的单次输出。
+
+参数可以用 `--threshold`、`--window`、`--alpha` 传入，或用 `--parameters-file` 声明各方法的开发参数。当前五种子批次采用集成默认值，没有独立调优，不能当成充分调参后的最终排名。
 
 旧 ns3-ai 示例未修改。新场景使用同步行管道：C++ 输出带时戳的 JSON 状态，Python 回复网络编号；C++ 在收到动作前停止仿真时间前进。这样无需改变旧消息 ABI，保留旧实验复现入口。
 
@@ -97,9 +81,11 @@ python report_comparison.py outputs/physical_comparison_2
 
 学习分支预测 0.1/0.3/0.5 s 状态，注意力接受当前任务负载、速度和高度；训练损失含预测、固定外部服务目标监督的候选排序和权重正则。归一化只拟合训练任务。预测低置信度时回退当前观测；正常迁移要求当前收益与未来目标持续性，服务失效时走独立恢复。算法没有网络顺序、预定时间点或次数上限。
 
-所有对照共用可用性门限和确认机制。`topsis` 是显式任务权重+滞回强对照；`trend` 和五样本移动平均对照共用预测目的地持续性检查。后者沿用 CLI/CSV 标识 `ewma`，实际为等权移动平均，图表和正文标作 moving-average。`strongest-signal` 实际最大化 SINR，标作 strongest-SINR。`topsis-q/gra/vikor/copras/spotis/saw` 是共同效用变换下的 MADM 适配版本；`fuzzy-vho` 调用旧规则后使用共同可用性/滞回。不能将适配版的结果描述为未修改原作者完整系统。原实现仍在快照中。
+所有对照共用可用性门限和失效恢复；ALERA 的普通确认窗口随速度变化，其他方法采用声明的固定窗口。`topsis` 是显式任务权重+滞回强对照；`trend` 和五样本移动平均对照共用预测目的地持续性检查。后者沿用 CLI/CSV 标识 `ewma`，实际为等权移动平均，图表和正文标作 moving-average。`strongest-signal` 实际最大化 SINR，标作 strongest-SINR。`scoring.py` 实现修正后的 Fuzzy、标准逐列归一化 VIKOR、收益/成本分组 COPRAS；TOPSIS/GRA/SPOTIS 使用明确的固定效用变换，SAW 使用手工任务权重。历史规则保留在快照中。不能将适配版的结果描述为未修改原作者完整系统。原实现仍在快照中。
 
 任务收益外部定义为 `4 × 遥测服务满足度 + 视频服务满足度`，不是由模型决定的评价权重。参考 DP 精确处理本服务模型的中断、分数成本和网络选择；穷举测试检验其正确性。该 memoryless 参考忽略实际 packet 队列，因此它在物理运行中的结果是估计参考，不能声称闭环全局最优。
+
+ALERA 默认统计原始值波动并使用 `max(2, floor(4-2v/30))` 的确认窗口；`--alera-statistic increments` 是显式替代版本。`no-attention` 表示固定任务权重替代，不与旧稿熵权 LAAVHA-A 混用。新增 `no-fusion`、`no-persistence`、熵权/均匀权重替代及 ALERA 分量消融，可通过 CLI 单独选择。
 
 ## 证据范围
 

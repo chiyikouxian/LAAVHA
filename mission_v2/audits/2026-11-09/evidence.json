@@ -1,0 +1,128 @@
+{
+  "date": "2026-11-09",
+  "scope": "Static source audit, existing-log statistics and algebraic checks; no new simulation, training, or policy replay.",
+  "source_sha256": {
+    "mission_v2/policy.py": "a7b9b81ae7750463b0f5e9390c69188d5f9cc77a53158aedc2f166848112ac5a",
+    "mission_v2/mission.py": "3b1eb1f3e520415f9318693fe629a1ba09baead68cc55e2319733f23ea014234",
+    "mission_v2/model.py": "8d561de0b8396717b094da66acdf5938f27439109fec0d54923a93852d91b012",
+    "mission_v2/train.py": "e2abe9d2138ce89d069085af47e099ad63900789dd09d92f75b0cbe10f6d2ad1",
+    "mission_v2/run.py": "2a1b843545b3762d90329f02db0ea8486b13558d921b180ced8d20117899aaa0",
+    "mission_v2/pilot.py": "c7815c7b62d462f2957b4c9c7ddb5382887c543e8fce8ce080584700c1ec7021",
+    "mission_v2/ns3/laavha-mission.cc": "70ff7e084317ffbb33eeb1d4855f530763623d0f3fc944ce7041a8ad0c3752a2",
+    "mission_v2/baseline_snapshot/fuzzy_vho.py": "76fd9abcb4af71fa1eda66e2e03addc36b56ade6e11fcf98fc4dd8d56d1a64cb",
+    "mission_v2/baseline_snapshot/madm_comparison.py": "a1c17b13733a9a4018b9d9fedb98848e60bd4e740b5421fdaaeeac1a69b9ebf7",
+    "mission_v2/baseline_snapshot/topsis_q.py": "5b54f3b721836f75919ee5fd9ee88feb35b679f67b7d3bd0890cdf7be73aa12a",
+    "mission_v2/baseline_snapshot/saw_madm.py": "aa8ebeefc48d3dec377d6e2263072cde43d8860f32af29523382698a20385edb",
+    "mission_v2/outputs/physical_comparison_2/manifest.json": "ab488dec709aa2f09f379a49447880b785bb34569e9d0c5dbd029c31ff1bc183",
+    "mission_v2/outputs/physical_comparison_2/comparison.csv": "a42b56ce180e241df21c69c290aef6fc7fbb12f05cf535a5950d5caa26ca2fde"
+  },
+  "campaign": {
+    "count_consistency": {
+      "runs": 30,
+      "migrations": 64,
+      "cpp_python_and_decisions_agree": true
+    },
+    "200": {
+      "steps": 500,
+      "one_usable_steps": 286,
+      "one_usable_or_componentwise_dominant_steps": 472,
+      "laavha_no_prediction_same_action_steps": 499,
+      "laavha_alera_same_action_steps": 500,
+      "preview_capacity_feature_at_0_or_1_fraction": 0.9928741092636579,
+      "mean_forecast_feature_fraction": 0.3599386181163003
+    },
+    "201": {
+      "steps": 500,
+      "one_usable_steps": 272,
+      "one_usable_or_componentwise_dominant_steps": 453,
+      "laavha_no_prediction_same_action_steps": 500,
+      "laavha_alera_same_action_steps": 500,
+      "preview_capacity_feature_at_0_or_1_fraction": 0.9928571428571429,
+      "mean_forecast_feature_fraction": 0.35822896452782993
+    }
+  },
+  "formula_checks": {
+    "fuzzy_cost_direction": {
+      "raw_metrics": [
+        [
+          10.0,
+          -80.0,
+          5.0,
+          10.0,
+          0.01
+        ],
+        [
+          10.0,
+          -80.0,
+          20.0,
+          10.0,
+          0.1
+        ],
+        [
+          10.0,
+          -80.0,
+          100.0,
+          10.0,
+          0.4
+        ]
+      ],
+      "expected_best": 0,
+      "actual_selected": 2,
+      "actual_scores": [
+        0.15,
+        0.27280701754385966,
+        0.9
+      ],
+      "result": "Cost direction reversed after benefit conversion."
+    },
+    "vikor_definition": {
+      "benefit_features": [
+        [
+          0.772782,
+          0.290087,
+          0.574124,
+          0.6055,
+          0.363186
+        ],
+        [
+          0.587506,
+          0.838828,
+          0.798692,
+          0.383438,
+          0.336678
+        ],
+        [
+          0.751978,
+          0.782285,
+          0.754289,
+          0.534013,
+          0.426868
+        ]
+      ],
+      "same_entropy_weights": [
+        0.05736024398669439,
+        0.6864399942741062,
+        0.07782363771695264,
+        0.13808827264162712,
+        0.040287851380619674
+      ],
+      "current_Q": [
+        1.0,
+        0.0,
+        0.0634716929966795
+      ],
+      "reference_Q": [
+        1.0,
+        0.12997892517632548,
+        0.0
+      ],
+      "current_selected": 1,
+      "reference_selected": 2,
+      "result": "Fixed-ideal regret differs from standard VIKOR normalization."
+    },
+    "spotis_fixed_bounds": {
+      "reference_max_abs_error": 1.1102230246251565e-16,
+      "result": "Current SPOTIS expression agrees with fixed-bound reference; weighted-sum equivalence itself is not a bug."
+    }
+  }
+}

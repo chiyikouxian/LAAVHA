@@ -2,5 +2,5 @@
   "ns3_version": "3.45",
   "nr_commit": "5606a4e96b3a0bdbe7a5ecb9bbda10d69da3a7a8",
   "dependency_patch_sha256": "6d34c03384e9420453c16a3c0e8d99396523ee0767a70a01ec13b474def6cea6",
-  "source_sha256": "70ff7e084317ffbb33eeb1d4855f530763623d0f3fc944ce7041a8ad0c3752a2"
+  "source_sha256": "c73922ccab366cf1e07d2b26630275de4cdc0459b5f6e9c0bfd64b1009f91d02"
 }

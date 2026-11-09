@@ -27,9 +27,27 @@ class SceneLoss : public PropagationLossModel
 {
   public:
     double obstructionDb=mission_config::obstruction_db,shadowDb=0;
+    double shadowLengthM=8,shadowCorrelation=.35;
+    int linkIndex=0;
     double roofHeight=mission_config::building_high[2];
     uint32_t sceneSeed=100;
     static TypeId GetTypeId(){static TypeId t=TypeId("MissionSceneLoss").SetParent<PropagationLossModel>().AddConstructor<SceneLoss>();return t;}
+    double ShadowLoss(const Vector& mobile) const
+    {
+        double common=0,independent=0;
+        for(int k=1;k<=8;++k)
+        {
+            double spatial=mobile.x/(shadowLengthM*(.4+.15*k))
+                          +mobile.y/(shadowLengthM*(.6+.17*k));
+            common+=std::sin(spatial+sceneSeed*(.37+k*.11));
+            independent+=std::sin(spatial+sceneSeed*(.61+k*.17)+(linkIndex+1)*(1.13+k*.73));
+        }
+        // Shared and link-specific fields are fixed before actions, continuous
+        // in space and reciprocal. The parameter is a mixing power fraction,
+        // not a promise of exact finite-trajectory sample correlation.
+        return shadowDb*(std::sqrt(shadowCorrelation)*common
+                         +std::sqrt(1-shadowCorrelation)*independent)/2.;
+    }
   private:
     double DoCalcRxPower(double tx,Ptr<MobilityModel> a,Ptr<MobilityModel> b) const override
     {
@@ -46,10 +64,7 @@ class SceneLoss : public PropagationLossModel
         }
         crosses=crosses&&enter<=leave&&leave>=0&&enter<=1;
         Vector mobile=p.z>q.z?p:q;
-        double field=0;
-        for(int k=1;k<=8;++k)
-            field+=std::sin(mobile.x/(13.+k*3)+mobile.y/(17.+k*5)+sceneSeed*(.37+k*.11));
-        return tx-(crosses?obstructionDb:0)-shadowDb*field/2.;
+        return tx-(crosses?obstructionDb:0)-ShadowLoss(mobile);
     }
     int64_t DoAssignStreams(int64_t) override{return 0;}
 };
@@ -81,6 +96,7 @@ class Mission
     double offsetX=0,offsetY=0,offsetZ=0;
     double lteBackhaulMbps=6,nrTxDbm=23;
     double obstructionDb=mission_config::obstruction_db,shadowDb=0;
+    double shadowLengthM=8,shadowCorrelation=.35;
     double roofHeight=mission_config::building_high[2];
     uint32_t seed=100;
     bool randomize=true;
@@ -91,6 +107,7 @@ class Mission
     Ptr<LteHelper> lte;
     Ptr<NrHelper> nr;
     std::array<Ptr<Socket>,3> send;
+    std::array<Ptr<SceneLoss>,3> sceneModels;
     std::array<Ipv4Address,3> destinations;
     std::array<double,3> sinr{{-50,-50,-50}},rx{{-150,-150,-150}},signalTime{{-1,-1,-1}};
     std::vector<Record> records;
@@ -224,7 +241,11 @@ class Mission
                <<",\"speed\":"<<Motion(step*period).second<<",\"altitude\":"<<pos.z
                <<",\"position\":["<<pos.x<<","<<pos.y<<","<<pos.z<<"],\"demand\":"<<Demand()<<",\"metrics\":[";
         for(int n=0;n<3;++n){if(n)message<<",";message<<"[";for(int k=0;k<5;++k){if(k)message<<",";message<<metrics[n][k];}message<<"]";}
-        message<<"],\"delay_valid\":["<<valid[0]<<","<<valid[1]<<","<<valid[2]<<"]}";
+        message<<"],\"delay_valid\":["<<valid[0]<<","<<valid[1]<<","<<valid[2]<<"],\"signal_age_s\":[";
+        for(int n=0;n<3;++n){if(n)message<<",";message<<(signalTime[n]<0?1e9:std::max(0.,now-signalTime[n]));}
+        message<<"],\"shadow_loss_db\":[";
+        for(int n=0;n<3;++n){if(n)message<<",";message<<sceneModels[n]->ShadowLoss(pos);}
+        message<<"]}";
         states<<message.str()<<"\n";states.flush();
         int target=serving;
         if(controller=="pipe")
@@ -250,6 +271,16 @@ class Mission
         return ip.Assign(dev).GetAddress(1);
     }
 
+    Ptr<SceneLoss> ConfigureScene(int network)
+    {
+        auto scene=CreateObject<SceneLoss>();
+        scene->obstructionDb=obstructionDb;scene->shadowDb=shadowDb;
+        scene->shadowLengthM=shadowLengthM;scene->shadowCorrelation=shadowCorrelation;
+        scene->sceneSeed=seed;scene->roofHeight=roofHeight;scene->linkIndex=network;
+        sceneModels[network]=scene;
+        return scene;
+    }
+
     void Setup()
     {
         RngSeedManager::SetSeed(12345);RngSeedManager::SetRun(seed);
@@ -267,7 +298,7 @@ class Mission
         // YansWifiChannel exposes its loss chain through the setter; use the
         // same engineering log-distance law as its primary propagation model.
         auto wifiLoss=CreateObject<LogDistancePropagationLossModel>();wifiLoss->SetAttribute("Exponent",DoubleValue(mission_config::pathloss[2]));wifiLoss->SetAttribute("ReferenceLoss",DoubleValue(mission_config::reference_loss[2]));
-        auto wifiScene=CreateObject<SceneLoss>();wifiScene->obstructionDb=obstructionDb;wifiScene->shadowDb=shadowDb;wifiScene->sceneSeed=seed;wifiScene->roofHeight=roofHeight;
+        auto wifiScene=ConfigureScene(2);
         wifiLoss->SetNext(wifiScene);wifiChannel->SetPropagationLossModel(wifiLoss);
         YansWifiPhyHelper phy;phy.SetChannel(wifiChannel);
         phy.Set("TxPowerStart",DoubleValue(20));phy.Set("TxPowerEnd",DoubleValue(20));
@@ -287,7 +318,7 @@ class Mission
         lte->SetAttribute("PathlossModel",TypeIdValue(LogDistancePropagationLossModel::GetTypeId()));
         lte->SetPathlossModelAttribute("Exponent",DoubleValue(mission_config::pathloss[1]));lte->SetPathlossModelAttribute("ReferenceLoss",DoubleValue(mission_config::reference_loss[1]));
         auto enb=lte->InstallEnbDevice(NodeContainer(sites.Get(1)));auto ld=lte->InstallUeDevice(NodeContainer(ue.Get(1)));
-        auto lteScene=CreateObject<SceneLoss>();lteScene->obstructionDb=obstructionDb;lteScene->shadowDb=shadowDb;lteScene->sceneSeed=seed;lteScene->roofHeight=roofHeight;
+        auto lteScene=ConfigureScene(1);
         lte->GetUplinkSpectrumChannel()->AddPropagationLossModel(lteScene);
         lte->AssignStreams(enb,300);lte->AssignStreams(ld,400);epc->AssignUeIpv4Address(ld);
         routes.GetStaticRouting(ue.Get(1)->GetObject<Ipv4>())->SetDefaultRoute(epc->GetUeDefaultGatewayAddress(),1);
@@ -306,7 +337,7 @@ class Mission
         auto band=creator.CreateOperationBandContiguousCc(bandConf);
         auto spectrum=CreateObject<MultiModelSpectrumChannel>();
         auto nrLoss=CreateObject<LogDistancePropagationLossModel>();nrLoss->SetAttribute("Exponent",DoubleValue(mission_config::pathloss[0]));nrLoss->SetAttribute("ReferenceLoss",DoubleValue(mission_config::reference_loss[0]));
-        auto nrScene=CreateObject<SceneLoss>();nrScene->obstructionDb=obstructionDb;nrScene->shadowDb=shadowDb;nrScene->sceneSeed=seed;nrScene->roofHeight=roofHeight;
+        auto nrScene=ConfigureScene(0);
         // Match NrChannelHelper's zero propagation-delay scheduling convention.
         nrLoss->SetNext(nrScene);spectrum->AddPropagationLossModel(nrLoss);
         auto bwps=CcBwpCreator::GetAllBwps({band});bwps.at(0).get()->SetChannel(spectrum);
@@ -359,9 +390,13 @@ int main(int argc,char**argv)
     cmd.AddValue("imagingMbps","Shared upstream video demand during imaging",m.imagingMbps);
     cmd.AddValue("nrTxDbm","NR UE transmit power",m.nrTxDbm);cmd.AddValue("lteBackhaulMbps","LTE backhaul allocation",m.lteBackhaulMbps);
     cmd.AddValue("obstructionDb","Loss for a ray intersecting the declared building",m.obstructionDb);cmd.AddValue("shadowDb","Policy-independent spatial shadow field strength",m.shadowDb);
+    cmd.AddValue("shadowLengthM","Spatial shadow scale in meters",m.shadowLengthM);
+    cmd.AddValue("shadowCorrelation","Shared shadow mixing power fraction",m.shadowCorrelation);
     cmd.AddValue("buildingHeight","Roof height for geometry sensitivity",m.roofHeight);
     cmd.AddValue("randomize","Initial position/height perturbation",m.randomize);
     cmd.AddValue("output","Packet CSV path",m.output);cmd.AddValue("controller","pipe|fixed|schedule",m.controller);
     cmd.AddValue("fixedNetwork","Fixed network index",m.fixedNetwork);cmd.AddValue("scheduleFile","Integer actions for schedule control",m.scheduleFile);
-    cmd.Parse(argc,argv);m.Setup();Simulator::Stop(Seconds(m.warmup+m.duration+1.));Simulator::Run();m.Finish();Simulator::Destroy();
+    cmd.Parse(argc,argv);
+    NS_ABORT_MSG_IF(m.shadowLengthM<=0||m.shadowCorrelation<0||m.shadowCorrelation>1||m.shadowDb<0,"Invalid spatial shadow parameters");
+    m.Setup();Simulator::Stop(Seconds(m.warmup+m.duration+1.));Simulator::Run();m.Finish();Simulator::Destroy();
 }
