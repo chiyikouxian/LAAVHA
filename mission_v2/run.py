@@ -49,6 +49,8 @@ def main():
     ap.add_argument('--shadow-correlation',type=float,default=None)
     ap.add_argument('--alera-statistic',choices=['level','increments'],default='level')
     ap.add_argument('--risk-lambda',type=float,default=.5)
+    ap.add_argument('--controller', choices=['auto', 'legacy', 'qos-aware'], default='auto',
+                    help='auto: QoS-aware for learned policies, legacy for other methods; explicit values enable matched controls')
     ap.add_argument('--building-height',type=float,default=CONFIG['building_bounds_m'][2][1])
     ap.add_argument('--ns3-root',type=Path,default=Path('/home/suwen/ns-3.45'))
     ap.add_argument('--reference-sensitivity',action='store_true',help='Evaluate offline reference interruption/cost sensitivity')
@@ -68,7 +70,8 @@ def main():
     model=None
     if args.algorithm in LEARNED:model,_=load_model(args.model)
     policy=Policy(args.algorithm,model,args.threshold,args.window,args.alpha,
-                  alera_statistic=args.alera_statistic,risk_lambda=args.risk_lambda)
+                  alera_statistic=args.alera_statistic,risk_lambda=args.risk_lambda,
+                  controller=args.controller)
     decisions=[];start=time.monotonic()
     source_hashes=implementation_hashes()
     run_metadata={k:str(v) if isinstance(v,Path) else v for k,v in vars(args).items()}

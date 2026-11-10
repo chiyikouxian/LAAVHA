@@ -88,7 +88,7 @@ HO 分布：
 - `outputs/fixAB3_full8_2seed/` — 8 算法 2-seed 对比
 - `outputs/fixAB3_seed115/` — seed 115 验证
 
-## 遗留问题与可选下一步
+## 原 50-seed 测试结束时的遗留问题
 
 1. **其他 7 个算法未做 50-seed**：目前只有 LAAVHA 跑了 50 seed。论文若要完整对比表，需要对 topsis/vikor/copras/fuzzy-vho/no-pred/no-attention/alera 各跑 50 seed。可用 `batch_run.py --seeds 110-159 --algorithm <name>` 分别跑。
 
@@ -96,9 +96,9 @@ HO 分布：
 
 3. **质量与切换的权衡**：window=20 让 UAV 在 stale WiFi 上等最多 2 秒，导致 zero_s 均值 2.42s（no-pred 约 1.3s）。用户之前已接受这个权衡。
 
-## 代码状态
+## 本交接初始代码状态（历史）
 
-policy.py 当前是 fixAB3 状态，已 git 提交（commit a928c9c）。batch_run.py 是未跟踪新文件。
+本交接初始时 policy.py 为 fixAB3 状态，已 git 提交（commit a928c9c）。batch_run.py 是未跟踪新文件。此后的活动版本见下文与 README。
 
 ## 2026-11-10 后续改进（mission-v2-audited-2）
 
@@ -110,3 +110,27 @@ policy.py 当前是 fixAB3 状态，已 git 提交（commit a928c9c）。batch_r
 - 当前版本指纹升为 `mission-v2-audited-2`，旧输出仍保存原始版本指纹，不能与新版本混作一批。
 
 后续应先扩大新版 LAAVHA 的留出种子复测，再在相同冻结版本和参数下重跑基线作配对比较。以上结果只支持短时往返减少的初步判断，不能据此声称已证明总体优于其他算法。
+
+## 2026-11-10 继续优化（mission-v2-qos-aware-3）
+
+已实现服务收益覆盖迁移代价的资格判断、自适应确认及有界失效恢复。`--controller auto` 对全部学习方法及消融使用同一新控制器；`legacy` 保留上一版，`qos-aware` 可以给传统基线显式套用相同控制层。新增 `no-service-guard` 消融、`service_control.py`、逐动作诊断和严格配对汇总工具。场景、二进制与模型权重未修改。
+
+开发种子 110–114 的真实 ns-3 均值：HO 3.2、遥测按时交付 97.14%、视频 92.50%、零交付 cohort 时长 1.12 s；相对上一版分别为 4.0、93.46%、90.17%、2.64 s。35 项测试通过，开发批次 5 次均通过原始包与动作校验。50 条旧观测的重放均值为 2.32，恰好两次占 72%，不代表新版本的 50-seed 包级结果。
+
+规则冻结后，seed 160–164 进行 9 方法 × 5（45 次）物理配对，另加相同控制层的 TOPSIS × 5。完整机制、数据路径与结果以 [QOS_AWARE_OPTIMIZATION.md](QOS_AWARE_OPTIMIZATION.md) 为准；原 110–159 已用于开发诊断，不再当成独立最终测试集。
+
+该 50 次对比已全部完成并校验：LAAVHA 五颗均为 2 次，遥测 98.34%、视频 96.62%、零交付 cohort 时长 0.80 s。legacy TOPSIS/VIKOR/COPRAS/Fuzzy-VHO 的 HO 均值为 4.4/4.4/4.8/4.2。ALERA、no-attention 与 LAAVHA 持平；no-pred 及同控制层 TOPSIS 的 HO 为 1.8、视频 95.69%。部分 legacy 基线的视频交付略高，不能宣称所有指标全面超越。完整配对表与输入指纹见 `outputs/qos_aware_validation_report/`。
+
+下一轮优先处理已知任务负载变化前的迁移时机、在独立压力场景数据上重训、按网络/预测时域校准置信度，并加强注意力监督。不要继续单纯加大窗口。新版本若依据 160–164 继续优化，这些种子应转为开发数据，最终验证另选未使用种子。`batch_run.py` 已补齐缓存核验、冻结输入和显式控制器。
+
+## 用户后续要求的新版 50-seed × 50 s 测试（已完成）
+
+版本仍为 `mission-v2-qos-aware-3`，显式 `qos-aware` 控制器；原场景、模型与二进制未改动。使用未发现历史运行记录或 manifest 引用的 seed 450–499，全部 50 次成功完成，无失败、重跑或剔除。启动前发现原拟定 165–214 范围包含历史种子 200/201，因此没有采用该范围。
+
+- 真实 ns-3 HO 均值 2.36，样本标准差 0.693，均值 95% bootstrap 区间 [2.18, 2.56]。
+- 分布：1 次 1 颗、2 次 35 颗、3 次 9 颗、4 次 5 颗。恰好两次比例 70%，不是五种子预览中的 100%。
+- 遥测按时交付均值 97.46%，视频 94.44%，视频按时吞吐 2.7352 Mbps，零交付 cohort 时长 0.966 s。
+- 所有 50 次核对了 500 个决策、50 s 时间范围、包 cohort、动作与原始次数、源码/runner/模型/二进制哈希；从原始包独立重算的指标与 summary 一致。
+- 目录：`mission_v2/outputs/laavha_qos_aware_50seed_450_499/`（从仓库根目录定位）；[完整报告](outputs/laavha_qos_aware_50seed_450_499/RESULTS.md)、`validated_runs.csv`、`campaign_statistics.json`、`PROTOCOL.md` 和 `report_campaign.py` 均已保存，原始文件全部保留。
+
+本批只有 LAAVHA，没有 450–499 上的配对基线，不能声称已完成 50-seed 算法优越性比较。旧 110–159 属于不同控制器与不同种子，不能当作配对版本改进证据。若依据本批继续调参，应将 450–499 标为开发数据并另设最终验证种子。

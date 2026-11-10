@@ -6,6 +6,7 @@ from mission import sanitize, features, task_value
 from model import context_tensor
 from provenance import ALGORITHMS, LEARNED
 from scoring import topsis, entropy_weights, madm_scores
+from service_control import service_estimates, migration_evidence, RECOVERY_TIMEOUT_S
 
 
 def task_weights(demand):
@@ -28,18 +29,22 @@ def adaptive_hysteresis(sinr_values, speed, base=.03, statistic='level'):
 
 class Policy:
     def __init__(self, name='laavha', model=None, threshold=.03, window=3,
-                 alpha=.6, period=.1, alera_statistic='level', risk_lambda=.5):
+                 alpha=.6, period=.1, alera_statistic='level', risk_lambda=.5,
+                 controller='auto'):
         if name not in ALGORITHMS:
             raise ValueError(f'Unknown policy: {name}')
         if not 0 <= alpha <= 1 or threshold < 0 or window < 1 or period <= 0 or risk_lambda < 0:
             raise ValueError('Invalid policy parameters')
         if alera_statistic not in ('level', 'increments'):
             raise ValueError('Unknown ALERA statistic')
+        if controller not in ('auto', 'legacy', 'qos-aware'):
+            raise ValueError('Unknown migration controller')
         if name in LEARNED and model is None:
             raise ValueError('A trained checkpoint is required; random weights are not allowed')
         self.name, self.model = name, model
         self.threshold, self.window, self.alpha, self.period = threshold, window, alpha, period
         self.alera_statistic, self.risk_lambda = alera_statistic, risk_lambda
+        self.controller = ('qos-aware' if name in LEARNED else 'legacy') if controller == 'auto' else controller
         self.history = deque(maxlen=10)
         self.fresh_history = deque(maxlen=10)
         self.scores = deque(maxlen=5)
@@ -52,6 +57,8 @@ class Policy:
         # link always bypasses this guard through the failure-recovery path.
         self.last_normal_from = None
         self.last_normal_step = None
+        self.outage_s = 0.
+        self.confirmation_mode = None
 
     def decide(self, metrics, serving, speed, altitude, demand, interruption=.1, signal_age_s=None):
         cur = sanitize(metrics)
@@ -119,16 +126,21 @@ class Policy:
             threshold, window = adaptive_hysteresis(observed, speed, self.threshold, self.alera_statistic)
         recent = np.mean(h[-3:], axis=0)
         usable = (recent[:, 3] >= .1) & (recent[:, 2] <= 200) & (recent[:, 4] < .5) & fresh
+        physical_usable = usable.copy()
+        qos_control = self.controller == 'qos-aware'
         # Change B: block links still within failure cooldown (prediction-capable only).
         self.step += 1
-        if self.name in ('laavha', 'alera') and self.cooldown_step:
+        if not qos_control and self.name in ('laavha', 'alera') and self.cooldown_step:
             for _net, _allow in self.cooldown_step.items():
                 if self.step < _allow:
                     usable[_net] = False
         raw_candidate = int(np.argmax(score))
         failed = bool(not usable[serving] and usable.any())
+        self.outage_s = self.outage_s + self.period if not physical_usable[serving] else 0.
         if failed:
-            if self.name in ('laavha', 'alera'):
+            if qos_control:
+                threshold, window = 0., 2
+            elif self.name in ('laavha', 'alera'):
                 threshold, window = 0., 20  # Change A: 20-step (~2 s) window
             else:
                 threshold, window = 0., 2
@@ -141,13 +153,24 @@ class Policy:
                     raw_candidate=raw_candidate, effective_threshold=threshold,
                     effective_window=window, failure_recovery=failed,
                     all_unavailable=bool(not usable.any()),
-                    deferred_transient_destination=False)
+                    deferred_transient_destination=False,
+                    controller=self.controller, outage_s=float(self.outage_s),
+                    recovery_deadline_reached=bool(qos_control and failed and self.outage_s >= RECOVERY_TIMEOUT_S - 1e-9))
         if not usable.any():
             self.candidate, self.confirmations = None, 0
             self.diagnostics = {**diag, 'candidate': int(serving), 'score_gap': 0.,
                                 'confirmations': 0, 'decision_reason': 'all_unavailable'}
             return int(serving), score
         score = np.where(usable, score, -1.)
+        observed_service, expected_service = service_estimates(h, freshness, demand, forecasts, forecast_fraction)
+        service_gain, migration_cost, service_allowed, service_windows = migration_evidence(
+            expected_service, serving, interruption, window, self.period)
+        service_guard = qos_control and self.name != 'no-service-guard' and not failed
+        if service_guard:
+            score = np.where(service_allowed, score, -1.)
+        diag.update(observed_service=observed_service.tolist(), expected_service=expected_service.tolist(),
+                    service_gain=service_gain.tolist(), migration_cost=migration_cost.tolist(),
+                    service_eligible=service_allowed.tolist(), service_guard=service_guard)
         candidate = int(np.argmax(score))
         if usable[serving] and np.isclose(score[serving], score[candidate], rtol=0, atol=1e-12):
             candidate = int(serving)
@@ -158,10 +181,11 @@ class Policy:
             winners = [int(np.argmax(s)) for s in future]
             if winners[0] == winners[1] and winners[0] != candidate:
                 destination = winners[0]
-                if usable[destination] and score[destination] - score[candidate] > threshold:
+                eligible_destination = usable[destination] and (not service_guard or service_allowed[destination])
+                if eligible_destination and score[destination] - score[candidate] > threshold:
                     # Predicted future winner must beat the *current* top scorer, not just serving.
                     candidate = destination
-                elif usable[destination] and score[destination] - score[serving] > threshold:
+                elif eligible_destination and score[destination] - score[serving] > threshold:
                     # Predicted target beats serving but not current best: defer without overriding.
                     defer = True
         target = int(serving)
@@ -172,7 +196,7 @@ class Policy:
         elif self.locked > 1e-8:
             reason = 'migration_lock'
         reversal_guard = bool(
-            self.name == 'laavha' and not failed and
+            not qos_control and self.name == 'laavha' and not failed and
             candidate != serving and candidate == self.last_normal_from and
             self.last_normal_step is not None and self.step - self.last_normal_step <= 20
         )
@@ -182,11 +206,20 @@ class Policy:
             # ban: the candidate can still win after the longer confirmation.
             window = max(window, 10)
             diag['effective_window'] = window
+        if qos_control and not failed and candidate != serving:
+            window = int(service_windows[candidate])
+            diag['effective_window'] = window
+        if qos_control and candidate == serving and raw_candidate != serving and service_guard and not service_allowed[raw_candidate]:
+            reason = 'service_sufficient'
         if not defer and self.locked <= 1e-8 and candidate != serving and gap > threshold:
-            self.confirmations = self.confirmations + 1 if candidate == self.candidate else 1
+            mode = 'failure' if failed else 'normal'
+            same_evidence = candidate == self.candidate and (not qos_control or mode == self.confirmation_mode)
+            self.confirmations = self.confirmations + 1 if same_evidence else 1
             self.candidate = candidate
+            self.confirmation_mode = mode
             reason = 'confirming'
-            if self.confirmations >= window:
+            deadline = qos_control and failed and self.outage_s >= RECOVERY_TIMEOUT_S - 1e-9
+            if self.confirmations >= window or deadline:
                 target, self.confirmations, self.candidate, self.locked = candidate, 0, None, interruption
                 reason = 'failure_recovery' if failed else 'normal_migration'
                 if reason == 'normal_migration' and self.name == 'laavha':
@@ -194,7 +227,7 @@ class Policy:
                     self.last_normal_step = self.step
                 # Change B: after failure recovery, block return to the just-abandoned
                 # failed link for 35 steps (~3.5 s) to prevent boomerang oscillation.
-                if reason == 'failure_recovery' and self.name in ('laavha', 'alera'):
+                if not qos_control and reason == 'failure_recovery' and self.name in ('laavha', 'alera'):
                     self.cooldown_step[serving] = self.step + 35
         else:
             self.candidate, self.confirmations = None, 0

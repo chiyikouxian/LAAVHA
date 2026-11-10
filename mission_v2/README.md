@@ -1,6 +1,6 @@
 # LAAVHA Mission v2
 
-新会话接手请先阅读 [最新交接文档](HANDOVER_PROMPT.md)，其中包含最终目标、最新五种子结果和下一步优先级。
+新会话接手请先阅读 [最新交接文档](HANDOVER_PROMPT_50SEED.md)，其中包含最终目标、50-seed 结果及后续控制器改进。
 
 本目录保存重新设计的三阶段遥感任务、真实 ns-3 接入、LAAVHA 训练与推理、独立参考、实验输出和论文修订稿。旧 `time_series_50s/`、旧模型和提交稿不作为新实验结果使用，也没有被覆盖。
 
@@ -38,7 +38,44 @@
 
 ## 当前活动版本与复现
 
-2026-11-10 的此前活动版本为 `mission-v2-audited-1`。交接后的 LAAVHA 短时反向迁移确认改进标记为 `mission-v2-audited-2`；旧输出仍按其原始指纹保留，不可复用为新版本结果。此前五种子测试见 [五种子开发测试](AUDITED_FIVE_SEED_RESULTS.md)。
+2026-11-10 的活动版本为 `mission-v2-qos-aware-3`。`mission-v2-audited-2` 是上一轮固定反向迁移确认版本；旧输出仍按其原始指纹保留，不可复用为新版本结果。
+
+当前控制器由 `--controller auto|legacy|qos-aware` 明确选择。`auto` 为全部学习方法及其消融使用 QoS-aware，为传统排名方法保留 legacy；可以显式给 TOPSIS 等传统方法指定 `qos-aware`，以核对收益是否来自共享控制层。学习方法之间不使用不同的失效窗口或冷却规则。`--controller legacy` 保留上一版行为，已逐项对比冻结版本的 2500 个决策和分数。
+
+`service_control.py` 将最近三次观测与置信加权的 0.1/0.3/0.5 s 预测转为任务服务满足度。正常迁移须在声明的 2 s 回本预算中覆盖中断损失与 `reference_switch_cost`；2 s 是代价摊销假设，不是预测时域。弱收益确认时间最多 1 s，强收益使用较短确认。失效恢复独立处理，稳定候选确认两步；在仍有可用候选且迁移锁已解除时，连续检测失效达到 0.5 s 可越过候选重置等待。它不包括检测失效前的测量陈旧时间，也不能保证实际包业务在 0.5 s 内恢复。QoS-aware 不硬屏蔽先前失败的链路，允许唯一可用网络用于恢复。`no-service-guard` 只移除服务回本资格判断，保留自适应确认和恢复，用于控制层消融。
+
+原始 link-shadow 场景、PHY、站点、路线、需求与模型均未改变。本轮开发种子为 110–114；160–164 在冻结规则后首次运行用于小样本配对检查，不能视作充分的最终泛化证明。
+
+```bash
+# 同版本配对检查：学习消融使用相同新控制器，传统基线保留既有控制层。
+python pilot.py --seeds 160,161,162,163,164 \
+  --algorithms laavha,alera,no-pred,no-attention,topsis,fuzzy-vho,copras,vikor,no-service-guard \
+  --workers 8 --profile link-shadow --output-dir outputs/qos_aware_validation_5
+# 额外的匹配控制层对照。
+python pilot.py --seeds 160,161,162,163,164 --algorithms topsis \
+  --controller qos-aware --workers 2 --profile link-shadow \
+  --output-dir outputs/qos_aware_matched_topsis_5
+python verify.py outputs/qos_aware_validation_5
+python verify.py outputs/qos_aware_matched_topsis_5
+# 重放会传入保存的信号年龄，不能将其当成新包级实验。
+python replay.py ../outputs/laavha_50seed --source-algorithm laavha \
+  --algorithms laavha --output outputs/new_replay.csv
+python handover_diagnostics.py outputs/qos_aware_validation_5 \
+  --output-dir outputs/new_diagnostics
+python controller_comparison.py outputs/qos_aware_validation_5 \
+  outputs/qos_aware_matched_topsis_5 --output-dir outputs/new_paired_report
+```
+
+`batch_run.py` 支持显式种子范围和同样的 `--controller` 选择。它会在启动前拒绝源码、参数、模型或二进制不符的旧缓存，并冻结源码、批跑脚本和模型；批次失败返回非零退出码。短任务冒烟测试及缓存复用/拒绝检查保存在 `outputs/qos_aware_dev/batch_smoke/`，仅用于验证工具，不计入 50 s 算法结果。
+
+用户随后指定的新版 LAAVHA 50-seed × 50 s 物理测试已完成，seed 450–499，场景与模型保持不变，全部 50 次通过原始包、动作、500 步时序、输入哈希及指标重算校验。HO 均值为 2.36，样本标准差 0.693，35/50（70%）恰好两次；遥测/视频按时交付均值为 97.46%/94.44%，零交付 cohort 时长均值为 0.966 s。完整结果见 [50-seed 测试报告](outputs/laavha_qos_aware_50seed_450_499/RESULTS.md)，逐 seed 数据及统计哈希保存在同目录。这一批只有 LAAVHA，不能代替相同种子的基线对比。
+
+```bash
+python batch_run.py --seeds 450-499 --algorithm laavha --duration 50 \
+  --controller qos-aware --workers 10 --profile link-shadow \
+  --output-dir outputs/laavha_qos_aware_50seed_450_499
+python outputs/laavha_qos_aware_50seed_450_499/report_campaign.py
+```
 
 本机 Python：`/home/suwen/miniconda3/envs/deeplearn/bin/python3`。以下命令在本目录执行。用户要求开发测试约五个种子，因此 `pilot.py` 最多接受五个不同种子；不启动全量测试。
 
@@ -81,7 +118,7 @@ python report_comparison.py outputs/audited_link_shadow_5
 
 学习分支预测 0.1/0.3/0.5 s 状态，注意力接受当前任务负载、速度和高度；训练损失含预测、固定外部服务目标监督的候选排序和权重正则。归一化只拟合训练任务。预测低置信度时回退当前观测；正常迁移要求当前收益与未来目标持续性，服务失效时走独立恢复。算法没有网络顺序、预定时间点或次数上限。
 
-所有对照共用可用性门限和失效恢复；ALERA 的普通确认窗口随速度变化，其他方法采用声明的固定窗口。`topsis` 是显式任务权重+滞回强对照；`trend` 和五样本移动平均对照共用预测目的地持续性检查。后者沿用 CLI/CSV 标识 `ewma`，实际为等权移动平均，图表和正文标作 moving-average。`strongest-signal` 实际最大化 SINR，标作 strongest-SINR。`scoring.py` 实现修正后的 Fuzzy、标准逐列归一化 VIKOR、收益/成本分组 COPRAS；TOPSIS/GRA/SPOTIS 使用明确的固定效用变换，SAW 使用手工任务权重。历史规则保留在快照中。不能将适配版的结果描述为未修改原作者完整系统。原实现仍在快照中。
+所有对照共用原始可用性门限；失效恢复与正常确认由上文声明的 controller 决定。legacy 下 ALERA 的普通确认窗口随速度变化，其他方法使用声明的固定窗口；QoS-aware 在基础窗口上按服务收益延长确认。`topsis` 是显式任务权重+滞回强对照；`trend` 和五样本移动平均对照共用预测目的地持续性检查。后者沿用 CLI/CSV 标识 `ewma`，实际为等权移动平均，图表和正文标作 moving-average。`strongest-signal` 实际最大化 SINR，标作 strongest-SINR。`scoring.py` 实现修正后的 Fuzzy、标准逐列归一化 VIKOR、收益/成本分组 COPRAS；TOPSIS/GRA/SPOTIS 使用明确的固定效用变换，SAW 使用手工任务权重。历史规则保留在快照中。不能将适配版的结果描述为未修改原作者完整系统。原实现仍在快照中。
 
 任务收益外部定义为 `4 × 遥测服务满足度 + 视频服务满足度`，不是由模型决定的评价权重。参考 DP 精确处理本服务模型的中断、分数成本和网络选择；穷举测试检验其正确性。该 memoryless 参考忽略实际 packet 队列，因此它在物理运行中的结果是估计参考，不能声称闭环全局最优。
 

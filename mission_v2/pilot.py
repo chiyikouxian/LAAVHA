@@ -34,6 +34,7 @@ def main():
     ap.add_argument('--interruption', type=float, default=.1)
     ap.add_argument('--alera-statistic', choices=['level', 'increments'], default='level')
     ap.add_argument('--risk-lambda', type=float, default=.5)
+    ap.add_argument('--controller', choices=['auto', 'legacy', 'qos-aware'], default='auto')
     ap.add_argument('--parameters-file', type=Path, help='Frozen per-method development overrides: threshold/window/alpha')
     args = ap.parse_args()
     seeds = [int(s) for s in args.seeds.split(',')]
@@ -46,7 +47,7 @@ def main():
         ap.error('workers must be positive')
     scene = scenario_parameters(args.profile, args.shadow_db, args.shadow_length_m, args.shadow_correlation)
     parameters = {k: getattr(args, k) for k in ['profile', 'obstruction_db', 'building_height', 'duration',
-                  'threshold', 'window', 'alpha', 'interruption', 'alera_statistic', 'risk_lambda']}
+                  'threshold', 'window', 'alpha', 'interruption', 'alera_statistic', 'risk_lambda', 'controller']}
     parameters.update(scene)
     overrides = json.loads(args.parameters_file.read_text()) if args.parameters_file else {}
     for name, values in overrides.items():

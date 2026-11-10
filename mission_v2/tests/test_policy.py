@@ -53,7 +53,7 @@ class AuditedPolicyTests(unittest.TestCase):
             result[preferred[0]] = 1.
             return result
 
-        p = Policy('laavha', Checkpoint(), threshold=.03, window=1)
+        p = Policy('laavha', Checkpoint(), threshold=.03, window=1, controller='legacy')
         with patch('policy.topsis', side_effect=scores):
             for _ in range(3):
                 target, _ = p.decide(m, 0, 20, 100, 2)
@@ -77,7 +77,7 @@ class AuditedPolicyTests(unittest.TestCase):
 
         m = np.array([[20, -60, 8, 8, .05], [10, -70, 1000, 0, 1],
                       [-10, -120, 1000, 0, 1]], float)
-        p = Policy('laavha', Checkpoint(), threshold=.03, window=1)
+        p = Policy('laavha', Checkpoint(), threshold=.03, window=1, controller='legacy')
         p.last_normal_from, p.last_normal_step, p.step = 0, 1, 1
         with patch('policy.topsis', return_value=np.array([1., 0., 0.])):
             for _ in range(19):

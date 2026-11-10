@@ -4,15 +4,15 @@ import json
 from pathlib import Path
 from mission import ROOT
 
-VERSION = 'mission-v2-audited-2'
+VERSION = 'mission-v2-qos-aware-3'
 LEARNED = ('laavha', 'alera', 'no-pred', 'no-attention', 'no-attention-entropy',
            'no-attention-uniform', 'no-fusion', 'no-persistence',
-           'alera-risk-only', 'alera-hysteresis-only')
+           'alera-risk-only', 'alera-hysteresis-only', 'no-service-guard')
 ALGORITHMS = LEARNED + ('topsis', 'trend', 'ewma', 'task-greedy', 'strongest-signal',
                        'saw', 'topsis-q', 'gra', 'vikor', 'copras', 'spotis',
                        'fuzzy-vho', 'fixed-nr', 'fixed-lte', 'fixed-wifi', 'offline-reference')
 SOURCE_FILES = ('config.json', 'scenarios.json', 'mission.py', 'scoring.py',
-                'policy.py', 'model.py', 'reference.py', 'run.py', 'pilot.py',
+                'policy.py', 'service_control.py', 'model.py', 'reference.py', 'run.py', 'pilot.py',
                 'provenance.py', 'ns3/laavha-mission.cc', 'ns3/mission-config.h')
 
 
