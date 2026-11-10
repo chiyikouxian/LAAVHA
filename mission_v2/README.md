@@ -38,7 +38,7 @@
 
 ## 当前活动版本与复现
 
-2026-11-10 的活动版本为 `mission-v2-audited-1`。 五种子测试已完成，结果见 [五种子开发测试](AUDITED_FIVE_SEED_RESULTS.md)。修复说明见 [IMPLEMENTATION_UPDATE.md](IMPLEMENTATION_UPDATE.md)。此前 `outputs/physical_*` 的结果属于旧实现，继续保留；旧稿和历史报告中的均值不代表修正后的结果。
+2026-11-10 的此前活动版本为 `mission-v2-audited-1`。交接后的 LAAVHA 短时反向迁移确认改进标记为 `mission-v2-audited-2`；旧输出仍按其原始指纹保留，不可复用为新版本结果。此前五种子测试见 [五种子开发测试](AUDITED_FIVE_SEED_RESULTS.md)。
 
 本机 Python：`/home/suwen/miniconda3/envs/deeplearn/bin/python3`。以下命令在本目录执行。用户要求开发测试约五个种子，因此 `pilot.py` 最多接受五个不同种子；不启动全量测试。
 

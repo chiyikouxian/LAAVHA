@@ -35,6 +35,59 @@ class PolicyTests(unittest.TestCase):
 
 
 class AuditedPolicyTests(unittest.TestCase):
+    def test_laavha_requires_sustained_evidence_for_rapid_reversal(self):
+        import torch
+        from unittest.mock import patch
+
+        class Checkpoint(torch.nn.Module):
+            def forward(self, h, context):
+                cur = h[:, :, -1, :]
+                return cur[:, :, None, :].repeat(1, 1, 3, 1), torch.full((1, 5), .2)
+
+        m = np.array([[20, -60, 5, 10, 0], [10, -70, 8, 8, .05],
+                      [-10, -120, 1000, 0, 1]], float)
+        preferred = [1]
+
+        def scores(*args):
+            result = np.zeros(3)
+            result[preferred[0]] = 1.
+            return result
+
+        p = Policy('laavha', Checkpoint(), threshold=.03, window=1)
+        with patch('policy.topsis', side_effect=scores):
+            for _ in range(3):
+                target, _ = p.decide(m, 0, 20, 100, 2)
+            self.assertEqual(target, 1)
+
+            preferred[0] = 0
+            for _ in range(9):
+                target, _ = p.decide(m, 1, 20, 100, 2)
+                self.assertEqual(target, 1)
+            target, _ = p.decide(m, 1, 20, 100, 2)
+            self.assertEqual(target, 0)
+
+    def test_laavha_failure_recovery_bypasses_reversal_guard(self):
+        import torch
+        from unittest.mock import patch
+
+        class Checkpoint(torch.nn.Module):
+            def forward(self, h, context):
+                cur = h[:, :, -1, :]
+                return cur[:, :, None, :].repeat(1, 1, 3, 1), torch.full((1, 5), .2)
+
+        m = np.array([[20, -60, 8, 8, .05], [10, -70, 1000, 0, 1],
+                      [-10, -120, 1000, 0, 1]], float)
+        p = Policy('laavha', Checkpoint(), threshold=.03, window=1)
+        p.last_normal_from, p.last_normal_step, p.step = 0, 1, 1
+        with patch('policy.topsis', return_value=np.array([1., 0., 0.])):
+            for _ in range(19):
+                target, _ = p.decide(m, 1, 20, 100, 2)
+                self.assertEqual(target, 1)
+            target, _ = p.decide(m, 1, 20, 100, 2)
+            self.assertEqual(target, 0)
+            self.assertEqual(p.diagnostics['decision_reason'], 'failure_recovery')
+            self.assertFalse(p.diagnostics['reversal_guard'])
+
     def test_paper_alera_changes_window_with_speed(self):
         from policy import adaptive_hysteresis
         stable = [10., 10., 10., 10., 10.]

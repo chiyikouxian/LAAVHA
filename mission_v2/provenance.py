@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from mission import ROOT
 
-VERSION = 'mission-v2-audited-1'
+VERSION = 'mission-v2-audited-2'
 LEARNED = ('laavha', 'alera', 'no-pred', 'no-attention', 'no-attention-entropy',
            'no-attention-uniform', 'no-fusion', 'no-persistence',
            'alera-risk-only', 'alera-hysteresis-only')

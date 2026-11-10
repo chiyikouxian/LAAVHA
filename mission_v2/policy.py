@@ -47,6 +47,11 @@ class Policy:
         self.last_forecast, self.diagnostics = None, {}
         self.step = 0                  # Change B: decision step counter
         self.cooldown_step = {}        # Change B: net_index → first step allowed again
+        # Remember only the link left by the latest normal LAAVHA migration.
+        # A rapid reversal needs sustained evidence, while an unusable serving
+        # link always bypasses this guard through the failure-recovery path.
+        self.last_normal_from = None
+        self.last_normal_step = None
 
     def decide(self, metrics, serving, speed, altitude, demand, interruption=.1, signal_age_s=None):
         cur = sanitize(metrics)
@@ -166,6 +171,17 @@ class Policy:
             reason = 'deferred_destination'
         elif self.locked > 1e-8:
             reason = 'migration_lock'
+        reversal_guard = bool(
+            self.name == 'laavha' and not failed and
+            candidate != serving and candidate == self.last_normal_from and
+            self.last_normal_step is not None and self.step - self.last_normal_step <= 20
+        )
+        if reversal_guard:
+            # One second of stable, score-supported evidence is required to
+            # undo a recent normal migration. This does not impose a dwell-time
+            # ban: the candidate can still win after the longer confirmation.
+            window = max(window, 10)
+            diag['effective_window'] = window
         if not defer and self.locked <= 1e-8 and candidate != serving and gap > threshold:
             self.confirmations = self.confirmations + 1 if candidate == self.candidate else 1
             self.candidate = candidate
@@ -173,6 +189,9 @@ class Policy:
             if self.confirmations >= window:
                 target, self.confirmations, self.candidate, self.locked = candidate, 0, None, interruption
                 reason = 'failure_recovery' if failed else 'normal_migration'
+                if reason == 'normal_migration' and self.name == 'laavha':
+                    self.last_normal_from = serving
+                    self.last_normal_step = self.step
                 # Change B: after failure recovery, block return to the just-abandoned
                 # failed link for 35 steps (~3.5 s) to prevent boomerang oscillation.
                 if reason == 'failure_recovery' and self.name in ('laavha', 'alera'):
@@ -181,5 +200,6 @@ class Policy:
             self.candidate, self.confirmations = None, 0
         self.diagnostics = {**diag, 'candidate': candidate, 'score_gap': gap,
                             'confirmations': self.confirmations, 'decision_reason': reason,
-                            'deferred_transient_destination': defer}
+                            'deferred_transient_destination': defer,
+                            'reversal_guard': reversal_guard}
         return target, score
